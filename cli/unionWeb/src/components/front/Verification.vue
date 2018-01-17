@@ -421,6 +421,7 @@ export default {
     activityCardChange() {
       this.tableData = [];
       this.$refs.multipleTable.clearSelection();
+      this.activitySelected = [];
       if (this.activityCardId) {
         let item = this.activityCards.find(item => {
           return item.activityCard.id === this.activityCardId;
@@ -532,7 +533,7 @@ export default {
           if (res.data.success) {
             if (data.textList.length > 0 && data.payMoney > 0) {
               this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
-            } else if (data.payMoney > 0) {
+            } else if (data.consume.payMoney > 0) {
               this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
             } else {
               this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
@@ -609,7 +610,7 @@ export default {
                   if (msg.status == '1') {
                     if (data.textList.length > 0 && data.payMoney > 0) {
                       _this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
-                    } else if (data.payMoney > 0) {
+                    } else if (data.consume.payMoney > 0) {
                       _this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
                     } else {
                       _this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
