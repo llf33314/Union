@@ -198,7 +198,7 @@ export default {
       if (parseFloat(COUNT) / 3 > 1 && j < 0) {
         i--;
         j++;
-        moved -= 1;//todo（问下需求）
+        moved -= 1;
         var offesetLength = -moved * (LIWIDTH + OFFSET);
         $('.SwitchAround .el-checkbox-group').css({
           left: offesetLength + 'px'
