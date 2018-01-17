@@ -142,9 +142,11 @@ export default {
 .drop_down {
   margin-top: 30px;
   border: 1px solid #ddd;
-  height: 720px;
+  height: 610px;
   overflow: auto;
-  width: 420px;
+  width: 35%;
+  max-width:420px ;
+  min-width:315px ;
   > p {
     background: #eef1f6;
     padding: 15px 30px;
@@ -153,11 +155,7 @@ export default {
   /*二维码的显示框的样式*/
   .middle_ {
     text-align: center;
-    padding: 50px 42px 40px 58px;
-    > img {
-      display: block;
-      margin: 0 40px 30px 40px;
-    }
+    margin: 40px 0;
   }
   > span {
     display: block;
@@ -173,7 +171,9 @@ export default {
   margin-top: 30px;
   border: 1px solid #ddd;
   overflow: auto;
-  width: 420px;
+  width: 35%;
+  max-width:420px ;
+  min-width:315px ;
   > p {
     background: #eef1f6;
     padding: 15px 30px;

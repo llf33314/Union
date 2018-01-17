@@ -551,7 +551,6 @@ hr{
 
 //我的联盟/创建联盟公共样式--------------------------------
 .container_one {
-  min-height:1000px;
   .special {
     .el-input__inner {
       width: 210px!important;
@@ -1647,6 +1646,7 @@ hr{
 
 //我的联盟中(前台模块）里边的所有样式---------------------------------------------------------------------------------------------2
 #front{
+  margin: 40px;
   //联盟卡消费核销--首页样式----------------------   1
   #Verification {
     .first_ {
@@ -1863,13 +1863,17 @@ hr{
         padding:0;
         text-align: center;
         img{
-          margin-top: 35px;
+          margin-top: 30px;
           width:200px;
           height:200px;
         }
         p{
-          margin-top: 20px;
-          margin-bottom: 30px;
+          span{
+            color: red;
+          }
+        }
+        >div{
+          margin-top: 5px;
         }
       }
     }
@@ -1927,8 +1931,10 @@ hr{
   #transaction{
     .uninCardContent{
       float: left;
-      width: 920px;
+      width: 63%;
       margin-top: 30px;
+      max-width: 920px;
+      min-width: 550px;
       //办理联盟卡
       >div{
         height: 227px;
@@ -1986,6 +1992,7 @@ hr{
           }
           .SwitchAround {
             position: relative;
+            overflow: hidden;
             >i{
               position:absolute;
               width: 20px;
@@ -2041,7 +2048,7 @@ hr{
                 .SelectunionImg1{
                   i{
                     display: block;
-                    width:200px;
+                    width:99.1%;
                     height:46px;
                     position: absolute;
                     background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;

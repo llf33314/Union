@@ -491,9 +491,6 @@ hr {
   background-color: #20a0ff;
   border-color: #20a0ff;
 }
-.container_one {
-  min-height: 1000px;
-}
 .container_one .special .el-input__inner {
   width: 210px!important;
 }
@@ -1452,6 +1449,9 @@ hr {
   padding: 20px 20px 16px;
   border-bottom: 1px solid #eeeeee;
 }
+#front {
+  margin: 40px;
+}
 #front #Verification .first_ .el-input__inner {
   font-size: 18px;
   height: 35px;
@@ -1636,13 +1636,15 @@ hr {
   text-align: center;
 }
 #front #Verification .codePayment .el-dialog__body img {
-  margin-top: 35px;
+  margin-top: 30px;
   width: 200px;
   height: 200px;
 }
-#front #Verification .codePayment .el-dialog__body p {
-  margin-top: 20px;
-  margin-bottom: 30px;
+#front #Verification .codePayment .el-dialog__body p span {
+  color: red;
+}
+#front #Verification .codePayment .el-dialog__body > div {
+  margin-top: 5px;
 }
 #front #ExpenseRecord > .el-row .el-form-item__label {
   padding: 11px 3px 11px 0;
@@ -1704,8 +1706,10 @@ hr {
 }
 #front #transaction .uninCardContent {
   float: left;
-  width: 920px;
+  width: 63%;
   margin-top: 30px;
+  max-width: 920px;
+  min-width: 550px;
 }
 #front #transaction .uninCardContent > div {
   height: 227px;
@@ -1765,6 +1769,7 @@ hr {
 }
 #front #transaction .uninCardContent > form .selectUnionCard .SwitchAround {
   position: relative;
+  overflow: hidden;
 }
 #front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > i {
   position: absolute;
@@ -1822,7 +1827,7 @@ hr {
 }
 #front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .SelectunionImg1 i {
   display: block;
-  width: 200px;
+  width: 99.1%;
   height: 46px;
   position: absolute;
   background: rgba(35, 34, 34, 0.5) url('../../assets/images/dagou.png') no-repeat center;

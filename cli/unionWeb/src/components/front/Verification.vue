@@ -197,7 +197,7 @@
         <hr>
         <img v-bind:src="payUrl">
         <p>￥<span>{{ payPrice }}</span>
-        <p>请使用微信/支付宝扫描该二维码付款</p>
+        <div>扫描二维码进行支付</div>
       </el-dialog>
     </div>
   </div>
@@ -687,6 +687,9 @@ export default {
   .model_ {
     p {
       color: #999999;
+      img{
+        width: 240px;
+      }
     }
   }
 }

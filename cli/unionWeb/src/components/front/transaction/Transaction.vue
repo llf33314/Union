@@ -198,7 +198,7 @@ export default {
       if (parseFloat(COUNT) / 3 > 1 && j < 0) {
         i--;
         j++;
-        moved -= 4;
+        moved -= 1;//todo（问下需求）
         var offesetLength = -moved * (LIWIDTH + OFFSET);
         $('.SwitchAround .el-checkbox-group').css({
           left: offesetLength + 'px'
@@ -267,7 +267,8 @@ export default {
                       this.form2 = res.data.data;
                       this.form2.unionList = res.data.data.unionList;
                       this.unionId = res.data.data.currentUnion.id;
-                      this.form2.activityList = res.data.data.cardActivityApplyVOList;
+                      this.form2.activityList = res.data.data.cardActivityApplyVOList.concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList).
+                      concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList);
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
                           //todo
