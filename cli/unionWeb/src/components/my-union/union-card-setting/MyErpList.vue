@@ -77,7 +77,7 @@
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
                   <div class="rightContentBottomHidden" style=""> {{ item.name }}</div>
                   <span>
-                    <el-input-number v-model="item.number" :min="1"></el-input-number>
+                    <el-input-number v-model="item.number" :min="1" :max="10000"></el-input-number>
                     <el-button @click="handleDelete2(index)" type="text" style="margin-left: 15px;">删除</el-button>
                   </span>
                 </div>

@@ -313,10 +313,6 @@ export default {
     // 校验输入为数字类型
     check() {
       this.price = numberCheck(this.price);
-      if (this.price > 50000) {
-        this.price = 50000;
-        this.$message({ showClose: true, message: '单次核销金额最大为5万元', type: 'error', duration: 3000 });
-      }
     },
     check2() {
       this.price2 = numberCheck(this.price2);
@@ -505,6 +501,8 @@ export default {
     confirm() {
       if (this.activitySelected.length === 0 && !this.price) {
         this.$message({ showClose: true, message: '请输入金额', type: 'error', duration: 3000 });
+      } else if (this.price > 50000) {
+        this.$message({ showClose: true, message: '单次消费金额最大为5万元', type: 'error', duration: 3000 });
       } else {
         this.visible3 = true;
         let temData = 0;

@@ -23,6 +23,7 @@ import com.gt.union.card.project.service.IUnionCardProjectFlowService;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
@@ -357,17 +358,26 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (price == null || price <= 0) {
             throw new BusinessException("价格不能为空，且不能小于0");
         }
+        if(price > ConfigConstant.CARD_MAX_MONEY){
+            throw new BusinessException("价格不可超过5000");
+        }
         saveActivity.setPrice(price);
         // 校验表单发行量
         Integer amount = vo.getAmount();
         if (amount == null || amount <= 0) {
             throw new BusinessException("发行量不能为空，且不能小于0");
         }
+        if(amount > ConfigConstant.CARD_MAX_AMOUNT){
+            throw new BusinessException("发行量不可超过10000");
+        }
         saveActivity.setAmount(amount);
         // 校验表单有效天数
         Integer validityDay = vo.getValidityDay();
         if (validityDay == null || validityDay <= 0) {
             throw new BusinessException("有效天数不能为空，且不能小于0");
+        }
+        if(validityDay > ConfigConstant.CARD_MAX_DAY){
+            throw new BusinessException("有效天数不可超过730天");
         }
         saveActivity.setValidityDay(validityDay);
         // 校验表单报名开始时间

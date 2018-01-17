@@ -371,7 +371,9 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (consumeMoney == null || consumeMoney < 0) {
             throw new BusinessException("消费金额不能为空，且不能小于0");
         }
-
+        if(consumeMoney > ConfigConstant.CONSUME_MAX_MONEY){
+            throw new BusinessException("消费金额不可超过50000");
+        }
         Double discount = member.getDiscount() != null ? member.getDiscount() : 1.0;
         BigDecimal discountMoney = BigDecimalUtil.multiply(consumeMoney, BigDecimalUtil.subtract(1.0, discount));
         saveConsume.setDiscount(discount);

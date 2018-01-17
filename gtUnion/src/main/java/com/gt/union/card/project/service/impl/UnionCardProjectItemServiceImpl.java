@@ -19,6 +19,7 @@ import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
@@ -229,7 +230,14 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
-
+        for(UnionCardProjectItem item : saveItemList){
+            if(item.getNumber() == null || item.getNumber() < 0){
+                throw new BusinessException("项目数量不能为空，且不能小于0");
+            }
+            if(item.getNumber() > ConfigConstant.PROJECT_ITEM_MAX_COUNT){
+                throw new BusinessException("项目数量不可超过10000");
+            }
+        }
         // 事务操作
         if (project == null) {
             unionCardProjectService.save(saveProject);
