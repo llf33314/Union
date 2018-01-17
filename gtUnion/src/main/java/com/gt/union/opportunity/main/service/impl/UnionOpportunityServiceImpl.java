@@ -570,6 +570,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
             if (acceptPrice == null || acceptPrice < 1) {
                 throw new BusinessException("接受商机时受理金额不能为空，且必须大于1");
             }
+            if (acceptPrice > ConfigConstant.BROKERAGE_MAX_MONEY) {
+                throw new BusinessException("接受商机时受理金额不可超过50000");
+            }
             UnionOpportunityRatio ratio = opportunityRatioService.getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), opportunity.getFromMemberId());
             if (ratio == null) {
                 throw new BusinessException("没有对商机推荐者设置佣金比例");

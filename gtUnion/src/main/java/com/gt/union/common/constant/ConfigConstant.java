@@ -36,6 +36,36 @@ public interface ConfigConstant {
     int WXPUBLIC_QRCODE_MODEL = 10;
 
     /**
+     * 最大消费金额 50000
+     */
+    double CONSUME_MAX_MONEY = 50000;
+
+    /**
+     * 活动卡最大发行数量 10000
+     */
+    int CARD_MAX_AMOUNT = 10000;
+
+    /**
+     * 活动卡最大售卡金额 5000
+     */
+    double CARD_MAX_MONEY = 5000;
+
+    /**
+     * 活动卡最大有效天数 730
+     */
+    int CARD_MAX_DAY = 730;
+
+    /**
+     * 佣金最大受理金额 50000
+     */
+    double BROKERAGE_MAX_MONEY = 50000;
+
+    /**
+     * 优惠项目和商品最大数量 10000
+     */
+    int PROJECT_ITEM_MAX_COUNT = 10000;
+
+    /**
      * 开发者联系电话
      */
     String DEVELOPER_PHONE = "15986670850";
