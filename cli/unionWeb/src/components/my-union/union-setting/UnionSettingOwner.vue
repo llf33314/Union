@@ -97,6 +97,11 @@ export default {
     });
   },
   methods: {
+    // 调用素材库
+    materiallayer() {
+      this.materialVisible = true;
+      this.materialUrl = this.$store.state.materialUrl + window.location.href;
+    },
     init() {
       // 获取联盟基本信息
       $http
@@ -121,11 +126,6 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
-    },
-    // 调用素材库
-    materiallayer() {
-      this.materialVisible = true;
-      this.materialUrl = this.$store.state.materialUrl + window.location.href;
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {

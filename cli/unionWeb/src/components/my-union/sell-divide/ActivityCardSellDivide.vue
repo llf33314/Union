@@ -166,8 +166,9 @@ export default {
     getTableData2() {
       $http
         .get(
-          `/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=${this
-            .currentPage2}`
+          `/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=${
+            this.currentPage2
+          }`
         )
         .then(res => {
           if (res.data.data) {
@@ -231,8 +232,8 @@ export default {
           v.sharingRatio.ratio = average;
         });
         this.tableData3[0].sharingRatio.ratio = 100 - average * (len - 1);
+        this.sum3 = 100;
       }
-      this.sum3 = 100;
     },
     // 计算分配比例
     onChange() {
