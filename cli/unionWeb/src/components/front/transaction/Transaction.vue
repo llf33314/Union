@@ -106,6 +106,8 @@
         <hr>
         <div class="model_">
           <p><img v-bind:src="codeSrc" class="codeImg"></p>
+          <p>￥<span>{{ payPrice }}</span>
+          </p>
           <p style="margin-bottom: 50px;">请使用微信扫描该二维码付款</p>
         </div>
       </el-dialog>
@@ -173,7 +175,8 @@ export default {
       },
       timeEnd: '',
       detaiVisible: false,
-      detailTableData: []
+      detailTableData: [],
+      payPrice: ''
     };
   },
   mounted: function() {
@@ -373,6 +376,8 @@ export default {
       } else {
         this.activityCheckList.forEach(v => {
           data.push(v);
+          this.payPrice = this.payPrice - 0;
+          this.payPrice += v.activity.price - 0;
         });
       }
       $http
@@ -382,6 +387,7 @@ export default {
             this.codeSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
             this.visible3 = true;
+            this.payPrice = this.payPrice.toFixed(2);
             var _this = this;
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {

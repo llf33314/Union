@@ -50,6 +50,7 @@
           <hr>
           <div class="model_">
             <p><img v-bind:src="codeSrc" class="codeImg" style="width:240px;height:240px;"></p>
+            <p>￥<span>{{ price | formatPrice }}</span>
             <p style="margin-bottom: 50px;">请使用微信/支付宝扫描该二维码付款</p>
           </div>
         </el-dialog>

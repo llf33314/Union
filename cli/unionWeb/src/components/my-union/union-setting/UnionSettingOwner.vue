@@ -85,6 +85,7 @@ export default {
   mounted: function() {
     let _this = this;
     window.addEventListener('message', function(e) {
+      console.log(e.data);
       if (e.data && e.data != 'go_back()') {
         _this.form.unionImg = e.data.split(',')[1].replace(/\'|\)/g, '');
       }

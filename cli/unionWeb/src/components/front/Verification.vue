@@ -196,6 +196,7 @@
       <el-dialog title="付款" :visible.sync="visible4" size="tiny" @close="resetData">
         <hr>
         <img v-bind:src="payUrl">
+        <p>￥<span>{{ payPrice }}</span>
         <p>请使用微信/支付宝扫描该二维码付款</p>
       </el-dialog>
     </div>
@@ -251,7 +252,8 @@ export default {
       socketFlag: {
         socketKey: '',
         status: ''
-      }
+      },
+      payPrice: ''
     };
   },
   mounted: function() {
@@ -567,6 +569,7 @@ export default {
               this.payUrl = res.data.data.payUrl;
               this.socketKey = res.data.data.socketKey;
               this.visible4 = true;
+              this.payPrice = (this.price1 - 0).toFixed(2);
             } else {
               this.payUrl = '';
               this.socketKey = '';
