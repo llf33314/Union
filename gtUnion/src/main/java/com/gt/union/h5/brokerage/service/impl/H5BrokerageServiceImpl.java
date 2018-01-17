@@ -280,6 +280,27 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         return result;
     }
 
+    private List<OpportunityBrokerageVO> getOpportunityBrokerageVOList(List<UnionOpportunity> opportunityList) throws Exception {
+        List<OpportunityBrokerageVO> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                OpportunityBrokerageVO vo = new OpportunityBrokerageVO();
+                vo.setOpportunity(opportunity);
+
+                Integer unionId = opportunity.getUnionId();
+                vo.setUnion(unionMainService.getById(unionId));
+
+                vo.setFromMember(unionMemberService.getById(opportunity.getFromMemberId()));
+
+                vo.setToMember(unionMemberService.getById(opportunity.getToMemberId()));
+
+                result.add(vo);
+            }
+        }
+
+        return result;
+    }
+
     @Override
     public Page pageUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
         if (h5BrokerageUser == null || page == null) {
@@ -304,27 +325,6 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
         List<OpportunityBrokerageVO> opportunityList = getOpportunityBrokerageVOList(result.getRecords());
         page.setRecords(opportunityList);
-        return result;
-    }
-
-    private List<OpportunityBrokerageVO> getOpportunityBrokerageVOList(List<UnionOpportunity> opportunityList) throws Exception {
-        List<OpportunityBrokerageVO> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(opportunityList)) {
-            for (UnionOpportunity opportunity : opportunityList) {
-                OpportunityBrokerageVO vo = new OpportunityBrokerageVO();
-                vo.setOpportunity(opportunity);
-
-                Integer unionId = opportunity.getUnionId();
-                vo.setUnion(unionMainService.getById(unionId));
-
-                vo.setFromMember(unionMemberService.getById(opportunity.getFromMemberId()));
-
-                vo.setToMember(unionMemberService.getById(opportunity.getToMemberId()));
-
-                result.add(vo);
-            }
-        }
-
         return result;
     }
 
