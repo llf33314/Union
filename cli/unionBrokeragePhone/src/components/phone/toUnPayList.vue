@@ -38,7 +38,7 @@
             <div class="clearfr">
               <div class="fr">
                 <span>{{item.toMember.enterpriseName}}</span>
-                <p class="" style="color: #5EB6FF;text-align: right;">{{item.opportunity.money}}</p>
+                <p class="" style="color: #5EB6FF;text-align: right;">{{item.opportunity.brokerageMoney}}</p>
               </div>
             </div>
           </li>

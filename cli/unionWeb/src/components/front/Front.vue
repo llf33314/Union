@@ -56,8 +56,3 @@ export default {
   }
 };
 </script>
-<style lang='less' rel="stylesheet/less" scoped>
-#front {
-  margin: 40px 70px 20px 60px;
-}
-</style>
