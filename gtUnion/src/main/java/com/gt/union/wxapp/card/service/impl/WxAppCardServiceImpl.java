@@ -12,6 +12,7 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
+import com.gt.union.card.consume.service.IUnionConsumeProjectService;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
@@ -19,6 +20,7 @@ import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.entity.UnionCardRecord;
 import com.gt.union.card.main.service.*;
 import com.gt.union.card.project.constant.ProjectConstant;
+import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
@@ -93,6 +95,9 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
 
     @Autowired
     private WxPayService wxPayService;
+
+    @Autowired
+    private IUnionConsumeProjectService unionConsumeProjectService;
 
 
     @Override
@@ -394,12 +399,19 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         }
         if (ListUtil.isNotEmpty(members)) {
             for (UnionMember member : members) {
+                UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
                 CardDetailListVO listVO = new CardDetailListVO();
                 listVO.setUnionMember(member);
                 if (CommonUtil.isNotEmpty(activityId)) {
                     List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByUnionIdAndMemberIdAndActivityIdAndProjectStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
                     if (ListUtil.isNotEmpty(textItemList)) {
-                        listVO.setUnionCardProjectItems(textItemList);
+                        for (UnionCardProjectItem textItem : textItemList) {
+                            Integer consumeItemCount = unionConsumeProjectService.countValidByProjectIdAndProjectItemId(project.getId(), textItem.getId());
+                            Integer textItemNumber = textItem.getNumber() != null ? textItem.getNumber() : 0;
+                            Integer surplusItemCount = textItemNumber - consumeItemCount;
+                            textItem.setNumber(surplusItemCount);
+                            listVO.setUnionCardProjectItems(textItemList);
+                        }
                     }
                 }
                 list.add(listVO);
