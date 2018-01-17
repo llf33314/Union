@@ -134,20 +134,4 @@ export default {
 .tabs {
   margin: 40px 50px;
 }
-#feedbackcontent::-webkit-input-placeholder {
-  /* WebKit browsers */
-  color: #97a8be;
-}
-#feedbackcontent:-moz-placeholder {
-  /* Mozilla Firefox 4 to 18 */
-  color: #97a8be;
-}
-#feedbackcontent::-moz-placeholder {
-  /* Mozilla Firefox 19+ */
-  color: #97a8be;
-}
-#feedbackcontent:-ms-input-placeholder {
-  /* Internet Explorer 10+ */
-  color: #97a8be;
-}
 </style>

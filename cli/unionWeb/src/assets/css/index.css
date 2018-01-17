@@ -2,10 +2,7 @@
 body {
   background: #FFFFFF;
   font-family: "Microsoft YaHei";
-  min-width: 1280px;
   font-size: 16px;
-  overflow-y: auto;
-  width: 100%;
 }
 a {
   text-decoration: none;
@@ -456,7 +453,7 @@ hr {
   padding-top: 4px;
   position: absolute!important;
   margin: 10px 0 0 40px;
-  left: 280px;
+  left: 293px;
   top: -2px;
 }
 .tabs .el-form-item__label {
@@ -600,7 +597,7 @@ hr {
 }
 #recommended textarea {
   height: 85px;
-  width: 241px;
+  width: 290px;
   border-radius: 5px;
   resize: none;
   padding-left: 10px;

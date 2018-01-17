@@ -383,7 +383,7 @@ export default {
 
 <style scoped lang='less' rel="stylesheet/less">
 .container {
-  margin: 41px 119px 10px 56px;
+  margin: 30px;
 }
 /*创建和加入联盟---------------------------------*/
 .notice {
