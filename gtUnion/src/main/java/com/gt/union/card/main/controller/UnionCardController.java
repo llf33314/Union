@@ -2,6 +2,7 @@ package com.gt.union.card.main.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardService;
@@ -12,8 +13,10 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.QRcodeKit;
 import com.gt.union.union.main.vo.UnionPayVO;
+import com.gt.util.entity.result.wx.ApiWxApplet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -43,6 +46,9 @@ public class UnionCardController {
     @Resource(name = "unionBackCardApplyService")
     private IUnionCardApplyService unionCardApplyService;
 
+    @Autowired
+    private IBusUserService busUserService;
+
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡", produces = "application/json;charset=UTF-8")
@@ -69,16 +75,20 @@ public class UnionCardController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "获取联盟卡手机端二维码", notes = "获取联盟卡手机端二维码", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/qr/h5Card", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
-    public void qrH5Card(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    @ApiOperation(value = "获取联盟卡粉丝端二维码", notes = "获取联盟卡粉丝端二维码", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/qr/applet", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+    public String qrH5Card(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        String url = ConfigConstant.CARD_PHONE_BASE_URL + "toUnionCard/" + busId;
-        QRcodeKit.buildQRcode(url, 250, 250, response);
+        ApiWxApplet wxApplet = busUserService.getBusIdAndIndustry(busId, PropertiesUtil.getAppIndustry());
+        if(wxApplet!= null){
+            String imgUrl = PropertiesUtil.getResourceUrl() + wxApplet.getExperienceQrUrl();
+            return GtJsonResult.instanceSuccessMsg(imgUrl).toString();
+        }
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

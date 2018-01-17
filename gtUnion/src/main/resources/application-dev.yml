@@ -136,6 +136,7 @@ union:
   signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
   appid: wxa65e97cf48d6110f
   appVersion: v1.0.0
+  appIndustry: 11
 wx:
   duofen:
     busId: 33

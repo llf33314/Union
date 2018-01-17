@@ -3,6 +3,7 @@ package com.gt.union.api.client.user;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.user.bean.UserUnionAuthority;
+import com.gt.util.entity.result.wx.ApiWxApplet;
 
 import java.util.Map;
 
@@ -57,6 +58,12 @@ public interface IBusUserService {
 	 */
 	BusUser getBusUserByPhone(String phone);
 
-
+	/**
+	 * 根据商家id和industry获取商家小程序信息
+	 * @param busId		商家id
+	 * @param industry	类型
+	 * @return
+	 */
+	ApiWxApplet getBusIdAndIndustry(Integer busId, Integer industry);
 
 }
