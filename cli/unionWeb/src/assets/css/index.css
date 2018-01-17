@@ -1700,6 +1700,12 @@ hr {
   padding-left: 30px;
   margin: 18px 0;
 }
+#front #ExpenseRecord .searchBar .el-form--inline .el-form-item__content {
+  width: 67%;
+}
+#front #ExpenseRecord .searchBar .el-date-editor--daterange.el-input {
+  width: 92%;
+}
 #front #transaction .uninCardContent {
   float: left;
   width: 63%;
