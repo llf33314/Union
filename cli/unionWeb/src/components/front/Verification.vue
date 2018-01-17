@@ -141,7 +141,7 @@
               </span>
             </el-form-item>
             <div class="discountsProject">
-              <el-form-item label="优惠项目：">
+              <el-form-item label="优惠项目：" v-if="activitySelected.length>0">
                 <span v-for="(item, index) in activitySelected" :key="item.item.id">
                   {{ index + 1 }} 、 {{ item.item.name }};
                 </span>
@@ -530,7 +530,13 @@ export default {
         .post(url, data)
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
+            if (data.textList.length > 0 && data.payMoney > 0) {
+              this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
+            } else if (data.payMoney > 0) {
+              this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
+            } else {
+              this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
+            }
             this.init();
             eventBus.$emit('newTransaction');
             eventBus.$emit('unionUpdata');
@@ -601,7 +607,13 @@ export default {
               if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                 if (_this.socketKey == msg.socketKey) {
                   if (msg.status == '1') {
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
+                    if (data.textList.length > 0 && data.payMoney > 0) {
+                      _this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
+                    } else if (data.payMoney > 0) {
+                      _this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
+                    } else {
+                      _this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
+                    }
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
                     eventBus.$emit('newTransaction');
