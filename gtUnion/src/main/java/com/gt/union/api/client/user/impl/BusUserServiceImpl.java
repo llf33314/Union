@@ -170,7 +170,7 @@ public class BusUserServiceImpl implements IBusUserService {
         data.put("busId",busId);
         data.put("industry",industry);
         param.put("reqdata", data);
-        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectBybusIdAndindustry.do";
         try{
             String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
             logger.info("根据商家id和industry获取商家小程序信息，结果：{}", result);

@@ -61,7 +61,7 @@ public interface IH5BrokerageService {
     Page pageWithdrawalHistory(H5BrokerageUser h5BrokerageUser, Page page) throws Exception;
 
     /**
-     * 佣金平台-首页-我要提现-佣金明细-推荐佣金-分页；佣金平台-首页-我需支付-已支付-分页
+     * 佣金平台-首页-我需支付-已支付-分页
      *
      * @param h5BrokerageUser 登录信息
      * @param optUnionId      联盟id
@@ -69,7 +69,16 @@ public interface IH5BrokerageService {
      * @return List<OpportunityBrokerageVO>
      * @throws Exception 统一处理异常
      */
-    Page pageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
+    Page pageToOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
+
+    /**
+     * 佣金平台-首页-我要提现-佣金明细-推荐佣金-分页
+     * @param h5BrokerageUser
+     * @param unionId
+     * @param page
+     * @return
+     */
+    Page pageFromOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer unionId, Page page) throws Exception;
 
     /**
      * 拥挤平台-首页-我要提现-佣金明细-售卡佣金-分页
@@ -166,14 +175,24 @@ public interface IH5BrokerageService {
     //***************************************** Domain Driven Design - count *******************************************
 
     /**
-     * 佣金平台-首页-我要提现-佣金明细-推荐佣金-总额；佣金平台-首页-我需支付-已支付-总额
+     * 佣金平台-首页-我需支付-已支付-总额
      *
      * @param h5BrokerageUser 登录信息
      * @param optUnionId      联盟id
      * @return Double
      * @throws Exception 统一处理异常
      */
-    Double sumPaidOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
+    Double sumToPaidOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
+
+    /**
+     * 佣金平台-首页-我要提现-佣金明细-推荐佣金-总额
+     *
+     * @param h5BrokerageUser 登录信息
+     * @param optUnionId      联盟id
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumPaidFromOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
 
     /**
      * 佣金平台-首页-我要提现-佣金明细-售卡佣金-总额
@@ -204,6 +223,7 @@ public interface IH5BrokerageService {
      * @throws Exception 统一处理异常
      */
     Double sumUnReceivedOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
+
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
