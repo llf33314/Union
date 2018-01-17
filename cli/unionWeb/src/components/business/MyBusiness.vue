@@ -33,6 +33,14 @@
         <el-table-column prop="opportunity.clientName" label="顾客姓名">
         </el-table-column>
         <el-table-column prop="opportunity.clientPhone" label="电话">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p>电话：{{ scope.row.opportunity.clientPhone }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ scope.row.opportunity.clientPhone }}</span>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="opportunity.businessMsg" label="业务备注">
           <template slot-scope="scope">
@@ -44,16 +52,16 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="fromMember.enterpriseName" label="商机来源">
+        <el-table-column prop="fromMember.enterpriseName"   label="商机来源">
         </el-table-column>
-        <el-table-column prop="union.name" label="所属联盟">
+        <el-table-column prop="union.name"  label="所属联盟">
         </el-table-column>
         <el-table-column prop="opportunity.acceptStatus" label="状态" :filters="[{ text: '未处理', value: '未处理' }, { text: '已完成', value: '已完成' }, { text: '已拒绝', value: '已拒绝' }]" :filter-method="filterTag" filter-placement="bottom-end" width="150">
           <template slot-scope="scope">
             <el-tag :type="scope.row.opportunity.acceptStatus === '未处理' ? 'warning' : (scope.row.opportunity.acceptStatus === '已完成' ? 'success' : 'danger')">{{scope.row.opportunity.acceptStatus}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="操作" min-width="120" ref="test">
+        <el-table-column prop="" label="操作" min-width="150"  ref="test">
           <template slot-scope="scope">
             <div class="sizeAndColor">
               <el-button @click="showDialog(scope)" size="small">详情</el-button>
