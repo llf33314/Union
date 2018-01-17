@@ -310,7 +310,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             Integer consumeCount = unionConsumeService.countValidPayByFanId(fan.getId());
             vo.setConsumeCount(consumeCount);
             vo.setCardNo(fan.getNumber());
-            vo.setCardImg(PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo=" + fan.getNumber());
+            vo.setCardImg(PropertiesUtil.getUnionUrl() + "/union/wxAppCard/"+PropertiesUtil.getAppVersion()+"/qr/cardNo?cardNo=" + fan.getNumber());
         }
         return vo;
     }

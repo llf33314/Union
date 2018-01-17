@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
-import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.pay.WxPayService;
