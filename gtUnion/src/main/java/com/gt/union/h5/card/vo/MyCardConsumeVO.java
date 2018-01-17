@@ -46,6 +46,9 @@ public class MyCardConsumeVO {
 	@ApiModelProperty(value = "赠送积分")
 	private Double giveIntegral;
 
+	@ApiModelProperty(value = "优惠金额")
+	private Double freeMoney;
+
 	@ApiModelProperty(value = "优惠项目")
 	private List<UnionCardProjectItem> items;
 
@@ -135,6 +138,14 @@ public class MyCardConsumeVO {
 
 	public void setGiveIntegral(Double giveIntegral) {
 		this.giveIntegral = giveIntegral;
+	}
+
+	public Double getFreeMoney() {
+		return freeMoney;
+	}
+
+	public void setFreeMoney(Double freeMoney) {
+		this.freeMoney = freeMoney;
 	}
 
 	public List<UnionCardProjectItem> getItems() {
