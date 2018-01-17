@@ -266,6 +266,8 @@ export default {
                     if (res.data.data) {
                       this.form2 = res.data.data;
                       this.form2.unionList = res.data.data.unionList;
+                      // 给unionId 赋初始值
+                      // this.unionId = this.form2.unionList[0].id;
                       this.unionId = res.data.data.currentUnion.id;
                       this.form2.activityList = res.data.data.cardActivityApplyVOList;
                       if (this.form2.activityList) {
