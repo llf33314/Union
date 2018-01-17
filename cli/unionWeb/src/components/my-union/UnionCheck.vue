@@ -174,11 +174,11 @@ export default {
             this.search();
             eventBus.$emit('unionUpdata');
             this.visible1 = false;
-            this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 3000 });
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 不通过
@@ -196,11 +196,11 @@ export default {
             this.search();
             eventBus.$emit('unionUpdata');
             this.visible2 = false;
-            this.$message({ showClose: true, message: '审核不通过', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '审核不通过', type: 'success', duration: 3000 });
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

@@ -181,7 +181,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       // 推荐给我的商机
       this.currentPage = 1;
@@ -212,7 +212,7 @@ export default {
           this.$emit('loadingFinish');
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 带条件搜索
@@ -244,7 +244,7 @@ export default {
     confirm() {
       if (this.acceptancePrice) {
         if (this.acceptancePrice < 1) {
-          this.$message({ showClose: true, message: '商机受理金额最小为1元', type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: '商机受理金额最小为1元', type: 'error', duration: 3000 });
         } else {
           $http
             .put(
@@ -253,18 +253,18 @@ export default {
             )
             .then(res => {
               if (res.data.success) {
-                this.$message({ showClose: true, message: '商机接受成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '商机接受成功', type: 'success', duration: 3000 });
                 eventBus.$emit('newCommissionPay');
                 this.dialogVisible1 = false;
                 this.search();
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         }
       } else {
-        this.$message({ showClose: true, message: '请输入商机受理金额', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '请输入商机受理金额', type: 'error', duration: 3000 });
       }
     },
     // 拒绝
@@ -280,13 +280,13 @@ export default {
         .then(res => {
           this.dialogVisible2 = false;
           if (res.data.success) {
-            this.$message({ showClose: true, message: '商机拒绝成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '商机拒绝成功', type: 'success', duration: 3000 });
             this.dialogVisible1 = false;
             this.search();
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     filterTag(value, row) {

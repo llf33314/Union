@@ -101,7 +101,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     getTableData() {
@@ -121,7 +121,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     search() {
@@ -149,13 +149,13 @@ export default {
         )
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 3000 });
             this.search();
             this.dialogVisible = false;
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     //点击键盘事件

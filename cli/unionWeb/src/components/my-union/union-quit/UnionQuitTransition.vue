@@ -149,7 +149,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 分页查询
@@ -168,12 +168,12 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.visible1 = false;
-                this.$message({ showClose: true, message: '申请成功，请等待审核', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '申请成功，请等待审核', type: 'success', duration: 3000 });
                 eventBus.$emit('newOutApply');
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;
@@ -197,12 +197,12 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.visible3 = false;
-            this.$message({ showClose: true, message: '取消移出成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '取消移出成功', type: 'success', duration: 3000 });
             this.init();
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

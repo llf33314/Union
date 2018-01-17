@@ -146,7 +146,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 显示隐藏审核记录
@@ -180,18 +180,18 @@ export default {
           return item.name === '' || (item.number === '' || 0);
         });
         if (canSaveFlag) {
-          this.$message({ showClose: true, message: '项目名称或数量不能为空', type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: '项目名称或数量不能为空', type: 'error', duration: 3000 });
         } else {
           $http
             .post(url, data)
             .then(res => {
               if (res.data.success) {
-                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 3000 });
                 this.init();
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         }
       } else {
@@ -204,20 +204,20 @@ export default {
           return item.number === '' || 0;
         });
         if (canSaveFlag1) {
-          this.$message({ showClose: true, message: '项目数量不能为空', type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: '项目数量不能为空', type: 'error', duration: 3000 });
         } else if (canSaveFlag2) {
-          this.$message({ showClose: true, message: '商品数量不能为空', type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: '商品数量不能为空', type: 'error', duration: 3000 });
         } else {
           $http
             .post(url, data)
             .then(res => {
               if (res.data.success) {
-                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 3000 });
                 this.init();
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         }
       }
@@ -232,20 +232,20 @@ export default {
           return item.name === '' || (item.number === '' || 0);
         });
         if (canSaveFlag) {
-          this.$message({ showClose: true, message: '项目名称或数量不能为空', type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: '项目名称或数量不能为空', type: 'error', duration: 3000 });
         } else {
           $http
             .post(url, data)
             .then(res => {
               if (res.data.success) {
-                this.$message({ showClose: true, message: '提交审核成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '提交审核成功', type: 'success', duration: 3000 });
                 eventBus.$emit('newActivityProject');
                 this.init();
                 this.visible = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         }
       } else {
@@ -258,22 +258,22 @@ export default {
           return item.number === '' || 0;
         });
         if (canSaveFlag1) {
-          this.$message({ showClose: true, message: '项目数量不能为空', type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: '项目数量不能为空', type: 'error', duration: 3000 });
         } else if (canSaveFlag2) {
-          this.$message({ showClose: true, message: '商品数量不能为空', type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: '商品数量不能为空', type: 'error', duration: 3000 });
         } else {
           $http
             .post(url, data)
             .then(res => {
               if (res.data.success) {
-                this.$message({ showClose: true, message: '提交审核成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '提交审核成功', type: 'success', duration: 3000 });
                 eventBus.$emit('newActivityProject');
                 this.init();
                 this.visible = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         }
       }

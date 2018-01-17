@@ -80,7 +80,7 @@ export default {
           let value = document.getElementById('tipinput').value;
           placeSearch.search(value, (status, result) => {
             if (!result.poiList.pois.length) {
-              this.$message({ showClose: true, message: '请缩小搜索范围', type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: '请缩小搜索范围', type: 'error', duration: 3000 });
             }
           }); // 关键字查询查询
         });

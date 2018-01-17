@@ -113,7 +113,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     }
@@ -138,7 +138,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     show() {
@@ -164,11 +164,11 @@ export default {
                 eventBus.$emit('newBusinessRecommend');
                 this.$refs[formName].resetFields();
                 this.init();
-                this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 3000 });
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;
