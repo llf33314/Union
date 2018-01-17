@@ -183,7 +183,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     }
 
     @Override
-    public Page pageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+    public Page pageToOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
         if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -199,6 +199,34 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("to_member_id", memberIdList)
                 .eq(ListUtil.isEmpty(memberList), "to_member_id", null)
+                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
+                .eq("is_close", OpportunityConstant.IS_CLOSE_YES)
+                .orderBy("create_time", false);
+        Page result = unionOpportunityService.pageSupport(page, entityWrapper);
+
+        List<OpportunityBrokerageVO> list = getOpportunityBrokerageVOList(result.getRecords());
+        result.setRecords(list);
+
+        return result;
+    }
+
+    @Override
+    public Page pageFromOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception{
+        if (h5BrokerageUser == null || page == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        Integer busId = h5BrokerageUser.getVerifier().getBusId();
+        List<UnionMember> memberList = unionMemberService.listByBusId(busId);
+        if (optUnionId != null) {
+            memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
+        }
+        // （1）	获取商机佣金明细，如果unionId不为空，则对unionId进行过滤，按时间倒序排序
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberList), "from_member_id", null)
                 .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .eq("is_close", OpportunityConstant.IS_CLOSE_YES)
                 .orderBy("create_time", false);
@@ -563,7 +591,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     //***************************************** Domain Driven Design - count *******************************************
 
     @Override
-    public Double sumPaidOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
+    public Double sumToPaidOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
         if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -576,6 +604,23 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         // （1）	获取已支付的商机佣金收入总额
         return unionOpportunityService.sumValidBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(memberIdList,
+                OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_YES);
+    }
+
+    @Override
+    public Double sumPaidFromOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
+        if (h5BrokerageUser == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        Integer busId = h5BrokerageUser.getVerifier().getBusId();
+        List<UnionMember> memberList = unionMemberService.listByBusId(busId);
+        if (optUnionId != null) {
+            memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
+        }
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+        // （1）	获取已支付的商机佣金收入总额
+        return unionOpportunityService.sumValidBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_YES);
     }
 
