@@ -1,7 +1,7 @@
 <template>
   <div id="Verification">
     <div class="first_">
-      <el-col style="width: 540px;">
+      <el-col style="width: 35%;">
         <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keyup.enter.native="handleIconClick">
         </el-input>
       </el-col>
@@ -16,7 +16,7 @@
     <!--联盟卡信息-->
     <div v-show="visible2" class="UnionCardInformation">
       <div class="clearfix">
-        <el-form :model="form" label-position="right" label-width="120px">
+        <el-form :model="form" label-position="right" label-width="24%">
           <el-form-item label="联盟卡号:">
             <span> {{ form.fan.number }} </span>
           </el-form-item>
@@ -48,13 +48,14 @@
             <span style="color: #f10b0b" v-if="form.currentMember.discount != 1"> {{ form.currentMember.discount * 10 }} 折</span>
           </el-form-item>
           <el-form-item label="消费金额:">
-            <el-col style="width: 220px;">
+            <el-col style="width: 100%;">
               <el-input v-model="price" @keyup.native="check()" @keyup.enter.native="confirm">
                 <template slot="prepend">￥</template>
               </el-input>
             </el-col>
           </el-form-item>
-          <el-form-item label="优惠项目" v-if="form.isProjectAvailable">
+          <!--<el-form-item label="优惠项目" v-if="form.isProjectAvailable">-->
+            <el-form-item label="优惠项目">
             <el-switch v-model="isProjectAvailable_" on-text="" off-text="" :disabled="!unionId">
             </el-switch>
           </el-form-item>
@@ -64,16 +65,16 @@
           <div v-show="isProjectAvailable_" class="preferenceItems">
             <div style="margin-top: 10px;">
               <span>活动卡名称：</span>
-              <el-select v-model="activityCardId" placeholder="请选择" @change="activityCardChange" style="width: 180px">
+              <el-select style="width: 31%;" v-model="activityCardId" placeholder="请选择" @change="activityCardChange">
                 <el-option v-for="item in activityCards" :key="item.activityCard.id" :label="item.activityCard.name" :value="item.activityCard.id">
                 </el-option>
               </el-select>
               <span style="margin-left: 15px;">有效时间： {{ activityCardValidity }} </span>
             </div>
             <div class="section_ clearfix">
-              <div style="float: left">
-                <el-table ref="multipleTable" :data="tableData" style="width:382px;overflow-y: auto" height="442" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
-                  <el-table-column type="selection" width="50">
+              <div style="float: left" id="left-table">
+                <el-table ref="multipleTable" :data="tableData" style="width:100%;overflow-y: auto;" height="442" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick" >
+                  <el-table-column type="selection" width="40">
                   </el-table-column>
                   <el-table-column prop="item.name" label="项目名称">
                   </el-table-column>
@@ -81,7 +82,7 @@
                   </el-table-column>
                 </el-table>
               </div>
-              <div class="rightContent" style="width: 295px;">
+              <div class="rightContent">
                 <p>已选择：{{ activitySelected.length }}</p>
                 <div>
                   <div v-for="(item, index) in activitySelected" :key="item.item.id">
@@ -153,13 +154,13 @@
             <div>
               <el-radio-group v-model="payType" @change="payTypeChange">
                 <el-radio-button label="1">
-                  <p>
+                  <p style="margin-bottom: 10px">
                     <i class="iconfont" style="font-size: 33px;">&#xe727;</i>
                   </p>
-                  <span>现金支付</span>
+                  <span >现金支付</span>
                 </el-radio-button>
                 <el-radio-button label="2">
-                  <p>
+                  <p style="margin-bottom: 10px">
                     <i class="iconfont" style="font-size: 33px;">&#xe60d;</i>
                   </p>
                   <span>扫码支付</span>
@@ -409,7 +410,7 @@ export default {
         // 获取活动卡名称列表
         $('.UnionCardInformation form').css({
           transition: 'all .3s ease',
-          transform: 'translate(-420px)'
+          transform: 'translate(-81%)'
         });
         $http
           .get(`/unionCardActivity/unionId/${this.unionId}/consume?fanId=${this.form.fan.id}`)
@@ -715,6 +716,8 @@ export default {
   .color_ {
     color: #ff4949;
     font-size: 20px;
+    position: relative;
+    top: 3px;
   }
   .color-1 {
     color: #ff4949;
@@ -740,4 +743,5 @@ export default {
   transform: translateX(100px);
   opacity: 0;
 }
+
 </style>
