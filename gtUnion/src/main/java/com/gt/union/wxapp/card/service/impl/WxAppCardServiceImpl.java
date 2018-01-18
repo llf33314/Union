@@ -1,6 +1,5 @@
 package com.gt.union.wxapp.card.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
@@ -35,6 +34,7 @@ import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.union.wxapp.card.constant.WxAppCardConstant;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,37 +120,30 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             List<UnionCardVO> activityCardList = new ArrayList<>();
             UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
             long nowTime = DateUtil.getCurrentDate().getTime();
-            if (fan != null) {
-                for (UnionMember member : members) {
-                    UnionMain unionMain = unionMainService.getValidById(member.getUnionId());
-                    if (unionMain != null && unionMainService.isUnionValid(unionMain)) {
-                        //是否办理过折扣卡
-                        if (!unionCardService.existValidUnexpiredByUnionIdAndFanIdAndType(unionMain.getId(), fan.getId(), CardConstant.TYPE_DISCOUNT)) {
-                            //没有办理折扣卡
-                            UnionCardVO discountCardVO = getUnionCardVO(unionMain.getName() + "折扣卡", CardConstant.TYPE_DISCOUNT, unionMain.getId(), null, null, member.getId());
-                            discountCardVO.setUnionMemberId(member.getId());
-                            discountCardList.add(discountCardVO);
-                        }
+            for (UnionMember member : members) {
+                UnionMain unionMain = unionMainService.getValidById(member.getUnionId());
+                if (unionMain != null && unionMainService.isUnionValid(unionMain)) {
 
-                        //是否办理过活动卡
-                        List<UnionCardActivity> list = unionCardActivityService.listValidByUnionIdAndStatus(unionMain.getId(), ActivityConstant.STATUS_SELLING);
-                        if (ListUtil.isNotEmpty(list)) {
-                            for (UnionCardActivity activity : list) {
-                                if (!unionCardService.existValidUnexpiredByUnionIdAndFanIdAndActivityId(unionMain.getId(), fan.getId(), activity.getId())) {
-                                    //没办理过该联盟卡或已过期
-                                    if(nowTime > activity.getSellBeginTime().getTime() && nowTime < activity.getSellEndTime().getTime()){
-                                        //售卡中
-                                        UnionCardVO activityCardVO = getUnionCardVO(activity.getName(), CardConstant.TYPE_ACTIVITY, unionMain.getId(), activity.getId(), activity.getColor(), member.getId());
-                                        activityCardList.add(activityCardVO);
-                                    }
-                                }
+                    UnionCardVO discountCardVO = getUnionCardVO(unionMain.getName() + "折扣卡", CardConstant.TYPE_DISCOUNT, unionMain.getId(), null, null, member.getId());
+                    if (CommonUtil.isNotEmpty(fan) && unionCardService.existValidUnexpiredByUnionIdAndFanIdAndType(unionMain.getId(), fan.getId(), CardConstant.TYPE_DISCOUNT)) {
+                        //已办理折扣卡
+                        discountCardVO.setStatus(WxAppCardConstant.CARD_DISCOUNT_APPLY);
+                    }
+                    discountCardVO.setUnionMemberId(member.getId());
+                    discountCardVO.setIllustration(unionMain.getIllustration());
+                    discountCardList.add(discountCardVO);
+
+                    //活动卡
+                    List<UnionCardActivity> list = unionCardActivityService.listValidByUnionId(unionMain.getId());
+                    if (ListUtil.isNotEmpty(list)) {
+                        for (UnionCardActivity activity : list) {
+                            UnionCardVO activityCardVO = getActivityCard(activity, nowTime, unionMain.getId(), member.getId(), CommonUtil.isEmpty(fan) ? null : fan.getId());
+                            if(activityCardVO != null){
+                                activityCardList.add(activityCardVO);
                             }
                         }
                     }
                 }
-            } else {
-                //没办过卡
-                nonTransacted(members, discountCardList, activityCardList, nowTime);
             }
             indexCardList.addAll(discountCardList);
             indexCardList.addAll(activityCardList);
@@ -174,33 +167,32 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         return unionCardVO;
     }
 
-    /**
-     * 没有办理卡
-     *
-     * @param members
-     * @param discountCardList
-     * @param activityCardList
-     * @throws Exception
-     */
-    void nonTransacted(List<UnionMember> members, List discountCardList, List activityCardList, long nowTime) throws Exception {
-        for (UnionMember member : members) {
-            UnionMain unionMain = unionMainService.getValidById(member.getUnionId());
-            if (unionMain != null && unionMainService.isUnionValid(unionMain)) {
-                //折扣卡
-                UnionCardVO discountCardVO = getUnionCardVO(unionMain.getName() + "折扣卡", CardConstant.TYPE_DISCOUNT, unionMain.getId(), null, null, member.getId());
-                discountCardList.add(discountCardVO);
-                //活动卡
-                List<UnionCardActivity> list = unionCardActivityService.listValidByUnionIdAndStatus(unionMain.getId(), ActivityConstant.STATUS_SELLING);
-                if (ListUtil.isNotEmpty(list)) {
-                    for (UnionCardActivity activity : list) {
-                        if(nowTime > activity.getSellBeginTime().getTime() && nowTime < activity.getSellEndTime().getTime()){
-                            UnionCardVO activityCardVO = getUnionCardVO(activity.getName(), CardConstant.TYPE_ACTIVITY, unionMain.getId(), activity.getId(), activity.getColor(), member.getId());
-                            activityCardList.add(activityCardVO);
-                        }
+
+    private UnionCardVO getActivityCard(UnionCardActivity activity, long nowTime, Integer unionId, Integer memberId, Integer fanId) throws Exception{
+        UnionCardVO activityCardVO = null;
+        if(nowTime > activity.getSellBeginTime().getTime()){
+            //售卡开始
+            activityCardVO = getUnionCardVO(activity.getName(), CardConstant.TYPE_ACTIVITY, unionId, activity.getId(), activity.getColor(), memberId);
+            if(nowTime > activity.getSellBeginTime().getTime() && nowTime < activity.getSellEndTime().getTime()){
+                //售卡中
+                int count = unionCardService.countValidByUnionIdAndActivityId(unionId,activity.getId());
+                if(activity.getAmount() <= count){
+                    //售罄
+                    activityCardVO.setStatus(WxAppCardConstant.CARD_SELL_OUT);
+                }else {
+                    if (CommonUtil.isEmpty(fanId) || !unionCardService.existValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fanId, activity.getId())) {
+                        //没办理过该联盟卡或已过期
+                        activityCardVO.setStatus(WxAppCardConstant.CARD_ACTIVITY_APPLY);
                     }
                 }
+            }else {
+                //结束
+                activityCardVO.setStatus(WxAppCardConstant.CARD_SELL_OUT);
             }
+            activityCardVO.setIllustration(activity.getIllustration());
+            activityCardVO.setCardPrice(activity.getPrice());
         }
+        return activityCardVO;
     }
 
     @Override
