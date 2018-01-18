@@ -46,6 +46,11 @@ export default {
           this.placeSearch = new AMap.PlaceSearch({
             map: this.unionMap
           });
+          this.geocoder = new AMap.Geocoder({
+            radius: 1000,
+            extensions: 'all'
+          });
+          this.citysearch = new AMap.CitySearch();
           if (this.address) {
             this.getGeocoder();
           } else {
@@ -59,10 +64,6 @@ export default {
     },
     // 地理编码,返回地理编码结果
     getGeocoder() {
-      this.geocoder = new AMap.Geocoder({
-        radius: 1000,
-        extensions: 'all'
-      });
       this.geocoder.getLocation(this.address, (status, result) => {
         if (status === 'complete' && result.info === 'OK') {
           let lng = result.geocodes[0].location.lng;
@@ -79,7 +80,6 @@ export default {
     },
     // 定位到当前城市
     getCity() {
-      this.citysearch = new AMap.CitySearch();
       this.citysearch.getLocalCity((status, result) => {
         if (status === 'complete' && result.info === 'OK') {
           if (result && result.city && result.bounds) {
