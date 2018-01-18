@@ -269,8 +269,11 @@ export default {
                       // 给unionId 赋初始值
                       // this.unionId = this.form2.unionList[0].id;
                       this.unionId = res.data.data.currentUnion.id;
-                      this.form2.activityList = res.data.data.cardActivityApplyVOList.concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList).
-                      concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList);
+                      this.form2.activityList = res.data.data.cardActivityApplyVOList
+                        .concat(res.data.data.cardActivityApplyVOList)
+                        .concat(res.data.data.cardActivityApplyVOList)
+                        .concat(res.data.data.cardActivityApplyVOList)
+                        .concat(res.data.data.cardActivityApplyVOList);
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
                           //todo
@@ -379,6 +382,11 @@ export default {
       } else {
         this.activityCheckList.forEach(v => {
           data.push(v);
+        });
+        let activityCheckList_ = this.form2.activityList.filter(item => {
+          return this.activityCheckList.indexOf(item.activity.id) > -1;
+        });
+        activityCheckList_.forEach(v => {
           this.payPrice = this.payPrice - 0;
           this.payPrice += v.activity.price - 0;
         });

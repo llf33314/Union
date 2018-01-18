@@ -546,7 +546,7 @@ export default {
         .post(url, data)
         .then(res => {
           if (res.data.success) {
-            if (data.textList.length > 0 && data.payMoney > 0) {
+            if (data.textList.length > 0 && data.consume.payMoney > 0) {
               this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
             } else if (data.consume.payMoney > 0) {
               this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
@@ -623,7 +623,7 @@ export default {
               if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                 if (_this.socketKey == msg.socketKey) {
                   if (msg.status == '1') {
-                    if (data.textList.length > 0 && data.payMoney > 0) {
+                    if (data.textList.length > 0 && data.consume.payMoney > 0) {
                       _this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
                     } else if (data.consume.payMoney > 0) {
                       _this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
@@ -703,7 +703,7 @@ export default {
   .model_ {
     p {
       color: #999999;
-      img{
+      img {
         width: 240px;
       }
     }

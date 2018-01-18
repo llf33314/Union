@@ -27,12 +27,12 @@
             <span>粉丝办理活动卡后，可使用的有效天数</span>
           </el-form-item>
           <el-form-item label="报名时间：" prop="applyTime">
-            <el-date-picker v-model="form.applyTime" type="datetimerange" placeholder="请选择项目报名时间" :editable="false">
+            <el-date-picker v-model="form.applyTime" type="datetimerange" placeholder="请选择项目报名时间" :editable="false" :picker-options="pickerOptions1">
             </el-date-picker>
             <span>项目报名时间段中，盟员可添加各自的项目至活动卡</span>
           </el-form-item>
           <el-form-item label="售卖时间：" prop="sellTime">
-            <el-date-picker v-model="form.sellTime" type="datetimerange" placeholder="请选择活动卡售卖时间" :editable="false">
+            <el-date-picker v-model="form.sellTime" type="datetimerange" placeholder="请选择活动卡售卖时间" :editable="false"  :picker-options="pickerOptions2" :disabled="!form.applyTime[0]">
             </el-date-picker>
             <span>活动卡售卖时间段，粉丝可购买活动卡享受联盟内项目</span>
           </el-form-item>
@@ -48,6 +48,8 @@
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="activityCardConfirm('form')">确定</el-button>
           <el-button @click="visible=false">取消</el-button>
+          <!-- todo delete -->
+          <el-button @click="this.console.log(new Date(form.applyTime))">test</el-button>
         </span>
       </el-dialog>
     </div>
@@ -106,6 +108,16 @@ export default {
         applyTime: [{ validator: applyTimePass, trigger: 'blur' }],
         sellTime: [{ validator: sellTimePass, trigger: 'blur' }],
         illustration: [{ validator: activityCardIllustrationPass, trigger: 'blur' }]
+      },
+      pickerOptions1: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 3600 * 1000 * 24;
+        }
+      },
+      pickerOptions2: {
+        disabledDate(time) {
+          return time.getTime() < Date.now();
+        }
       }
     };
   },
