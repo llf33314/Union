@@ -101,7 +101,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "联盟卡-详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/cardDetail/list/{busId}/{unionId}/{memberId}/{unionMemberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardDetail/list/{busId}/{unionId}/{unionMemberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String cardDetailList(HttpServletRequest request,
 							 @ApiParam(value = "版本号", name = "version", required = true)
 							 @PathVariable("version") String version,
@@ -110,8 +110,7 @@ public class WxAppCardController {
 							 @ApiParam(value = "活动卡id，如果没有，则是折扣卡", name = "activityId", required = false)
 							 @RequestParam(name = "activityId", required = false) Integer activityId,
 							 @ApiParam(value = "联盟id", name = "unionId", required = true)
-							 @PathVariable("unionId") Integer unionId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true)
-							@PathVariable("memberId") Integer memberId, @ApiParam(value = "盟员id", name = "unionMemberId", required = true)
+							 @PathVariable("unionId") Integer unionId,  @ApiParam(value = "盟员id", name = "unionMemberId", required = true)
 							@PathVariable("unionMemberId") Integer unionMemberId, Page page) throws Exception {
 		Page result = wxAppCardService.listCardDetailPage(busId, unionId, activityId, page, unionMemberId);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -171,7 +170,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "发送短信验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/sms/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/{busId}/sms", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String sendMsg(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
