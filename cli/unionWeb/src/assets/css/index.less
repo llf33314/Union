@@ -815,7 +815,7 @@ hr{
 //我的联盟/联盟卡设置---------------------------------------------------------------5
 #UnionCardSetting{
   >.container {
-    margin: 40px 80px 50px 50px;
+    margin: 40px;
     //折扣卡设置
     #DiscountCardSetting{
       .el-table .cell{
@@ -2250,7 +2250,7 @@ hr{
 
 
 //没有数据的样式
-#noUnion,#noUnion1{
+#noUnion,#noUnion1 {
   margin: 40px 110px 0 50px;
   margin-top: 30px;
   border:1px solid #ddd;
@@ -2266,3 +2266,17 @@ hr{
   }
 }
 
+//媒体查询适应响应式布局
+@media screen and (max-width: 1680px){
+  #ActivityCardSetting .activityCardsList{
+    //活动卡规则
+    .activityCardRule{
+      p{
+        span:nth-child(2){
+          display: block!important;
+          margin-left: inherit!important;
+        }
+      }
+    }
+  }
+}

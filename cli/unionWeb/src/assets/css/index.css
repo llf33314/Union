@@ -698,7 +698,7 @@ hr {
   overflow: hidden;
 }
 #UnionCardSetting > .container {
-  margin: 40px 80px 50px 50px;
+  margin: 40px;
 }
 #UnionCardSetting > .container #DiscountCardSetting .el-table .cell {
   padding-left: 38px!important;
@@ -1995,4 +1995,10 @@ hr {
 #noUnion1 p {
   font-size: 14px;
   color: #999999;
+}
+@media screen and (max-width: 1680px) {
+  #ActivityCardSetting .activityCardsList .activityCardRule p span:nth-child(2) {
+    display: block!important;
+    margin-left: inherit!important;
+  }
 }
