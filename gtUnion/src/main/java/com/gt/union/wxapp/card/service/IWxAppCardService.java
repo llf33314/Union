@@ -2,6 +2,7 @@ package com.gt.union.wxapp.card.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
+import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.wxapp.card.vo.CardDetailVO;
 import com.gt.union.wxapp.card.vo.MyCardDetailVO;
 import com.gt.union.wxapp.card.vo.NearUserVO;
@@ -30,7 +31,7 @@ public interface IWxAppCardService {
 	 * @param enterpriseName	企业名称 模糊搜索
 	 * @return
 	 */
-	List<NearUserVO> listNearUser(Integer busId, Integer enterpriseName);
+	List<UnionMember> listNearUser(Integer busId, String enterpriseName) throws Exception;
 
 	/**
 	 * 联盟卡详情
