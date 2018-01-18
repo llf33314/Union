@@ -15,7 +15,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="颜色：" prop="color">
-            <union-color-picker @colorSelect="colorSelect" class="chooseColor"></union-color-picker>
+            <union-color-picker @colorSelect="colorSelect"></union-color-picker>
           </el-form-item>
           <el-form-item label="发行量：" prop="amount">
             <el-input v-model="form.amount" placeholder="请输入活动卡发行量" @keyup.native="checkAmount()"></el-input>

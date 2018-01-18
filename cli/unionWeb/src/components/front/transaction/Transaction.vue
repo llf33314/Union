@@ -104,7 +104,7 @@
         <hr>
         <div class="model_">
           <p><img v-bind:src="codeSrc" class="codeImg"></p>
-          <p>￥<span>{{ payPrice }}</span>
+          <p>￥<span style="color: red;">{{ payPrice }}</span>
           </p>
           <p style="margin-bottom: 50px;">请使用微信扫描该二维码付款</p>
         </div>
@@ -267,11 +267,7 @@ export default {
                       // 给unionId 赋初始值
                       // this.unionId = this.form2.unionList[0].id;
                       this.unionId = res.data.data.currentUnion.id;
-                      this.form2.activityList = res.data.data.cardActivityApplyVOList
-                        .concat(res.data.data.cardActivityApplyVOList)
-                        .concat(res.data.data.cardActivityApplyVOList)
-                        .concat(res.data.data.cardActivityApplyVOList)
-                        .concat(res.data.data.cardActivityApplyVOList);
+                      this.form2.activityList = res.data.data.cardActivityApplyVOList;
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
                           let color1 = (v.activity.color1 = v.activity.color.split(',')[0]);
