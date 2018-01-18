@@ -102,7 +102,8 @@ export default {
     search() {
       if (this.searchValue) {
         this.unionMap.getCity(res => {
-          this.geocoder.getLocation(res.city, (status, result) => {
+          let city = res.city || res.province;
+          this.geocoder.getLocation(city, (status, result) => {
             if (status === 'complete' && result.info === 'OK') {
               this.placeSearch.setCity(result.geocodes[0].adcode);
               this.placeSearch.search(this.searchValue);
