@@ -3,6 +3,7 @@ package com.gt.union.h5.brokerage.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.sign.SignBean;
 import com.gt.api.util.SessionUtils;
@@ -193,10 +194,16 @@ public class H5BrokerageController {
     @RequestMapping(value = "/loginStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String checkLogin(HttpServletRequest request) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
+        BusUser busUser = SessionUtils.getUnionBus(request);
         if(h5BrokerageUser == null){
             return GtJsonResult.instanceSuccessMsg(0).toString();
+        }else {
+            if(busUser != null){
+                return GtJsonResult.instanceSuccessMsg(1).toString();
+            }else {
+                return GtJsonResult.instanceSuccessMsg(0).toString();
+            }
         }
-        return GtJsonResult.instanceSuccessMsg(1).toString();
     }
 
 
