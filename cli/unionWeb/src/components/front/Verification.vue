@@ -694,8 +694,8 @@ export default {
   height: 100px;
   background: #f8f8f8;
   line-height: 100px;
-  margin-bottom: 25px;
-  padding: 0 34.7%;
+  display: flex;
+  justify-content: center;
 }
 
 .code_ {

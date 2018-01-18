@@ -152,7 +152,7 @@ export default {
           data.isProjectCheck = this.form.isProjectCheck - 0;
           if (data.price > 5000) {
             this.$message({ showClose: true, message: '价格最大为5千元', type: 'error', duration: 3000 });
-          } else if (data.amount > 10000) {
+          } else if (data.amount > 100000) {
             this.$message({ showClose: true, message: '发行量最大为10万张', type: 'error', duration: 3000 });
           } else if (data.validityDay > 730) {
             this.$message({ showClose: true, message: '有效期最大为730天', type: 'error', duration: 3000 });

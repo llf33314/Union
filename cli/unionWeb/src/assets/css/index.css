@@ -23,7 +23,7 @@ h6,
 }
 textarea.el-textarea__inner {
   resize: none;
-  width: 240px;
+  width: 290px;
 }
 .fr {
   float: right;
@@ -777,10 +777,11 @@ hr {
   width: 25%;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.nav li:nth-child(1) {
-  padding-left: 31px;
+  padding-left: 2%;
+  box-sizing: border-box;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.nav li:nth-last-child(1) {
-  padding-left: 48px;
+  padding-left: 3%;
   width: 18%;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li {
@@ -788,6 +789,7 @@ hr {
   width: 25%;
   margin-top: 20px ;
   margin-bottom: 20px ;
+  box-sizing: border-box;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(1) {
   padding-left: 31px;
@@ -795,14 +797,14 @@ hr {
   top: 31px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(1) > img {
-  width: 260px;
+  width: 80%;
   height: 60px;
   border-radius: 6px;
   background-image: linear-gradient(90deg, #03abff 0%, #008bd2 100%);
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(1) > div {
   position: absolute;
-  width: 260px;
+  width: 80%;
   height: 60px;
   border-radius: 6px;
   top: 0;
@@ -850,9 +852,6 @@ hr {
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) > p > span:nth-child(2) {
   margin-left: 30px;
   color: #1f2b3d;
-}
-#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .el-progress-bar__outer {
-  width: 300px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .btnCheck > button {
   background: #E8F5FF;
@@ -1013,9 +1012,6 @@ hr {
 #UnionCardSetting > .container #ActivityCardSetting .noPass .el-dialog--small .el-dialog__body > div .el-textarea textarea.el-textarea__inner {
   width: 220px;
   height: 85px;
-}
-#UnionCardSetting > .container #MyActivityCard {
-  min-height: 625px;
 }
 #UnionCardSetting > .container #MyActivityCard .explain {
   background-color: #f4f4f4;
@@ -1269,7 +1265,7 @@ hr {
   padding: 10px 35px;
 }
 #Business {
-  margin: 40px 89px 40px 50px;
+  margin: 40px;
 }
 #Business h4 {
   margin: 30px 0;
@@ -1703,6 +1699,12 @@ hr {
 #front #ExpenseRecord .verificationMessage .el-dialog--small .el-dialog__body > div > div {
   padding-left: 30px;
   margin: 18px 0;
+}
+#front #ExpenseRecord .searchBar .el-form--inline .el-form-item__content {
+  width: 67%;
+}
+#front #ExpenseRecord .searchBar .el-date-editor--daterange.el-input {
+  width: 92%;
 }
 #front #transaction .uninCardContent {
   float: left;

@@ -202,7 +202,7 @@ export default {
 }
 
 .container {
-  margin: 40px 50px;
+  margin: 40px;
   .top_top {
     border: 1px solid #ddd;
     padding: 20px 20px 20px 50px;
@@ -258,7 +258,7 @@ export default {
     }
     .photo {
       img {
-        margin-right: 15px;
+        margin-right: 10px;
         margin-bottom: 15px;
       }
     }

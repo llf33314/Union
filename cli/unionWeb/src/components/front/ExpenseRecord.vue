@@ -2,54 +2,56 @@
   <div>
     <div id="ExpenseRecord">
       <!-- 搜索栏 -->
-      <el-row>
-        <el-col style="width:287px;">
-          <el-form :inline="true" class="demo-form-inline">
-            <el-form-item label="所属联盟:">
-              <el-select v-model="unionId" clearable placeholder="请选择所属联盟" @change="search">
-                <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
+      <div class="searchBar">
+        <el-row>
+          <el-col style="width:26%;max-width: 238px">
+            <el-form :inline="true" class="demo-form-inline">
+              <el-form-item label="所属联盟:">
+                <el-select v-model="unionId" clearable placeholder="请选择所属联盟" @change="search">
+                  <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col style="width:26%;max-width: 238px">
+            <el-form :inline="true" class="demo-form-inline">
+              <el-form-item label="消费门店:">
+                <el-select v-model="shopId" clearable placeholder="请选择来源" @change="search">
+                  <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col style="width:9%;max-width: 100px">
+            <div class="grid-content bg-purple">
+              <el-select v-model="value" clearable placeholder="请选择" class="fl">
+                <el-option v-for="item in options3" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
-            </el-form-item>
-          </el-form>
-        </el-col>
-        <el-col style="width:276px;">
-          <el-form :inline="true" class="demo-form-inline">
-            <el-form-item label="消费门店:">
-              <el-select v-model="shopId" clearable placeholder="请选择来源" @change="search">
-                <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-        </el-col>
-        <el-col style="width:100px;">
-          <div class="grid-content bg-purple">
-            <el-select v-model="value" clearable placeholder="请选择" class="fl">
-              <el-option v-for="item in options3" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col style="width:180px;margin-right: 20px;">
-          <div class="grid-content1 bg-purple">
-            <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
-            </el-input>
-          </div>
-        </el-col>
-        <el-col :span="3" style="width:235px;">
-          <div class="third_">
-            <div class="block">
-              <el-date-picker v-model="timeValue" type="daterange" placeholder="选择日期范围" @change="search">
-              </el-date-picker>
             </div>
-          </div>
+          </el-col>
+          <el-col style="width:15%;max-width: 200px;margin-right: 20px;">
+            <div class="grid-content1 bg-purple">
+              <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+              </el-input>
+            </div>
+          </el-col>
+          <el-col :span="3" style="width:16%;">
+            <div class="third_">
+              <div class="block">
+                <el-date-picker v-model="timeValue" type="daterange" placeholder="选择日期范围" @change="search">
+                </el-date-picker>
+              </div>
+            </div>
+          </el-col>
+          <!-- 导出按钮 -->
+          <el-col style="width:1%;height: 38px;line-height: 33px;">
+          <el-button type="primary" @click="output" size="small">导出</el-button>
         </el-col>
-        <!-- 导出按钮 -->
-        <el-col style="width:50px;">
-          <el-button type="primary" @click="output">导出</el-button>
-        </el-col>
-      </el-row>
+        </el-row>
+      </div>
       <!-- 记录表格 -->
       <el-table :data="tableData" style="width: 100%;">
         <el-table-column prop="union.name" label="所属联盟">
@@ -73,6 +75,14 @@
           </template>
         </el-table-column>
         <el-table-column prop="fan.number" label="联盟卡号">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p>联盟卡号: {{ scope.row.fan.number }}</p>
+              <div slot="reference" class="name-wrapper">
+                {{ scope.row.fan.number }}
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="fan.phone" label="手机号">
           <template slot-scope="scope">

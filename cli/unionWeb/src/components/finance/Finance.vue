@@ -345,7 +345,7 @@ export default {
 </script>
 <style lang='less' rel="stylesheet/less" scoped>
 .container {
-  margin: 40px 120px 20px 60px;
+  margin: 40px;
   #union_people {
     padding: 13px 0 17px;
     background: #f8f8f8;
