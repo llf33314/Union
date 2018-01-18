@@ -53,7 +53,7 @@ public class WxAppCardController {
 
 	//-------------------------------------------------- get ----------------------------------------------------------
 
-	@ApiOperation(value = "联盟卡-首页", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "联盟卡-领卡", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/index/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String wxAppCardIndex(HttpServletRequest request, Page page,
 							 @ApiParam(value = "版本号", name = "version", required = true)
@@ -63,6 +63,18 @@ public class WxAppCardController {
 							 @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception {
 		Member member = memberService.getById(memberId);
 		Page result = wxAppCardService.listWxAppCardPage(member == null ? null : member.getPhone(), busId, page);
+		return GtJsonResult.instanceSuccessMsg(result).toString();
+	}
+
+	@ApiOperation(value = "联盟卡-领卡-附近商家", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/list/nearUser/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String listNearUser(HttpServletRequest request, Page page,
+								 @ApiParam(value = "版本号", name = "version", required = true)
+								 @PathVariable("version") String version,
+								 @ApiParam(value = "商家id", name = "busId", required = true)
+								 @PathVariable("busId") Integer busId, @ApiParam(value = "商家名称", name = "enterpriseName", required = false) @RequestParam(name = "enterpriseName", required = false) Integer enterpriseName
+								 ) throws Exception {
+		List<NearUserVO> result = wxAppCardService.listNearUser(busId, enterpriseName);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 

@@ -152,6 +152,13 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         return page;
     }
 
+    @Override
+    public List<NearUserVO> listNearUser(Integer busId, Integer enterpriseName) {
+        List<NearUserVO> list = new ArrayList<NearUserVO>();
+        //TODO 小程序附近商家列表
+        return list;
+    }
+
     UnionCardVO getUnionCardVO(String cardName, Integer type, Integer unionId, Integer activityId, String color, Integer memberId) {
         UnionCardVO unionCardVO = new UnionCardVO();
         unionCardVO.setCardName(cardName);

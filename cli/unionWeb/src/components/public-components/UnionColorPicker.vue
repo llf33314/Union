@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="selectColorPublic" @click="showToggle" >
+    <div class="selectColorPublic chooseColor" @click="showToggle" >
       <p class="triangleDown"></p>
       <div class="selectColor" :class="'m'+myColor" style="">
       </div>
     </div>
     <!-- 备选色列表 -->
-    <div class="OptionalColor">
+    <div class="OptionalColor chooseColor">
       <el-radio-group v-model="color" v-show="visible" @change="colorSelect">
         <!-- blue -->
         <el-radio-button label="03ABFF,008CD4">

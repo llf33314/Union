@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.union.wxapp.card.vo.CardDetailVO;
 import com.gt.union.wxapp.card.vo.MyCardDetailVO;
+import com.gt.union.wxapp.card.vo.NearUserVO;
+
+import java.util.List;
 
 /**
  * @author hongjiye
@@ -20,6 +23,14 @@ public interface IWxAppCardService {
 	 * @throws Exception
 	 */
 	Page listWxAppCardPage(String phone, Integer busId, Page page) throws Exception;
+
+	/**
+	 * 附近的商家列表
+	 * @param busId		商家id
+	 * @param enterpriseName	企业名称 模糊搜索
+	 * @return
+	 */
+	List<NearUserVO> listNearUser(Integer busId, Integer enterpriseName);
 
 	/**
 	 * 联盟卡详情
