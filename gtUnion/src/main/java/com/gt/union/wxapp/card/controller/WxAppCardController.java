@@ -14,6 +14,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
+import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.wxapp.card.service.ITokenApiService;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
@@ -72,9 +73,9 @@ public class WxAppCardController {
 								 @ApiParam(value = "版本号", name = "version", required = true)
 								 @PathVariable("version") String version,
 								 @ApiParam(value = "商家id", name = "busId", required = true)
-								 @PathVariable("busId") Integer busId, @ApiParam(value = "商家名称", name = "enterpriseName", required = false) @RequestParam(name = "enterpriseName", required = false) Integer enterpriseName
+								 @PathVariable("busId") Integer busId, @ApiParam(value = "商家名称", name = "enterpriseName", required = false) @RequestParam(name = "enterpriseName", required = false) String enterpriseName
 								 ) throws Exception {
-		List<NearUserVO> result = wxAppCardService.listNearUser(busId, enterpriseName);
+		List<UnionMember> result = wxAppCardService.listNearUser(busId, enterpriseName);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
