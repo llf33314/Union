@@ -68,7 +68,7 @@
           </el-progress>
         </li>
         <!--  操作  -->
-        <li >
+        <li>
           <div class="btn" v-if="item.activityStatus !== '未开始'">
             <el-button @click="myActivity(item)" size="small">我的活动项目</el-button>
           </div>
