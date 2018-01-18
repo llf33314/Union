@@ -187,7 +187,7 @@ public class WxAppCardController {
 		msg.setParamsStr(code);
 		msg.setModel(ConfigConstant.SMS_UNION_MODEL);
 		sender.sendMsg(msg);
-		redisCacheUtil.set(SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE + ":" + phone, code, 300L);
+		redisCacheUtil.set("phoneCode:" + SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE + ":" + phone, code, 300L);
 		return GtJsonResult.instanceSuccessMsg().toString();
 	}
 

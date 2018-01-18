@@ -112,7 +112,7 @@ public class SmsApiController {
 		msg.setModel(ConfigConstant.SMS_UNION_MODEL);
 		sender.sendMsg(msg);
 
-		redisCacheUtil.set(type + ":" + phone, code, 300L);
+		redisCacheUtil.set("phoneCode:" + type + ":" + phone, code, 300L);
 		return GtJsonResult.instanceSuccessMsg();
 	}
 

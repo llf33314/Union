@@ -77,7 +77,7 @@ public class SmsServiceImpl implements SmsService {
 	public boolean checkPhoneCode(Integer type, String code, String phone) {
 		logger.info("短信验证码校验type：{}，code：{}，phone：{}", type, code, phone);
 		try{
-//			String key = type + ":" + phone;
+//			String key = "phoneCode:" + type + ":" + phone;
 //			if(redisCacheUtil.exists(key)){
 //				String checkCode = redisCacheUtil.get(type + ":" + phone);
 //				checkCode = JSONArray.parseObject(checkCode, String.class);
