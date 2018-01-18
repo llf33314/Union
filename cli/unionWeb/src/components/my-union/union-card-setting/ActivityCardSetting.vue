@@ -26,7 +26,6 @@
       <!--表内容主体-->
       <ul class="clearfix contentList">
         <li>
-          <!-- todo  更换样式-->
           <img :class="'m'+item.color2+index1" :src="item.activity.img">
           <div>
             <span>{{ item.activityStatus }}</span>
