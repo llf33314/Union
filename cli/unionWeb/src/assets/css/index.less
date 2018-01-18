@@ -1651,7 +1651,7 @@ hr{
   #Verification {
     .first_ {
       .el-input__inner {
-        font-size: 18px;
+        font-size: 17px;
         height: 35px;
       }
     }
@@ -1679,39 +1679,48 @@ hr{
         margin: 0 auto;
         form {
           padding-top:10px;
-          width: 540px;
+          width: 35%;
           height: 532px;
           background-color: #ffffff;
           box-shadow: 0px 0px 15px 0px rgba(53, 53, 53, 0.08);
           float: left;
           transition: all .5s;
           position: relative;
-          left: 454px;
-          margin-right: 70px;
+          left: 32%;
+          margin-right: 3%;
           box-sizing: border-box;
+          .el-select>.el-input {
+            width: 92%;
+            max-width:188px ;
+          }
+          .el-input-group--prepend .el-input__inner, .el-input-group__append {
+            width: 80%;
+            max-width:140px;
+          }
         }
         .preferenceItems {
+          width: 50%;
           max-width: 760px;
           float: left;
           height: 532px;
           box-shadow: 0px 0px 15px 0px
           rgba(53, 53, 53, 0.08);
           margin-left: 30px;
-          padding: 0px 37px;
+          padding: 0px 2%;
+          #left-table{
+            width: 44%;
+          }
           .section_ {
-            .el-table__header{
-              width: 382px!important;
-            }
             margin-top: 18px;
             .rightContent {
-              width: 238px;
+              width: 50%;
               height: 440px;
               border: solid 1px #dfe6ec;
               float: right;
               margin-left: 20px;
               > p {
                 background-color: #eef1f6;
-                padding: 11px 10px 10px;
+                padding: 2%;
               }
               > div {
                 height: 399px;
@@ -2253,3 +2262,4 @@ hr{
     color: #999999;
   }
 }
+
