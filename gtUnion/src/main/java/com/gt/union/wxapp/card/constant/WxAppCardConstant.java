@@ -10,6 +10,19 @@ public interface WxAppCardConstant {
 
 	String REDIS_MEMBER_LINK = "_LINK";
 
-	String REDIS_MEMBER_KEY = "UNION_MEMBER:";
+	/**
+	 * 购买了折扣卡
+	 */
+	int CARD_DISCOUNT_APPLY = 1;
+
+	/**
+	 * 购买活动卡
+	 */
+	int CARD_ACTIVITY_APPLY = 2;
+
+	/**
+	 * 已售罄
+	 */
+	int CARD_SELL_OUT = 3;
 
 }
