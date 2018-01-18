@@ -75,7 +75,7 @@
                 <el-button type="primary" style="margin-left: 20px" @click="getVerificationCode" :disabled="form1.getVerificationCode || !ruleForm.phone">{{ form1.countDownTime>0?form1.countDownTime+'s':'获取验证码' }}</el-button>
               </el-form-item>
               <el-form-item>
-                该手机号是联盟佣金平台的验证登录号码，请管理人员慎重设置号码
+                绑定后，该手机号将拥有佣金平台的登录及提现权限，请谨慎设置
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
