@@ -69,7 +69,7 @@ public class WxAppCardController {
 
 	@ApiOperation(value = "联盟卡-领卡-附近商家", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/list/nearUser/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String listNearUser(HttpServletRequest request, Page page,
+	public String listNearUser(HttpServletRequest request,
 								 @ApiParam(value = "版本号", name = "version", required = true)
 								 @PathVariable("version") String version,
 								 @ApiParam(value = "商家id", name = "busId", required = true)
