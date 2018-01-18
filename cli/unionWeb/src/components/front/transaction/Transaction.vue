@@ -44,10 +44,8 @@
               <i class="backward" style="font-style:normal"> &gt;</i>
               <div>
                 <el-checkbox-group v-model="activityCheckList">
-                  <!-- label 写死？ -->
                   <el-checkbox-button v-if="isDiscountCard" :label="0" disabled>
                     <div class="clearfix SelectunionImg1">
-                      <!-- todo 更改样式 -->
                       <img alt="" class="fl SelectunionImg " style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)">
                       <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
                         <h6 style="margin-bottom: 17px;color: #333333"> 联盟折扣卡 </h6>
@@ -269,11 +267,13 @@ export default {
                       // 给unionId 赋初始值
                       // this.unionId = this.form2.unionList[0].id;
                       this.unionId = res.data.data.currentUnion.id;
-                      this.form2.activityList = res.data.data.cardActivityApplyVOList.concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList).
-                      concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList);
+                      this.form2.activityList = res.data.data.cardActivityApplyVOList
+                        .concat(res.data.data.cardActivityApplyVOList)
+                        .concat(res.data.data.cardActivityApplyVOList)
+                        .concat(res.data.data.cardActivityApplyVOList)
+                        .concat(res.data.data.cardActivityApplyVOList);
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
-                          //todo
                           let color1 = (v.activity.color1 = v.activity.color.split(',')[0]);
                           let color2 = (v.activity.color2 = v.activity.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
@@ -326,7 +326,6 @@ export default {
               });
               if (this.form2.activityList) {
                 this.form2.activityList.forEach((v, i) => {
-                  //todo
                   let color1 = (v.activity.color1 = v.activity.color.split(',')[0]);
                   let color2 = (v.activity.color2 = v.activity.color.split(',')[1]);
                   let mDiv = 'm' + color2 + i;
@@ -379,6 +378,11 @@ export default {
       } else {
         this.activityCheckList.forEach(v => {
           data.push(v);
+        });
+        let activityCheckList_ = this.form2.activityList.filter(item => {
+          return this.activityCheckList.indexOf(item.activity.id) > -1;
+        });
+        activityCheckList_.forEach(v => {
           this.payPrice = this.payPrice - 0;
           this.payPrice += v.activity.price - 0;
         });

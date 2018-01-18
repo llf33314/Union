@@ -28,7 +28,17 @@ public class UnionCardVO {
 	@ApiModelProperty(value = "联盟id")
 	private Integer unionId;
 
+	@ApiModelProperty(value = "盟员id")
 	private Integer unionMemberId;
+
+	@ApiModelProperty(value = "联盟卡价格")
+	private Double cardPrice;
+
+	@ApiModelProperty(value = "说明")
+	private String illustration;
+
+	@ApiModelProperty(value = "状态 1：已领取 2：已购买 3：已售罄")
+	private Integer status;
 
 	public Integer getCardType() {
 		return cardType;
@@ -84,5 +94,29 @@ public class UnionCardVO {
 
 	public void setUnionMemberId(Integer unionMemberId) {
 		this.unionMemberId = unionMemberId;
+	}
+
+	public Double getCardPrice() {
+		return cardPrice;
+	}
+
+	public void setCardPrice(Double cardPrice) {
+		this.cardPrice = cardPrice;
+	}
+
+	public String getIllustration() {
+		return illustration;
+	}
+
+	public void setIllustration(String illustration) {
+		this.illustration = illustration;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 }
