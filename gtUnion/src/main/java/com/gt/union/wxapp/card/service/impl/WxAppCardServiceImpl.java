@@ -153,10 +153,24 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
     }
 
     @Override
-    public List<NearUserVO> listNearUser(Integer busId, Integer enterpriseName) {
-        List<NearUserVO> list = new ArrayList<NearUserVO>();
-        //TODO 小程序附近商家列表
-        return list;
+    public List<UnionMember> listNearUser(Integer busId, String enterpriseName) throws Exception{
+        List<UnionMember> members = unionMemberService.listValidReadByBusId(busId);
+        List<UnionMember> allList = new ArrayList<UnionMember>();
+        if (ListUtil.isNotEmpty(members)) {
+            for (UnionMember member : members) {
+                UnionMain unionMain = unionMainService.getValidById(member.getUnionId());
+                if (unionMain != null && unionMainService.isUnionValid(unionMain)) {
+                    List<UnionMember> memberList = unionMemberService.listValidReadByUnionId(unionMain.getId());
+                    if(ListUtil.isNotEmpty(memberList)){
+                        if(StringUtil.isNotEmpty(enterpriseName)){
+                            memberList = unionMemberService.filterByListEnterpriseName(memberList, enterpriseName);
+                        }
+                        allList.addAll(memberList);
+                    }
+                }
+            }
+        }
+        return allList;
     }
 
     UnionCardVO getUnionCardVO(String cardName, Integer type, Integer unionId, Integer activityId, String color, Integer memberId) {

@@ -14,6 +14,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
+import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.wxapp.card.service.ITokenApiService;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
@@ -68,13 +69,13 @@ public class WxAppCardController {
 
 	@ApiOperation(value = "联盟卡-领卡-附近商家", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/list/nearUser/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String listNearUser(HttpServletRequest request, Page page,
+	public String listNearUser(HttpServletRequest request,
 								 @ApiParam(value = "版本号", name = "version", required = true)
 								 @PathVariable("version") String version,
 								 @ApiParam(value = "商家id", name = "busId", required = true)
-								 @PathVariable("busId") Integer busId, @ApiParam(value = "商家名称", name = "enterpriseName", required = false) @RequestParam(name = "enterpriseName", required = false) Integer enterpriseName
+								 @PathVariable("busId") Integer busId, @ApiParam(value = "商家名称", name = "enterpriseName", required = false) @RequestParam(name = "enterpriseName", required = false) String enterpriseName
 								 ) throws Exception {
-		List<NearUserVO> result = wxAppCardService.listNearUser(busId, enterpriseName);
+		List<UnionMember> result = wxAppCardService.listNearUser(busId, enterpriseName);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
@@ -100,7 +101,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "联盟卡-详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/cardDetail/list/{busId}/{unionId}/{memberId}/{unionMemberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardDetail/list/{busId}/{unionId}/{unionMemberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String cardDetailList(HttpServletRequest request,
 							 @ApiParam(value = "版本号", name = "version", required = true)
 							 @PathVariable("version") String version,
@@ -109,8 +110,7 @@ public class WxAppCardController {
 							 @ApiParam(value = "活动卡id，如果没有，则是折扣卡", name = "activityId", required = false)
 							 @RequestParam(name = "activityId", required = false) Integer activityId,
 							 @ApiParam(value = "联盟id", name = "unionId", required = true)
-							 @PathVariable("unionId") Integer unionId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true)
-							@PathVariable("memberId") Integer memberId, @ApiParam(value = "盟员id", name = "unionMemberId", required = true)
+							 @PathVariable("unionId") Integer unionId,  @ApiParam(value = "盟员id", name = "unionMemberId", required = true)
 							@PathVariable("unionMemberId") Integer unionMemberId, Page page) throws Exception {
 		Page result = wxAppCardService.listCardDetailPage(busId, unionId, activityId, page, unionMemberId);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -170,7 +170,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "发送短信验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/sms/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/{busId}/sms", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String sendMsg(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
@@ -186,7 +186,7 @@ public class WxAppCardController {
 		msg.setParamsStr(code);
 		msg.setModel(ConfigConstant.SMS_UNION_MODEL);
 		sender.sendMsg(msg);
-		redisCacheUtil.set(SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE + ":" + phone, code, 300L);
+		redisCacheUtil.set("phoneCode:" + SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE + ":" + phone, code, 300L);
 		return GtJsonResult.instanceSuccessMsg().toString();
 	}
 

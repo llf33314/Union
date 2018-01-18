@@ -32,7 +32,7 @@
           </div>
         </li>
         <!-- 活动卡规则 -->
-        <li>
+        <li class="activityCardRule">
           <p>
             <span>项目报名开始时间</span>
             <span style="margin-left: 45px; ">{{ item.activity.applyBeginTime }}</span>
@@ -68,12 +68,12 @@
           </el-progress>
         </li>
         <!--  操作  -->
-        <li>
+        <li >
           <div class="btn" v-if="item.activityStatus !== '未开始'">
-            <el-button @click="myActivity(item)">我的活动项目</el-button>
+            <el-button @click="myActivity(item)" size="small">我的活动项目</el-button>
           </div>
           <div class="btn">
-            <el-button @click="showDetail(item)">详情</el-button>
+            <el-button @click="showDetail(item)" size="small">详情</el-button>
           </div>
           <activity-delete v-if="isUnionOwner && (item.activityStatus !== '售卡中' && item.activityStatus !== '已停售')" :activityId="item.activity.id"></activity-delete>
         </li>

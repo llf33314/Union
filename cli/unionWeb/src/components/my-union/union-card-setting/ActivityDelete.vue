@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button @click="visible=true">删除</el-button>
+    <el-button @click="visible=true" size="small">删除</el-button>
     <!-- 弹出框 删除确认 -->
     <div class="model_2">
       <el-dialog title="删除" :visible.sync="visible" size="tiny">
