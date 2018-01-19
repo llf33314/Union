@@ -236,19 +236,6 @@
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
-//        let url='toPayList';
-//        $http.post(`/unionH5Brokerage/allPay?unionId=${uid}&fee=${this.totalMoney12}&url=${url}`)
-//          .then(res => {
-//            if(res.data.data) {
-//              //清除页面列表的数据
-//              location.href = res.data.data;
-//              //页面刷新
-////            history.go(0)
-//            }
-//          })
-//          .catch(err => {
-//            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
-//          });
         $('.box-wrap3').hide();
       },
 //    点击'全部'时候触发

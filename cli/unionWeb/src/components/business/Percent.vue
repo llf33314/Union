@@ -22,7 +22,12 @@
         </el-table-column>
         <el-table-column prop="ratioToMe" label="TA给我佣金">
           <template slot-scope="scope">
-            {{ scope.row.ratioToMe }} %
+            <el-popover trigger="hover" placement="bottom">
+              <p>"{{ scope.row.member.enterpriseName }}"给我的佣金：{{ scope.row.ratioToMe }}%</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ scope.row.ratioToMe }}%</span>
+              </div>
+            </el-popover>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
@@ -110,6 +115,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
+            console.log(this.tableData);
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.ratioFromMe = v.ratioFromMe * 100 || 0;
