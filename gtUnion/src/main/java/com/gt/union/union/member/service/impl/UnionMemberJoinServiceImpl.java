@@ -178,6 +178,9 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 throw new BusinessException("请推荐商家主账号信息");
             }
+            if(busUser.getEndTime().getTime() < System.currentTimeMillis()){
+                throw new BusinessException("被推荐的商家已过期");
+            }
         } else {
             if (UnionConstant.JOIN_TYPE_APPLY_RECOMMEND != union.getJoinType()) {
                 throw new BusinessException("联盟只允许推荐入盟");
