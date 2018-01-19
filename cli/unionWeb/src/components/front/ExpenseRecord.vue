@@ -48,7 +48,9 @@
           </el-col>
           <!-- 导出按钮 -->
           <el-col style="width:1%;height: 38px;line-height: 33px;">
-          <el-button type="primary" @click="output" size="small">导出</el-button>
+            <span class="btn1">
+              <el-button type="primary" @click="output" >导出</el-button>
+            </span>
         </el-col>
         </el-row>
       </div>

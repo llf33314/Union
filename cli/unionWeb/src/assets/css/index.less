@@ -1676,7 +1676,7 @@ hr{
         }
       }
       >div {
-        max-width: 1450px;
+        max-width: 1172px;
         margin: 0 auto;
         form {
           padding-top:10px;
@@ -1701,20 +1701,25 @@ hr{
         }
         .preferenceItems {
           width: 50%;
-          max-width: 760px;
+          max-width: 550px;
           float: left;
           height: 532px;
           box-shadow: 0px 0px 15px 0px
           rgba(53, 53, 53, 0.08);
           margin-left: 30px;
           padding: 0px 2%;
+          //有效时间
+          .validTime{
+            margin-left: 15px;
+          }
           #left-table{
-            width: 44%;
+            width: 48%;
           }
           .section_ {
             margin-top: 18px;
             .rightContent {
               width: 50%;
+              max-width: 262px;
               height: 440px;
               border: solid 1px #dfe6ec;
               float: right;
@@ -2275,6 +2280,53 @@ hr{
         span:nth-child(2){
           display: block!important;
           margin-left: inherit!important;
+        }
+      }
+    }
+  }
+}
+//媒体查询适应响应式布局
+@media screen and (max-width: 1280px){
+  //前台模块的响应式
+  #front {
+    #Verification {
+      .validTime {
+        display: block;
+        margin-left: 0 !important;
+      }
+      .preferenceItems {
+        width: 485px !important;
+      }
+      //活动卡规则
+      #left-table {
+        width: 232px !important;
+      }
+      .rightContent {
+        width: 230px !important;
+      }
+    }
+    #ExpenseRecord{
+      .searchBar{
+        .btn1{
+          .el-button{
+            padding: 8px 9px!important;
+          }
+        }
+      }
+    }
+  }
+  //我的联盟/活动卡页面响应式
+  #UnionCardSetting{
+    #ActivityCardSetting{
+      .activityCardsList{
+        .contentList{
+          li:nth-child(1){
+            left: -16px;
+          }
+          .el-button{
+            display: block;
+            margin-top: 5px;
+          }
         }
       }
     }

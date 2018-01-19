@@ -46,7 +46,7 @@
                 <el-checkbox-group v-model="activityCheckList">
                   <el-checkbox-button v-if="isDiscountCard" :label="0" disabled>
                     <div class="clearfix SelectunionImg1">
-                      <img alt="" class="fl SelectunionImg " style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)">
+                      <span  class="fl SelectunionImg " style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)"></span>
                       <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
                         <h6 style="margin-bottom: 17px;color: #333333"> 联盟折扣卡 </h6>
                       </div>
@@ -55,7 +55,7 @@
                   </el-checkbox-button>
                   <el-checkbox-button v-for="(item,index1) in form2.activityList" :key="item.activity.id" :label="item.activity.id">
                     <div class="clearfix">
-                      <img v-bind:src="item.activity.img" alt="" class="fl SelectunionImg" :class="'m'+item.activity.color2+index1">
+                      <span  class="fl SelectunionImg" :class="'m'+item.activity.color2+index1"></span>
                       <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
                         <h6 style="margin-bottom: 17px;color: #333333">{{item.activity.name}}</h6>
                       </div>

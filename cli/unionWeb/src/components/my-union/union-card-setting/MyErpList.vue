@@ -13,7 +13,7 @@
       </p>
     </div>
     <!-- ERP项目 列表数据-->
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" hight="450" v-show="canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" height="430" v-show="canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
@@ -27,7 +27,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" hight="450" v-show="!canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" height="430" v-show="!canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
