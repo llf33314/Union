@@ -13,16 +13,16 @@
     </div>
     <div class="ratioSetting">
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="member.enterpriseName" label="盟员名称">
+        <el-table-column prop="member.enterpriseName" label="盟员名称" width="200">
         </el-table-column>
-        <el-table-column prop="" label="我给TA佣金">
+        <el-table-column prop="" label="我给TA佣金" align="center">
           <template slot-scope="scope">
             {{ scope.row.ratioFromMe }} %
           </template>
         </el-table-column>
-        <el-table-column prop="ratioToMe" label="TA给我佣金">
+        <el-table-column prop="ratioToMe" label="TA给我佣金" align="center">
           <template slot-scope="scope">
-            <el-popover trigger="hover" placement="bottom">
+            <el-popover trigger="hover" placement="bottom" >
               <p>"{{ scope.row.member.enterpriseName }}"给我的佣金：{{ scope.row.ratioToMe }}%</p>
               <div slot="reference" class="name-wrapper">
                 <span>{{ scope.row.ratioToMe }}%</span>

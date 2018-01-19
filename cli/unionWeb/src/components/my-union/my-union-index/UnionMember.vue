@@ -210,7 +210,12 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.visible1 = false;
-            this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 3000 });
+            this.$message({
+              showClose: true,
+              message: '移出成功，该盟员将在15天过渡期后正式退盟',
+              type: 'success',
+              duration: 3000
+            });
             this.search();
           }
         })

@@ -1543,7 +1543,7 @@ hr {
   width: 140px;
 }
 #front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > div > div .el-button--text {
-  margin-left: 50px;
+  margin-left: 30px;
 }
 #front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent .el-button--text {
   margin-left: 15px;
@@ -2029,5 +2029,13 @@ hr {
   #UnionCardSetting #ActivityCardSetting .activityCardsList .contentList .el-button {
     display: block;
     margin-top: 5px;
+  }
+}
+@media screen and (max-width: 1400px) {
+  #front #Verification .section_ .el-table .el-table__header {
+    width: 232px !important;
+  }
+  #front #Verification .section_ .el-table .el-table__body {
+    width: 232px !important;
   }
 }
