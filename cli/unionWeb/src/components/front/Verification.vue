@@ -69,7 +69,7 @@
                 <el-option v-for="item in activityCards" :key="item.activityCard.id" :label="item.activityCard.name" :value="item.activityCard.id">
                 </el-option>
               </el-select>
-              <span style="margin-left: 15px;">有效时间： {{ activityCardValidity }} </span>
+              <span class="validTime">有效时间： {{ activityCardValidity }} </span>
             </div>
             <div class="section_ clearfix">
               <div style="float: left" id="left-table">
@@ -167,7 +167,7 @@
                 </el-radio-button>
               </el-radio-group>
               <el-row v-if="payType == 1">
-                <el-col style="width:280px;">
+                <el-col style="width:280px;display:flex;align-items:center;">
                   <span>收取现金：</span>
                   <el-input v-model="price2" style="width:200px;" @keyup.enter.native="submit" @keyup.native="check2()">
                     <template slot="prepend">￥</template>

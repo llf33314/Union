@@ -13,7 +13,7 @@
         </el-form>
       </el-col>
       <!-- 导出按钮 -->
-      <el-col style="width:300px;">
+      <el-col style="width:289px;">
         <el-button type="primary" @click="output1">导出</el-button>
       </el-col>
     </el-row>

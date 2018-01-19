@@ -12,7 +12,7 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col style="width:300px;">
+      <el-col style="width:289px;">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="来源:">
             <el-select v-model="toMemberId" clearable placeholder="请选择来源" @change="search">

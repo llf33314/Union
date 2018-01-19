@@ -15,7 +15,7 @@
       </div>
       <div v-if="data1.length > 0" class="contentList" v-for="(item, index1) in data1" :key="item.activity.id">
         <div>
-          <img :class="'m'+item.color2+index1" :src="item.activity.img">
+          <div :class="'m'+item.color2+index1" style="height: 80px"></div>
           <span>{{ item.activityStatus }}</span>
         </div>
         <p>
