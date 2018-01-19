@@ -13,7 +13,7 @@
       </p>
     </div>
     <!-- ERP项目 列表数据-->
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" height="430" v-show="canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" max-height="430" v-show="canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
@@ -27,7 +27,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" height="430" v-show="!canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" max-height="430" v-show="!canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
@@ -190,7 +190,6 @@ export default {
       this.erpTextList.forEach(v => {
         this.selectedErpRight.push(v);
       });
-
       this.visible = true;
     },
     // 选择行业，获取门店数据
@@ -310,7 +309,7 @@ export default {
     confirm() {
       this.erpTextList.forEach((v, i) => {
         let delFlag = this.selectedErpRight.some(item => {
-          return item.erpType === v.erpType && item.erpGoodsId === v.erpGoodsId;
+          return item.erpType === v.erpType && item.erpTextId === v.erpTextId;
         });
         if (!delFlag) {
           this.erpTextList.splice(i, 1);
@@ -318,7 +317,7 @@ export default {
       });
       this.selectedErpRight.forEach(v => {
         let repeatItem = this.erpTextList.find(item => {
-          return item.erpType === v.erpType && item.erpGoodsId === v.erpGoodsId;
+          return item.erpType === v.erpType && item.erpTextId === v.erpTextId;
         });
         if (repeatItem) {
           repeatItem.number = v.number;

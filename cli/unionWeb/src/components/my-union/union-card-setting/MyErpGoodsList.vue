@@ -13,7 +13,7 @@
       </p>
     </div>
     <!-- ERP项目商品 列表数据-->
-    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" height="430" v-show="canEdit">
+    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" max-height="430" v-show="canEdit">
       <el-table-column prop="name" label="商品名称">
       </el-table-column>
       <el-table-column prop="spec" label="规格">
@@ -29,7 +29,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" height="430" v-show="!canEdit">
+    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" max-height="430" v-show="!canEdit">
       <el-table-column prop="name" label="商品名称">
       </el-table-column>
       <el-table-column prop="spec" label="规格">
