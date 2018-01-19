@@ -162,7 +162,9 @@
             //跳转到主页面中去
             if(res.data.success) {
               //跳转到主页面
-              this.$router.push({path:'/index'})
+              setTimeout(function () {
+                this.$router.push({path:'/index'})
+              },10)
             }
           })
           .catch(err => {

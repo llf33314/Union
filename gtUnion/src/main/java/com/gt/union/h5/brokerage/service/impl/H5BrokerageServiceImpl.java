@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
+import com.gt.api.util.SessionUtils;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.pay.WxPayService;
@@ -510,6 +511,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
             h5BrokerageUser.setVerifier(loginVerifier);
             h5BrokerageUser.setBusUser(busUser);
+            SessionUtils.setUnionBus(request,busUser);
 
             UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
             return;
@@ -523,6 +525,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                     H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setVerifier(verifier);
                     h5BrokerageUser.setBusUser(busUser);
+                    SessionUtils.setUnionBus(request,busUser);
                     UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
 
                     UnionVerifier updateVerifier = new UnionVerifier();
@@ -536,6 +539,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         // 判断是否是管理员
         BusUser busUser = busUserService.getBusUserByPhone(phone);
         if (busUser != null) {
+            SessionUtils.setUnionBus(request,busUser);
             H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
             h5BrokerageUser.setBusUser(busUser);
 
