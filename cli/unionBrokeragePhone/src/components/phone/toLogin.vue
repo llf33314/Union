@@ -162,7 +162,7 @@
             //跳转到主页面中去
             if(res.data.success) {
               //跳转到主页面
-              location.href = '/#/Index';
+              this.$router.push({path:'/index'})
             }
           })
           .catch(err => {
@@ -197,7 +197,6 @@
                   success: function (res) {
                     if(res.code == 0){
                       setTimeout(function () {
-//                        location.href = '/#/Index';
                         that_.add();
                       }, 10);
                     }else {

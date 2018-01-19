@@ -33,6 +33,7 @@
         </div>
       </div>
       <!-- 页面底部固定 -->
+      <div style="margin-top:60px ; "></div>
       <footer v-if="canEdit">
         <el-button @click="save">保存</el-button>
         <el-button type="primary" @click="visible=true" :disabled="!canSubmitFlag">提交审核</el-button>

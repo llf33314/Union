@@ -26,7 +26,7 @@
       <!--表内容主体-->
       <ul class="clearfix contentList">
         <li>
-          <img :class="'m'+item.color2+index1" :src="item.activity.img">
+          <div :class="'m'+item.color2+index1"></div>
           <div>
             <span>{{ item.activityStatus }}</span>
           </div>
