@@ -5,6 +5,7 @@ import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.user.bean.UserUnionAuthority;
 import com.gt.util.entity.result.wx.ApiWxApplet;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,5 +66,13 @@ public interface IBusUserService {
 	 * @return
 	 */
 	ApiWxApplet getBusIdAndIndustry(Integer busId, Integer industry);
+
+	/**
+	 * 查询商家是否拥有某个菜单的权限
+	 * @param busId		商家id
+	 * @param identis	菜单标识
+	 * @return
+	 */
+	List<Map> haveMenus(Integer busId, String identis);
 
 }

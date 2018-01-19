@@ -187,7 +187,10 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
-      this.selectedErpRight = this.projectData.erpTextList;
+      this.erpTextList.forEach(v => {
+        this.selectedErpRight.push(v);
+      });
+
       this.visible = true;
     },
     // 选择行业，获取门店数据
@@ -225,6 +228,9 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
+            this.tableData.forEach(v => {
+              v.erpTextId = v.id;
+            });
             this.totalAll = res.data.data.total;
             this.$nextTick(() => {
               this.checkToggle();
@@ -253,13 +259,13 @@ export default {
     // 单选
     handleSelect(selection, row, isAll) {
       let pass = this.selectedErpRight.some(item => {
-        return item.erpType === row.erpType && item.id === row.id;
+        return item.erpType === row.erpType && item.erpTextId === row.erpTextId;
       });
       if (!pass) {
         this.selectedErpRight.push(row);
       } else {
         this.selectedErpRight.forEach((item, index) => {
-          if (item.erpType === row.erpType && item.id === row.id && !isAll) {
+          if (item.erpType === row.erpType && item.erpTextId === row.erpTextId && !isAll) {
             this.selectedErpRight.splice(index, 1);
           }
         });
@@ -281,7 +287,7 @@ export default {
     checkToggle() {
       this.tableData.forEach((v, i) => {
         this.selectedErpRight.forEach(val => {
-          if (v.erpType === val.erpType && v.id === val.id) {
+          if (v.erpType === val.erpType && v.erpTextId === val.erpTextId) {
             this.$refs.multipleTable.toggleRowSelection(this.tableData[i]);
           }
         });
@@ -291,7 +297,7 @@ export default {
     handleDelete2(index) {
       let deletRow = this.selectedErpRight.splice(index, 1);
       this.tableData.forEach((v, i) => {
-        if (v.erpType === deletRow[0].erpType && v.id === deletRow[0].id) {
+        if (v.erpType === deletRow[0].erpType && v.erpTextId === deletRow[0].erpTextId) {
           this.$refs.multipleTable.toggleRowSelection(this.tableData[i], false);
         }
       });
@@ -302,16 +308,31 @@ export default {
     },
     // 确定所选ERP项目
     confirm() {
-      this.erpTextList.splice(0, this.erpTextList.length);
-      this.selectedErpRight.forEach(v => {
-        this.erpTextList.push({
-          erpType: v.erpType,
-          shopId: v.shopId,
-          erpTextId: v.id,
-          name: v.name,
-          number: v.number
+      this.erpTextList.forEach((v, i) => {
+        let delFlag = this.selectedErpRight.some(item => {
+          return item.erpType === v.erpType && item.erpGoodsId === v.erpGoodsId;
         });
+        if (!delFlag) {
+          this.erpTextList.splice(i, 1);
+        }
       });
+      this.selectedErpRight.forEach(v => {
+        let repeatItem = this.erpTextList.find(item => {
+          return item.erpType === v.erpType && item.erpGoodsId === v.erpGoodsId;
+        });
+        if (repeatItem) {
+          repeatItem.number = v.number;
+        } else {
+          this.erpTextList.push({
+            erpType: v.erpType,
+            shopId: v.shopId,
+            erpTextId: v.erpTextId,
+            name: v.name,
+            number: v.number
+          });
+        }
+      });
+
       this.erpTextListChange();
       this.visible = false;
     },
