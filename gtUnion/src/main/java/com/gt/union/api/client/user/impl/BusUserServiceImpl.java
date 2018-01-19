@@ -181,5 +181,22 @@ public class BusUserServiceImpl implements IBusUserService {
         }
     }
 
+	@Override
+	public List<Map> haveMenus(Integer busId, String identis) {
+        logger.info("验证主商家是否拥有该菜单busId：{}，identis：{}", busId, identis);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("busId", busId);
+        param.put("identis", identis);
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxmpMenus/isHaveMenus.do";
+        try {
+            String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            logger.info("验证主商家是否拥有该菜单，结果：{}", result);
+            return ApiResultHandlerUtil.listDataObject(result, Map.class);
+        } catch (Exception e) {
+            logger.error("验证主商家是否拥有该菜单错误", e);
+            return null;
+        }
+	}
+
 
 }
