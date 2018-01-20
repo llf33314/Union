@@ -10,7 +10,7 @@
       </el-col>
       <el-col :span="5" style="width:210px;margin-left: 50px;">
         <div class="block">
-          <el-date-picker v-model="timeValue" type="daterange" placeholder="选择日期范围">
+          <el-date-picker v-model="timeValue" type="daterange" placeholder="选择日期范围" @change="search">
           </el-date-picker>
         </div>
       </el-col>
