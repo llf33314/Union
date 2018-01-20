@@ -167,8 +167,10 @@ export default {
       codeSrc: '',
       socket: '',
       socketKey: '',
+      orderNo: '',
       socketFlag: {
         socketKey: '',
+        orderNo: '',
         status: ''
       },
       timeEnd: '',
@@ -389,44 +391,55 @@ export default {
           if (res.data.data) {
             this.codeSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
+            this.orderNo = res.data.data.orderNo;
             this.visible3 = true;
             this.payPrice = this.payPrice.toFixed(2);
             var _this = this;
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
-              this.socket = io.connect(socketUrl);
-            }
-            var socketKey = this.socketKey;
-            this.socket.on('connect', function() {
-              let jsonObject = { userId: socketKey, message: '0' };
-              _this.socket.emit('auth', jsonObject);
-            });
-            //重连机制
-            let socketindex = 0;
-            this.socket.on('reconnecting', function() {
-              socketindex += 1;
-              if (socketindex > 4) {
-                _this.socket.destroy(); //不在链接
-              }
-            });
-            this.socket.on('chatevent', function(data) {
-              let msg = eval('(' + data.message + ')');
-              console.log(msg, 'transaction');
-              // 避免 socket 重复调用
-              if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
-                if (_this.socketKey == msg.socketKey) {
-                  if (msg.status == '1') {
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
-                    _this.socketFlag.socketKey = msg.socketKey;
-                    _this.socketFlag.status = msg.status;
-                    eventBus.$emit('newUnionCard');
-                    _this.init();
-                  } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 3000 });
+              this.socket = io.connect(socketUrl, { reconnect: true });
+              var socketKey = this.socketKey;
+              this.socket.on('connect', function() {
+                let jsonObject = { userId: socketKey, message: '0' };
+                _this.socket.emit('auth', jsonObject);
+              });
+              //重连机制
+              let socketindex = 0;
+              this.socket.on('reconnecting', function() {
+                socketindex += 1;
+                if (socketindex > 4) {
+                  _this.socket.destroy(); //不在链接
+                }
+              });
+              this.socket.on('reconnect', function(data) {
+                socketindex--;
+              });
+              this.socket.on('chatevent', function(data) {
+                let msg = eval('(' + data.message + ')');
+                console.log(msg, 'transaction');
+                // 避免 socket 重复调用
+                if (
+                  !(
+                    _this.socketFlag.socketKey == msg.socketKey &&
+                    _this.socketFlag.status == msg.status &&
+                    _this.socketFlag.orderNo == msg.orderNo
+                  )
+                ) {
+                  if (_this.socketKey == msg.socketKey && _this.orderNo == msg.orderNo) {
+                    if (msg.status == '1') {
+                      _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
+                      _this.socketFlag.socketKey = msg.socketKey;
+                      _this.socketFlag.status = msg.status;
+                      _this.socketFlag.orderNo = msg.orderNo;
+                      eventBus.$emit('newUnionCard');
+                      _this.init();
+                    } else if (msg.status == '0') {
+                      _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 3000 });
+                    }
                   }
                 }
-              }
-            });
+              });
+            }
           } else if (res.data.success) {
             this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 3000 });
             eventBus.$emit('newUnionCard');
@@ -438,6 +451,7 @@ export default {
           } else {
             this.codeSrc3 = '';
             this.socketKey3 = '';
+            this.orderNo = '';
           }
         })
         .catch(err => {

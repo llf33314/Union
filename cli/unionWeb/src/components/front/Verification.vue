@@ -607,7 +607,6 @@ export default {
             if (!this.socket) {
               this.socket = io.connect(socketUrl, { reconnect: true });
               var socketKey = this.socketKey;
-
               this.socket.on('connect', function() {
                 let jsonObject = { userId: socketKey, message: '0' };
                 _this.socket.emit('auth', jsonObject);
@@ -623,8 +622,8 @@ export default {
               this.socket.on('reconnect', function(data) {
                 socketindex--;
               });
-              this.socket.on('chatevent', function(data) {
-                let msg = eval('(' + data.message + ')');
+              this.socket.on('chatevent', function(data_) {
+                let msg = eval('(' + data_.message + ')');
                 console.log(msg, 'verification');
                 // 避免 socket 重复调用
                 if (
