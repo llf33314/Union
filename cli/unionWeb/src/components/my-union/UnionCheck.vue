@@ -54,8 +54,8 @@
     </div>
     <!-- 弹出框 确认通过 -->
     <div class="model_02">
-      <el-dialog title="是否确认通过申请" :visible.sync="visible1" size="tiny">
-        <hr>
+      <el-dialog title="" :visible.sync="visible1" size="tiny">
+        <span>是否确认通过申请?</span>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm1">确定</el-button>
           <el-button @click="visible1=false">取消</el-button>
@@ -65,7 +65,7 @@
     <!-- 弹出框 确认不通过 -->
     <div class="model_03">
       <el-dialog title="" :visible.sync="visible2" size="tiny">
-        <span>是否确认不通过申请</span>
+        <span>是否确认不通过申请?</span>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm2">确定</el-button>
           <el-button @click="visible2=false">取消</el-button>
