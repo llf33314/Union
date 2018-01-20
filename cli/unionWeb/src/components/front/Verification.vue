@@ -249,9 +249,11 @@ export default {
       payUrl: '',
       socket: '',
       socketKey: '',
+      orderNo: '',
       socketFlag: {
         socketKey: '',
-        status: ''
+        status: '',
+        orderNo: ''
       },
       payPrice: '',
       WeChatImg: ''
@@ -590,62 +592,75 @@ export default {
             if (res.data.data) {
               this.payUrl = res.data.data.payUrl;
               this.socketKey = res.data.data.socketKey;
+              this.orderNo = res.data.data.orderNo;
               this.visible4 = true;
               this.payPrice = (this.price1 - 0).toFixed(2);
             } else {
               this.payUrl = '';
               this.socketKey = '';
+              this.orderNo = '';
             }
           })
           .then(res => {
             var _this = this;
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
-              this.socket = io.connect(socketUrl);
-            }
-            var socketKey = this.socketKey;
-            this.socket.on('connect', function() {
-              let jsonObject = { userId: socketKey, message: '0' };
-              _this.socket.emit('auth', jsonObject);
-            });
-            //重连机制
-            let socketindex = 0;
-            this.socket.on('reconnecting', function() {
-              socketindex += 1;
-              if (socketindex > 4) {
-                _this.socket.destroy(); //不在链接
-              }
-            });
-            this.socket.on('chatevent', function(data) {
-              let msg = eval('(' + data.message + ')');
-              console.log(msg, 'verification');
-              // 避免 socket 重复调用
-              if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
-                if (_this.socketKey == msg.socketKey) {
-                  if (msg.status == '1') {
-                    if (data.textList.length > 0 && data.consume.payMoney > 0) {
-                      _this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
-                    } else if (data.consume.payMoney > 0) {
-                      _this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
-                    } else {
-                      _this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
-                    }
-                    _this.socketFlag.socketKey = msg.socketKey;
-                    _this.socketFlag.status = msg.status;
-                    eventBus.$emit('newTransaction');
-                    eventBus.$emit('unionUpdata');
-                    _this.init();
-                    setTimeout(() => {
+              this.socket = io.connect(socketUrl, { reconnect: true });
+              var socketKey = this.socketKey;
+
+              this.socket.on('connect', function() {
+                let jsonObject = { userId: socketKey, message: '0' };
+                _this.socket.emit('auth', jsonObject);
+              });
+              //重连机制
+              let socketindex = 0;
+              this.socket.on('reconnecting', function() {
+                socketindex += 1;
+                if (socketindex > 4) {
+                  _this.socket.destroy(); //不在链接
+                }
+              });
+              this.socket.on('reconnect', function(data) {
+                socketindex--;
+              });
+              this.socket.on('chatevent', function(data) {
+                let msg = eval('(' + data.message + ')');
+                console.log(msg, 'verification');
+                // 避免 socket 重复调用
+                if (
+                  !(
+                    _this.socketFlag.socketKey == msg.socketKey &&
+                    _this.socketFlag.status == msg.status &&
+                    _this.socketFlag.orderNo == msg.orderNo
+                  )
+                ) {
+                  if (_this.socketKey == msg.socketKey && _this.orderNo == msg.orderNo) {
+                    if (msg.status == '1') {
+                      if (data.textList.length > 0 && data.consume.payMoney > 0) {
+                        _this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
+                      } else if (data.consume.payMoney > 0) {
+                        _this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
+                      } else {
+                        _this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
+                      }
+                      _this.socketFlag.socketKey = msg.socketKey;
+                      _this.socketFlag.status = msg.status;
+                      _this.socketFlag.orderNo = msg.orderNo;
+                      eventBus.$emit('newTransaction');
+                      eventBus.$emit('unionUpdata');
+                      _this.init();
                       setTimeout(() => {
-                        parent.window.postMessage('closeMask()', '*');
+                        setTimeout(() => {
+                          parent.window.postMessage('closeMask()', '*');
+                        }, 0);
                       }, 0);
-                    }, 0);
-                  } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 3000 });
+                    } else if (msg.status == '0') {
+                      _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 3000 });
+                    }
                   }
                 }
-              }
-            });
+              });
+            }
           })
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
@@ -742,5 +757,4 @@ export default {
   transform: translateX(100px);
   opacity: 0;
 }
-
 </style>
