@@ -85,8 +85,9 @@ export default {
       }
       $http
         .get(
-          `/unionCardSharingRecord/unionId/${this.unionId}/page?current=${this.currentPage}&cardNumber=${this
-            .value1}&beginTime=${beginTime}&endTime=${endTime}`
+          `/unionCardSharingRecord/unionId/${this.unionId}/page?current=${this.currentPage}&cardNumber=${
+            this.cardNumber
+          }&beginTime=${beginTime}&endTime=${endTime}`
         )
         .then(res => {
           if (res.data.data) {
@@ -122,11 +123,11 @@ export default {
       }
       let url =
         this.$store.state.baseUrl +
-        `/unionCardSharingRecord/unionId/${this.unionId}/export?cardNumber=${this
-          .cardNumber}&beginDate=${beginTime}&endDate=${endTime}`;
+        `/unionCardSharingRecord/unionId/${this.unionId}/export?cardNumber=${
+          this.cardNumber
+        }&beginDate=${beginTime}&endDate=${endTime}`;
       window.open(url);
     }
   }
 };
 </script>
-

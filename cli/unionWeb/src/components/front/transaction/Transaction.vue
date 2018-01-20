@@ -378,8 +378,8 @@ export default {
         let activityCheckList_ = this.form2.activityList.filter(item => {
           return this.activityCheckList.indexOf(item.activity.id) > -1;
         });
+        this.payPrice = 0;
         activityCheckList_.forEach(v => {
-          this.payPrice = this.payPrice - 0;
           this.payPrice += v.activity.price - 0;
         });
       }
