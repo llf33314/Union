@@ -350,11 +350,13 @@ export default {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
+            this.orderNo = res.data.data.orderNo;
             this.visible = true;
             this.mySocket();
           } else {
             this.imgSrc = '';
             this.socketKey = '';
+            this.orderNo = '';
           }
         })
         .catch(err => {
