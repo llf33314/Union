@@ -617,13 +617,26 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
     //********************************************* Base On Business - other *******************************************
 
     @Override
-    public Integer countValidPayByFanId(Integer fanId) throws ParamException {
+    public Integer countValidPayByFanId(Integer fanId) throws Exception {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
                 .eq("fan_id", fanId);
+
+        return unionConsumeDao.selectCount(entityWrapper);
+    }
+
+    @Override
+    public Integer countValidPayByFanIdAndStatus(Integer fanId, Integer status) throws Exception {
+        if (fanId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("fan_id", fanId)
+                .eq("pay_status", status);
 
         return unionConsumeDao.selectCount(entityWrapper);
     }
