@@ -452,7 +452,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
 
         // （4）调用支付接口
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney(), memberId);
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney(), memberId, busId);
 
         unionBrokeragePayService.save(savePay);
         return result;

@@ -40,7 +40,7 @@ public class SocketServiceImpl implements SocketService{
 	}
 
 	@Override
-	public boolean socketPaySendMessage(String socketKey, Integer status, String pushStyle) {
+	public boolean socketPaySendMessage(String socketKey, Integer status, String pushStyle, String orderNo) {
 		try {
 			Map<String,Object> params = new HashMap<>();
 			if(pushStyle == null){
@@ -51,6 +51,7 @@ public class SocketServiceImpl implements SocketService{
 			Map data = new HashMap<>();
 			data.put("status",status);
 			data.put("socketKey",socketKey);
+			data.put("orderNo",orderNo);
 
 			params.put("pushMsg", JSON.toJSONString(data));
 			params.put("pushName",socketKey);
