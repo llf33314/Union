@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.socket.SocketService;
+import com.gt.union.api.client.socket.constant.SocketKeyConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -121,7 +122,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         savePermit.setSysOrderNo(orderNo);
         // 调用支付接口，返回支付链接
         UnionPayVO result = new UnionPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
+        String socketKey = PropertiesUtil.getSocketKey() + SocketKeyConstant.UNION_PERMIT + busId;
         String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey;
 
         PayParam payParam = new PayParam()
@@ -135,6 +136,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
                 .setPayDuoFen(true);
         String payUrl = wxPayService.qrCodePay(payParam);
 
+        result.setOrderNo(orderNo);
         result.setPayUrl(payUrl);
         result.setSocketKey(socketKey);
 
@@ -198,7 +200,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
             }
 
             // socket通知
-            socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
             result.put("code", 0);
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);

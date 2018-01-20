@@ -352,7 +352,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         }
 
         // 调用接口，返回支付链接
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, BigDecimalUtil.toDouble(brokerageSum), memberId);
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, BigDecimalUtil.toDouble(brokerageSum), memberId, busId);
 
         saveBatch(savePayList);
         return result;
@@ -431,7 +431,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
             // socket通知
             if (StringUtil.isNotEmpty(socketKey)) {
-                socketService.socketPaySendMessage(socketKey, isSuccess, null);
+                socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
             }
             result.put("code", 0);
             result.put("msg", "成功");

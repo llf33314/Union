@@ -21,9 +21,10 @@ public interface SocketService {
 	 * @param socketKey		推送的客户端socketKey
 	 * @param status		支付结果状态
 	 * @param pushStyle		推送属性
+	 * @param orderNo		订单号
 	 * @return	false：失败 true：成功
 	 */
-	boolean socketPaySendMessage(String socketKey, Integer status,String pushStyle);
+	boolean socketPaySendMessage(String socketKey, Integer status,String pushStyle, String orderNo);
 
 
 
