@@ -49,7 +49,7 @@ function checkCode(res) {
   if (res.status === -404) {
     Message({
       showClose: true,
-      message: res.errorMsg,
+      message: '网络错误',
       type: 'warning',
       duration: 3000
     });
