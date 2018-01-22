@@ -58,27 +58,19 @@ export default {
     }
   },
   mounted: function() {
-    $http
-      .get(`/unionCardSharingRecord/unionId/${this.unionId}/page?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData = res.data.data.records || [];
-          this.tableData.forEach((v, i) => {
-            v.sharingRecord.createTime = timeFilter(v.sharingRecord.createTime);
-          });
-          this.totalAll = res.data.data.total;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
-      });
+    this.init();
   },
   methods: {
+    init() {
+      this.currentPage = 1;
+      this.cardNumber = '';
+      this.getTableData();
+    },
     getTableData() {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
+        endTime = this.timeValue[1].getTime() + 24 * 3600 * 1000;
       } else {
         beginTime = '';
         endTime = '';
@@ -95,6 +87,10 @@ export default {
             this.tableData.forEach((v, i) => {
               v.sharingRecord.createTime = timeFilter(v.sharingRecord.createTime);
             });
+            this.totalAll = res.data.data.total;
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
           }
         })
         .catch(err => {
@@ -116,7 +112,7 @@ export default {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
+        endTime = this.timeValue[1].getTime() + 24 * 3600 * 1000;
       } else {
         beginTime = '';
         endTime = '';

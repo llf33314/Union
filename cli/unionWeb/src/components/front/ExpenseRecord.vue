@@ -237,7 +237,7 @@ export default {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
+        endTime = this.timeValue[1].getTime() + 24 * 3600 * 1000;
       } else {
         beginTime = '';
         endTime = '';
@@ -295,7 +295,7 @@ export default {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
+        endTime = this.timeValue[1].getTime() + 24 * 3600 * 1000;
       } else {
         beginTime = '';
         endTime = '';
