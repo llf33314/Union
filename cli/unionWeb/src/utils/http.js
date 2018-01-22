@@ -50,7 +50,7 @@ function checkCode(res) {
     Message({
       showClose: true,
       message: '网络错误',
-      type: 'warning',
+      type: 'error',
       duration: 3000
     });
   }

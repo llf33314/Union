@@ -145,7 +145,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     handleCurrentChange1(val) {
@@ -188,7 +188,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     handleCurrentChange2(val) {
@@ -216,7 +216,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 校验输入为数字类型
@@ -265,7 +265,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       } else {
         this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'error', duration: 3000 });

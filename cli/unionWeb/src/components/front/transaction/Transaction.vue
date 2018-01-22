@@ -239,7 +239,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 确认验证码
@@ -296,14 +296,14 @@ export default {
                     }
                   })
                   .catch(err => {
-                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+                    this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
                   });
               } else {
                 this.visible2 = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+              this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
             });
         } else {
           return false;
@@ -339,7 +339,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       }
     },
@@ -363,7 +363,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 提交
@@ -455,7 +455,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 取消

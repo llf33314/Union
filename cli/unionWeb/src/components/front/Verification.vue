@@ -270,7 +270,7 @@ export default {
         }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+        this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
       });
     eventBus.$on('tabChange1', () => {
       this.input = '';
@@ -355,11 +355,11 @@ export default {
                 }
               })
               .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+                this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
               });
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       }
     },
@@ -398,7 +398,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       }
     },
@@ -423,7 +423,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       } else {
         $('.UnionCardInformation form').css({
@@ -454,7 +454,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       }
     },
@@ -561,7 +561,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 付款二维码
@@ -662,7 +662,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       }
     },

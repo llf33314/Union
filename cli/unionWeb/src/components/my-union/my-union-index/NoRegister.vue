@@ -113,7 +113,7 @@ export default {
         }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+        this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
       });
   },
   watch: {
@@ -196,7 +196,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       } else {
         this.$message({ showClose: true, message: '请选择版本', type: 'error', duration: 3000 });
