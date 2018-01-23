@@ -11,6 +11,7 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
+import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.service.IUnionConsumeProjectService;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.main.constant.CardConstant;
@@ -325,7 +326,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         if (fan != null) {
             Double integral = unionCardIntegralService.sumValidIntegralByFanId(fan.getId());
             vo.setIntegral(integral);
-            Integer consumeCount = unionConsumeService.countValidPayByFanId(fan.getId());
+            Integer consumeCount = unionConsumeService.countValidPayByFanIdAndStatus(fan.getId(), ConsumeConstant.PAY_STATUS_SUCCESS);
             vo.setConsumeCount(consumeCount);
             vo.setCardNo(fan.getNumber());
             vo.setCardImg(PropertiesUtil.getUnionUrl() + "/union/wxAppCard/"+PropertiesUtil.getAppVersion()+"/qr/cardNo?cardNo=" + fan.getNumber());

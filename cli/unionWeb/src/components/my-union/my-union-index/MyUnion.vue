@@ -278,7 +278,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       }
     });
@@ -316,7 +316,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 点击联盟图片切换联盟
@@ -341,7 +341,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       }
     },
@@ -360,7 +360,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     reject() {
@@ -374,7 +374,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     }
   }

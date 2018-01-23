@@ -10,7 +10,7 @@
       </el-col>
       <el-col :span="5" style="width:210px;margin-left: 50px;">
         <div class="block">
-          <el-date-picker v-model="timeValue" type="daterange" placeholder="选择日期范围">
+          <el-date-picker v-model="timeValue" type="daterange" placeholder="选择日期范围" @change="search">
           </el-date-picker>
         </div>
       </el-col>
@@ -58,27 +58,19 @@ export default {
     }
   },
   mounted: function() {
-    $http
-      .get(`/unionCardSharingRecord/unionId/${this.unionId}/page?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData = res.data.data.records || [];
-          this.tableData.forEach((v, i) => {
-            v.sharingRecord.createTime = timeFilter(v.sharingRecord.createTime);
-          });
-          this.totalAll = res.data.data.total;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
-      });
+    this.init();
   },
   methods: {
+    init() {
+      this.currentPage = 1;
+      this.cardNumber = '';
+      this.getTableData();
+    },
     getTableData() {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
+        endTime = this.timeValue[1].getTime() + 24 * 3600 * 1000;
       } else {
         beginTime = '';
         endTime = '';
@@ -95,10 +87,14 @@ export default {
             this.tableData.forEach((v, i) => {
               v.sharingRecord.createTime = timeFilter(v.sharingRecord.createTime);
             });
+            this.totalAll = res.data.data.total;
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 带条件搜索
@@ -116,7 +112,7 @@ export default {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
+        endTime = this.timeValue[1].getTime() + 24 * 3600 * 1000;
       } else {
         beginTime = '';
         endTime = '';

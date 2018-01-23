@@ -9,6 +9,7 @@ import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.socket.SocketService;
+import com.gt.union.api.client.socket.constant.SocketKeyConstant;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.dao.IUnionConsumeDao;
@@ -474,7 +475,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         } else {
             result = new UnionPayVO();
             saveConsume.setPayType(ConsumeConstant.PAY_STATUS_PAYING);
-            String socketKey = PropertiesUtil.getSocketKey() + orderNo;
+            String socketKey = PropertiesUtil.getSocketKey() + SocketKeyConstant.CARD_CONSUME + busId;
             String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume?socketKey=" + socketKey;
 
             PayParam payParam = new PayParam();
@@ -492,6 +493,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
             String payUrl = wxPayService.qrCodePay(payParam);
 
+            result.setOrderNo(orderNo);
             result.setPayUrl(payUrl);
             result.setSocketKey(socketKey);
         }
@@ -548,7 +550,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         Integer payStatus = consume.getPayStatus();
         if (payStatus == ConsumeConstant.PAY_STATUS_SUCCESS || payStatus == ConsumeConstant.PAY_STATUS_FAIL) {
             // socket通知
-            socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
             result.put("code", 0);
             result.put("msg", "已处理过");
             return JSONObject.toJSONString(result);
@@ -605,7 +607,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             }
 
             // socket通知
-            socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
             result.put("code", 0);
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);
@@ -615,13 +617,26 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
     //********************************************* Base On Business - other *******************************************
 
     @Override
-    public Integer countValidPayByFanId(Integer fanId) throws ParamException {
+    public Integer countValidPayByFanId(Integer fanId) throws Exception {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
                 .eq("fan_id", fanId);
+
+        return unionConsumeDao.selectCount(entityWrapper);
+    }
+
+    @Override
+    public Integer countValidPayByFanIdAndStatus(Integer fanId, Integer status) throws Exception {
+        if (fanId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("fan_id", fanId)
+                .eq("pay_status", status);
 
         return unionConsumeDao.selectCount(entityWrapper);
     }

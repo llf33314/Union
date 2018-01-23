@@ -523,7 +523,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
             // socket通知
             if (StringUtil.isNotEmpty(socketKey)) {
-                socketService.socketPaySendMessage(socketKey, isSuccess, null);
+                socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
             }
             result.put("code", 0);
             result.put("msg", "成功");

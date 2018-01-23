@@ -75,8 +75,10 @@ export default {
       codeSrc: '',
       socket: '',
       socketKey: '',
+      orderNo: '',
       socketFlag: {
         socketKey: '',
+        orderNo: '',
         status: ''
       }
     };
@@ -111,7 +113,7 @@ export default {
         }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+        this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
       });
   },
   watch: {
@@ -133,9 +135,11 @@ export default {
             if (res.data.data) {
               this.codeSrc = res.data.data.payUrl;
               this.socketKey = res.data.data.socketKey;
+              this.orderNo = res.data.data.orderNo;
             } else {
               this.codeSrc = '';
               this.socketKey = '';
+              this.orderNo = '';
             }
           })
           .then(res => {
@@ -145,44 +149,54 @@ export default {
             var _this = this;
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
-              this.socket = io.connect(socketUrl);
-            }
-            var socketKey = this.socketKey;
-            this.socket.on('connect', function() {
-              let jsonObject = { userId: socketKey, message: '0' };
-              _this.socket.emit('auth', jsonObject);
-            });
-            //重连机制
-            let socketindex = 0;
-            this.socket.on('reconnecting', function() {
-              socketindex += 1;
-              if (socketindex > 4) {
-                _this.socket.destroy(); //不在链接
-              }
-            });
-            this.socket.on('chatevent', function(data) {
-              let msg = eval('(' + data.message + ')');
-              console.log(msg, 'noRegister');
-              // 避免 socket 重复调用
-              if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
-                if (_this.socketKey == msg.socketKey) {
-                  if (msg.status == '1') {
-                    _this.visible1 = false;
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
-                    _this.socketFlag.socketKey = msg.socketKey;
-                    _this.socketFlag.status = msg.status;
-                    setTimeout(() => {
-                      _this.$router.push({ path: '/my-union/create-step' });
-                    }, 0);
-                  } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 3000 });
+              this.socket = io.connect(socketUrl, { reconnect: true });
+              var socketKey = this.socketKey;
+              this.socket.on('connect', function() {
+                let jsonObject = { userId: socketKey, message: '0' };
+                _this.socket.emit('auth', jsonObject);
+              });
+              //重连机制
+              let socketindex = 0;
+              this.socket.on('reconnecting', function() {
+                socketindex += 1;
+                if (socketindex > 4) {
+                  _this.socket.destroy(); //不在链接
+                }
+              });
+              this.socket.on('reconnect', function(data) {
+                socketindex--;
+              });
+              this.socket.on('chatevent', function(data) {
+                let msg = eval('(' + data.message + ')');
+                console.log(msg, 'noRegister');
+                // 避免 socket 重复调用
+                if (
+                  !(
+                    _this.socketFlag.socketKey == msg.socketKey &&
+                    _this.socketFlag.status == msg.status &&
+                    _this.socketFlag.orderNo == msg.orderNo
+                  )
+                ) {
+                  if (_this.socketKey == msg.socketKey && _this.orderNo == msg.orderNo) {
+                    if (msg.status == '1') {
+                      _this.visible1 = false;
+                      _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
+                      _this.socketFlag.socketKey = msg.socketKey;
+                      _this.socketFlag.status = msg.status;
+                      _this.socketFlag.orderNo = msg.orderNo;
+                      setTimeout(() => {
+                        _this.$router.push({ path: '/my-union/create-step' });
+                      }, 0);
+                    } else if (msg.status == '0') {
+                      _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 3000 });
+                    }
                   }
                 }
-              }
-            });
+              });
+            }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
           });
       } else {
         this.$message({ showClose: true, message: '请选择版本', type: 'error', duration: 3000 });

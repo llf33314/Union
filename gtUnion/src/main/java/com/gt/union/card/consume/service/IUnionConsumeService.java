@@ -153,6 +153,16 @@ public interface IUnionConsumeService {
      */
     Integer countValidPayByFanId(Integer fanId) throws Exception;
 
+    /**
+     * 根据联盟卡粉丝id计算消费记录数
+     *
+     * @param fanId 联盟卡粉丝id
+     * @param status 支付状态
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countValidPayByFanIdAndStatus(Integer fanId, Integer status) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**
@@ -386,6 +396,5 @@ public interface IUnionConsumeService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionConsume> updateUnionConsumeList) throws Exception;
-
 
 }

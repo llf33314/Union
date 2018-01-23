@@ -142,7 +142,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 0 });
         });
     },
     // 带条件查询
@@ -178,7 +178,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 不通过
@@ -200,7 +200,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     }
   }

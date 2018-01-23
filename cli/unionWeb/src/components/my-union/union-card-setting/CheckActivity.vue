@@ -104,7 +104,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     handleSelectionChange(val) {
@@ -135,7 +135,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 确认不通过
@@ -161,7 +161,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 关闭弹窗清空数据

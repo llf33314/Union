@@ -94,34 +94,37 @@ export default {
                 var _this = this;
                 var socketUrl = this.$store.state.socketUrl;
                 if (!this.socket) {
-                  this.socket = io.connect(socketUrl);
+                  this.socket = io.connect(socketUrl, { reconnect: true });
+                  var socketKey = this.socketKey;
+                  this.socket.on('connect', function() {
+                    let jsonObject = { userId: socketKey, message: '0' };
+                    _this.socket.emit('auth', jsonObject);
+                  });
+                  //重连机制
+                  let socketindex = 0;
+                  this.socket.on('reconnecting', function() {
+                    socketindex += 1;
+                    if (socketindex > 4) {
+                      _this.socket.destroy(); //不在链接
+                    }
+                  });
+                  this.socket.on('reconnect', function(data) {
+                    socketindex--;
+                  });
+                  this.socket.on('chatevent', function(data) {
+                    let msg = eval('(' + data.message + ')');
+                    console.log(msg, 'wx');
+                    _this.wxData = msg;
+                  });
                 }
-                var socketKey = this.socketKey;
-                this.socket.on('connect', function() {
-                  let jsonObject = { userId: socketKey, message: '0' };
-                  _this.socket.emit('auth', jsonObject);
-                });
-                //重连机制
-                let socketindex = 0;
-                this.socket.on('reconnecting', function() {
-                  socketindex += 1;
-                  if (socketindex > 4) {
-                    _this.socket.destroy(); //不在链接
-                  }
-                });
-                this.socket.on('chatevent', function(data) {
-                  let msg = eval('(' + data.message + ')');
-                  console.log(msg, 'wx');
-                  _this.wxData = msg;
-                });
               })
               .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+                this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
               });
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 下载二维码
@@ -145,8 +148,8 @@ export default {
   height: 610px;
   overflow: auto;
   width: 35%;
-  max-width:420px ;
-  min-width:315px ;
+  max-width: 420px;
+  min-width: 315px;
   > p {
     background: #eef1f6;
     padding: 15px 30px;
@@ -172,8 +175,8 @@ export default {
   border: 1px solid #ddd;
   overflow: auto;
   width: 35%;
-  max-width:420px ;
-  min-width:315px ;
+  max-width: 420px;
+  min-width: 315px;
   > p {
     background: #eef1f6;
     padding: 15px 30px;

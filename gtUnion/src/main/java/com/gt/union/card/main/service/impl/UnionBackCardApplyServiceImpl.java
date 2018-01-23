@@ -2,6 +2,7 @@ package com.gt.union.card.main.service.impl;
 
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
+import com.gt.union.api.client.socket.constant.SocketKeyConstant;
 import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.PropertiesUtil;
@@ -24,7 +25,7 @@ public class UnionBackCardApplyServiceImpl implements IUnionCardApplyService{
 	@Override
 	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, Integer unionId, List<Integer> activityIdList) {
 		UnionPayVO result = new UnionPayVO();
-		String socketKey = PropertiesUtil.getSocketKey() + orderNo;
+		String socketKey = PropertiesUtil.getSocketKey() + SocketKeyConstant.APPLY_CARD + busId;
 		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=" + socketKey;
 
 		PayParam payParam = new PayParam();
@@ -38,6 +39,7 @@ public class UnionBackCardApplyServiceImpl implements IUnionCardApplyService{
 		payParam.setPayDuoFen(true);
 		String payUrl = wxPayService.qrCodePay(payParam);
 
+		result.setOrderNo(orderNo);
 		result.setPayUrl(payUrl);
 		result.setSocketKey(socketKey);
 		return result;
