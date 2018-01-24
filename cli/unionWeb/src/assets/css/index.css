@@ -1421,7 +1421,7 @@ hr {
 }
 #Business .CommissionDetail .el-dialog--small .el-dialog__body .middle .totalAll span {
   float: right;
-  margin-right: 115px;
+  margin-right: 119px;
   font-weight: bold;
 }
 #Business .CommissionDetail .el-dialog--small .el-dialog__body .middle .el-button {
@@ -2032,5 +2032,11 @@ hr {
   }
   #front #Verification .section_ .el-table .el-table__body {
     width: 232px !important;
+  }
+  #sellCard #ActivityCardSellDivide .contentList > p {
+    font-size: 13px;
+  }
+  #sellCard #ActivityCardSellDivide .contentList .el-button--small {
+    padding: 6px 4px!important;
   }
 }
