@@ -14,10 +14,7 @@
         <el-tab-pane label="佣金结算" name="third">
           <commission></commission>
         </el-tab-pane>
-        <el-tab-pane label="数据统计图" name="fourth">
-          <datachart></datachart>
-        </el-tab-pane>
-        <el-tab-pane label="商机佣金比例设置" name="fifth">
+        <el-tab-pane label="商机佣金比例设置" name="fourth">
           <percent></percent>
         </el-tab-pane>
       </el-tabs>
@@ -29,16 +26,13 @@
 import MyBusiness from './MyBusiness';
 import Recommend from '@/components/business/recommend/Recommend';
 import Commission from '@/components/business/commission/Commission';
-import Datachart from './Datachart';
 import Percent from './Percent';
-import $http from '@/utils/http.js';
 export default {
   name: 'business',
   components: {
     MyBusiness,
     Recommend,
     Commission,
-    Datachart,
     Percent
   },
   data() {
