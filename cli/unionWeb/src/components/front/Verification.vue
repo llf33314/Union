@@ -109,31 +109,26 @@
             <el-form-item label="联盟卡号：">
               <span> {{ form.fan.number }} </span>
             </el-form-item>
-            <el-form-item label="联盟积分：">
-              <span> {{ form.integral }} </span>
-            </el-form-item>
             <el-form-item label="消费金额：">
               <span> ￥
                 <span class="color_">{{ price | formatPrice }} </span>
               </span>
             </el-form-item>
-            <el-form-item label="联盟价格：">
+            <el-form-item label="联盟卡折后价格：">
               <span> ￥
                 <span class="color_">{{ price * (form.currentMember.discount || 1) | formatPrice }}</span>
               </span>
             </el-form-item>
-            <el-form-item label="联盟积分折扣：" v-if="isIntegral && form.currentMember.integralExchangeRatio && form.integral > 0">
+            <el-form-item label="联盟积分：" v-if="isIntegral && form.currentMember.integralExchangeRatio && form.integral > 0">
+              <span> 共{{ form.integral }}积分，最多可抵扣{{ form.currentMember.integralExchangeRatio * 100 }}% </span>
               <el-switch v-model="isIntegral_" on-text="" off-text="">
               </el-switch>
-              <span>积分抵扣率：{{ form.currentMember.integralExchangeRatio * 100 }}%</span>
             </el-form-item>
-            <el-form-item label="消耗联盟积分：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
-              <span> {{ deductionIntegral | formatPrice }} </span>
-            </el-form-item>
-            <el-form-item label="抵扣金额：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
+            <el-form-item label="积分抵扣" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
               <span> ￥
                 <span class="color_">{{ deductionPrice | formatPrice }} </span>
               </span>
+              <span> （消耗{{ deductionIntegral | formatPrice }}积分） </span>
             </el-form-item>
             <el-form-item label="实收金额：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
               <span> ￥
@@ -232,7 +227,7 @@ export default {
       shopId: '',
       price: '',
       isIntegral: '', // 数据传输
-      isIntegral_: '', // 控制显示
+      isIntegral_: false, // 控制显示
       deductionPrice: '', // 抵扣金额
       deductionIntegral: '', // 抵扣积分
       tableData: [],
@@ -295,9 +290,9 @@ export default {
       this.isIntegral_ ? (temData = 1) : (temData = 0);
       this.deductionPrice =
         this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
-      this.deductionIntegral = this.deductionPrice * this.form.exchangeIntegral;
+      this.deductionIntegral = parseInt(this.deductionPrice * this.form.exchangeIntegral);
       if (this.deductionIntegral > this.form.integral) {
-        this.deductionIntegral = this.form.integral;
+        this.deductionIntegral = parseInt(this.form.integral);
         this.deductionPrice = this.deductionIntegral / this.form.exchangeIntegral;
       }
       if (this.deductionPrice > this.price * this.form.currentMember.discount) {
@@ -335,9 +330,6 @@ export default {
                 this.unionId = this.form.unionList[0].id;
               }
               this.isIntegral = this.form.currentUnion.isIntegral;
-              this.isIntegral && this.form.currentMember.integralExchangeRatio && this.form.integral > 0
-                ? (this.isIntegral_ = true)
-                : (this.isIntegral_ = false);
             } else {
               this.visible1 = true;
               this.visible2 = false;
@@ -375,9 +367,7 @@ export default {
       this.price = '';
       this.isProjectAvailable_ = false;
       this.isIntegral = '';
-      this.isIntegral && this.form.currentMember.integralExchangeRatio && this.form.integral > 0
-        ? (this.isIntegral_ = true)
-        : (this.isIntegral_ = false);
+
       if (this.unionId) {
         $http
           .get(`/unionCardFan/search?numberOrPhone=${this.input}&unionId=${this.unionId}`)
@@ -391,9 +381,7 @@ export default {
               this.form.integral = res.data.data.integral;
               this.form.isProjectAvailable = res.data.data.isProjectAvailable;
               this.isIntegral = this.form.currentUnion.isIntegral;
-              this.isIntegral && this.form.currentMember.integralExchangeRatio && this.form.integral > 0
-                ? (this.isIntegral_ = true)
-                : (this.isIntegral_ = false);
+
               this.isProjectAvailable_ = false;
             }
           })
@@ -511,9 +499,9 @@ export default {
         this.isIntegral_ ? (temData = 1) : (temData = 0);
         this.deductionPrice =
           this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
-        this.deductionIntegral = this.deductionPrice * this.form.exchangeIntegral;
+        this.deductionIntegral = parseInt(this.deductionPrice * this.form.exchangeIntegral);
         if (this.deductionIntegral > this.form.integral) {
-          this.deductionIntegral = this.form.integral;
+          this.deductionIntegral = parseInt(this.form.integral);
           this.deductionPrice = this.deductionIntegral / this.form.exchangeIntegral;
         }
         if (this.deductionPrice > this.price * this.form.currentMember.discount) {
@@ -674,6 +662,7 @@ export default {
       }, 0);
     },
     resetData1() {
+      this.isIntegral_ = false;
       this.price2 = '';
     },
     // 返回
@@ -691,7 +680,7 @@ export default {
       this.unionId = '';
       this.isProjectAvailable_ = false;
       this.price = '';
-      this.isIntegral_ = '';
+      this.isIntegral_ = false;
       this.price2 = '';
     }
   }
