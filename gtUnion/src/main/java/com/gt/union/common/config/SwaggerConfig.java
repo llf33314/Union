@@ -153,4 +153,19 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build();
     }
+
+    @Bean
+    public Docket userGroupConfig() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("user")
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Restful文档接口服务平台-联盟商家信息")
+                        .description("基于Swagger2实现")
+                        .version("3.1.1")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.user"))
+                .paths(PathSelectors.any())
+                .build();
+    }
 }
