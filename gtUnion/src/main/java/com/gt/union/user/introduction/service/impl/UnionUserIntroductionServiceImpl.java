@@ -2,8 +2,11 @@ package com.gt.union.user.introduction.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.StringUtil;
+import com.gt.union.user.introduction.constant.UserIntroductionConstant;
 import com.gt.union.user.introduction.dao.IUnionUserIntroductionDao;
 import com.gt.union.user.introduction.entity.UnionUserIntroduction;
 import com.gt.union.user.introduction.service.IUnionUserIntroductionService;
@@ -63,6 +66,11 @@ public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionS
 			unionUserIntroductionDao.updateBatchById(delList);
 		}
 		for(UnionUserIntroduction introduction : introductionList){
+			if(introduction.getType() == UserIntroductionConstant.INTRODUCTION_TEXT_TYPE){
+				if (StringUtil.getStringLength(introduction.getContent()) > 300) {
+					throw new BusinessException("商家简介文字描述不可大于300字");
+				}
+			}
 			introduction.setId(null);
 			introduction.setBusId(busId);
 			introduction.setCreateTime(new Date());
