@@ -46,4 +46,14 @@ public interface CardConstant {
      * 支付类型：支付宝
      */
     int PAY_TYPE_ALIPAY = 2;
+
+    /**
+     * 统计类型：按天统计
+     */
+    int STATISTICS_TYPE_DAY = 1;
+
+    /**
+     * 统计类型：按月统计
+     */
+    int STATISTICS_TYPE_MONTH = 2;
 }

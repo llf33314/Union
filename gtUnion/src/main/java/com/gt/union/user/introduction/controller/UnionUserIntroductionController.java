@@ -51,8 +51,9 @@ public class UnionUserIntroductionController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
+    //-------------------------------------------------- post ----------------------------------------------------------
 	@ApiOperation(value = "商家简介信息-保存", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String updateUnionMainVOById(
 			HttpServletRequest request,
 			@ApiParam(value = "表单信息", name = "unionUserIntroductionVO", required = true)
@@ -65,6 +66,5 @@ public class UnionUserIntroductionController {
 		unionUserIntroductionService.saveOrUpdate(busId, unionUserIntroductionVO);
 		return GtJsonResult.instanceSuccessMsg().toString();
 	}
-    //-------------------------------------------------- post ----------------------------------------------------------
 
 }

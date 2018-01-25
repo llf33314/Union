@@ -23,5 +23,9 @@ public class UnionUserIntroductionCacheUtil {
         return result;
     }
 
+    public static String getBusIdKey(Integer busId) {
+        return "unionUserIntroduction:busId:" + busId;
+    }
+
 
 }
