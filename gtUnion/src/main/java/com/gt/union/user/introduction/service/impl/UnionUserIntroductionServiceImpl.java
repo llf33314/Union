@@ -1,15 +1,18 @@
 package com.gt.union.user.introduction.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.user.introduction.constant.UserIntroductionConstant;
 import com.gt.union.user.introduction.dao.IUnionUserIntroductionDao;
 import com.gt.union.user.introduction.entity.UnionUserIntroduction;
 import com.gt.union.user.introduction.service.IUnionUserIntroductionService;
+import com.gt.union.user.introduction.util.UnionUserIntroductionCacheUtil;
 import com.gt.union.user.introduction.vo.UnionUserIntroductionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,20 +30,33 @@ import java.util.List;
  */
 @Service
 public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionService {
+
     @Autowired
     private IUnionUserIntroductionDao unionUserIntroductionDao;
 
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
 
 	@Override
 	public List<UnionUserIntroduction> listValidByBusId(Integer busId) throws Exception{
 		if(busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		List<UnionUserIntroduction> result = null;
+		String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
+		String data = redisCacheUtil.get(key);
+		if(StringUtil.isNotEmpty(data)){
+			result = JSONArray.parseArray(data, UnionUserIntroduction.class);
+		}
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("bus_id", busId)
 				.eq("del_status", CommonConstant.DEL_STATUS_NO)
 				.orderBy("id", true);
-		return unionUserIntroductionDao.selectList(wrapper);
+		result = unionUserIntroductionDao.selectList(wrapper);
+		if(ListUtil.isNotEmpty(result)){
+			redisCacheUtil.set(key, result);
+		}
+		return result;
 	}
 
 	@Override
@@ -54,6 +70,7 @@ public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionS
 			throw new ParamException("请填写商家简介信息");
 		}
 		List<UnionUserIntroduction> list = listValidByBusId(busId);
+		String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
 		if(ListUtil.isNotEmpty(list)){
 			//编辑 删除以前的
 			List<UnionUserIntroduction> delList = new ArrayList<UnionUserIntroduction>();
@@ -64,6 +81,7 @@ public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionS
 				delList.add(userIntroduction);
 			}
 			unionUserIntroductionDao.updateBatchById(delList);
+			redisCacheUtil.remove(key);
 		}
 		for(UnionUserIntroduction introduction : introductionList){
 			if(introduction.getType() == UserIntroductionConstant.INTRODUCTION_TEXT_TYPE){
@@ -78,6 +96,9 @@ public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionS
 			introduction.setDelStatus(CommonConstant.DEL_STATUS_NO);
 		}
 		unionUserIntroductionDao.insertBatch(introductionList);
+		if(ListUtil.isNotEmpty(introductionList)){
+			redisCacheUtil.set(key, introductionList);
+		}
 	}
 
 }
