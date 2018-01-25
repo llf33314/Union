@@ -2,7 +2,6 @@ package com.gt.union.opportunity.main.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.sms.constant.SmsConstant;
@@ -21,7 +20,6 @@ import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
-import com.gt.union.opportunity.main.vo.OpportunityStatisticsDay;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
 import com.gt.union.union.main.entity.UnionMain;
@@ -32,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,115 +92,117 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     }
 
     @Override
-    public OpportunityStatisticsVO getOpportunityStatisticsVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
-        if (busId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // 获取我的盟员信息
-        List<UnionMember> memberList = unionMemberService.listByBusIdAndUnionId(busId, unionId);
-        if (ListUtil.isEmpty(memberList)) {
-            throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
-        }
-        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
-        // 获取已接受的我推荐的商机，区分是否已支付
-        OpportunityStatisticsVO result = new OpportunityStatisticsVO();
-        List<UnionOpportunity> incomeOpportunityList = listValidByUnionIdAndFromMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
-        List<UnionOpportunity> paidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_YES);
-        BigDecimal paidIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(paidIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : paidIncomeOpportunityList) {
-                paidIncome = BigDecimalUtil.add(paidIncome, opportunity.getBrokerageMoney());
-            }
-        }
-        result.setPaidIncome(BigDecimalUtil.toDouble(paidIncome));
+    public OpportunityStatisticsVO getOpportunityStatisticsVOByBusId(Integer busId) throws Exception {
+//        if (busId == null || unionId == null) {
+//            throw new ParamException(CommonConstant.PARAM_ERROR);
+//        }
+//        // 获取我的盟员信息
+//        List<UnionMember> memberList = unionMemberService.listByBusIdAndUnionId(busId, unionId);
+//        if (ListUtil.isEmpty(memberList)) {
+//            throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
+//        }
+//        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+//        // 获取已接受的我推荐的商机，区分是否已支付
+//        OpportunityStatisticsVO result = new OpportunityStatisticsVO();
+//        List<UnionOpportunity> incomeOpportunityList = listValidByUnionIdAndFromMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+//        List<UnionOpportunity> paidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_YES);
+//        BigDecimal paidIncome = BigDecimal.ZERO;
+//        if (ListUtil.isNotEmpty(paidIncomeOpportunityList)) {
+//            for (UnionOpportunity opportunity : paidIncomeOpportunityList) {
+//                paidIncome = BigDecimalUtil.add(paidIncome, opportunity.getBrokerageMoney());
+//            }
+//        }
+//        result.setPaidIncome(BigDecimalUtil.toDouble(paidIncome));
+//
+//        List<UnionOpportunity> unPaidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_NO);
+//        BigDecimal unPaidIncome = BigDecimal.ZERO;
+//        if (ListUtil.isNotEmpty(unPaidIncomeOpportunityList)) {
+//            for (UnionOpportunity opportunity : unPaidIncomeOpportunityList) {
+//                unPaidIncome = BigDecimalUtil.add(unPaidIncome, opportunity.getBrokerageMoney());
+//            }
+//        }
+//        result.setUnPaidIncome(BigDecimalUtil.toDouble(unPaidIncome));
+//
+//        BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
+//        result.setIncomeSum(BigDecimalUtil.toDouble(incomeSum));
+//        // 获取已接受的推荐给我的商机，区分是否已支付
+//        List<UnionOpportunity> expenseOpportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+//        List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
+//        BigDecimal paidExpense = BigDecimal.ZERO;
+//        if (ListUtil.isNotEmpty(paidExpenseOpportunityList)) {
+//            for (UnionOpportunity opportunity : paidExpenseOpportunityList) {
+//                paidExpense = BigDecimalUtil.add(paidExpense, opportunity.getBrokerageMoney());
+//            }
+//        }
+//        result.setPaidExpense(BigDecimalUtil.toDouble(paidExpense));
+//
+//        List<UnionOpportunity> unPaidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_NO);
+//        BigDecimal unPaidExpense = BigDecimal.ZERO;
+//        if (ListUtil.isNotEmpty(unPaidExpenseOpportunityList)) {
+//            for (UnionOpportunity opportunity : unPaidExpenseOpportunityList) {
+//                unPaidExpense = BigDecimalUtil.add(unPaidExpense, opportunity.getBrokerageMoney());
+//            }
+//        }
+//        result.setUnPaidExpense(BigDecimalUtil.toDouble(unPaidExpense));
+//
+//        BigDecimal expenseSum = BigDecimalUtil.add(paidExpense, unPaidExpense);
+//        result.setExpenseSum(BigDecimalUtil.toDouble(expenseSum));
+//        // 获取一周内商机收支信息
+//        Date indexDay = DateUtil.getMondayInWeek();
+//        String strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
+//        for (int i = 0; i < 7; i++) {
+//            OpportunityStatisticsDay dayStatistic = new OpportunityStatisticsDay();
+//            String strDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
+//            Date beginDate = DateUtil.parseDate(strIndexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
+//            Date endDate = DateUtil.parseDate(strIndexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
+//            List<UnionOpportunity> dayIncomeOpportunityList = filterBetweenTime(paidIncomeOpportunityList, beginDate, endDate);
+//            BigDecimal dayIncome = BigDecimal.ZERO;
+//            if (ListUtil.isNotEmpty(dayIncomeOpportunityList)) {
+//                for (UnionOpportunity opportunity : dayIncomeOpportunityList) {
+//                    dayIncome = BigDecimalUtil.add(dayIncome, opportunity.getBrokerageMoney());
+//                }
+//            }
+//            dayStatistic.setPaidIncome(BigDecimalUtil.toDouble(dayIncome));
+//            List<UnionOpportunity> dayExpenseOpportunityList = filterBetweenTime(paidExpenseOpportunityList, beginDate, endDate);
+//            BigDecimal dayExpense = BigDecimal.ZERO;
+//            if (ListUtil.isNotEmpty(dayExpenseOpportunityList)) {
+//                for (UnionOpportunity opportunity : dayExpenseOpportunityList) {
+//                    dayExpense = BigDecimalUtil.add(dayExpense, opportunity.getBrokerageMoney());
+//                }
+//            }
+//            dayStatistic.setPaidExpense(BigDecimalUtil.toDouble(dayExpense));
+//            switch (i) {
+//                case 0:
+//                    result.setMonday(dayStatistic);
+//                    break;
+//                case 1:
+//                    result.setTuesday(dayStatistic);
+//                    break;
+//                case 2:
+//                    result.setWednesday(dayStatistic);
+//                    break;
+//                case 3:
+//                    result.setThursday(dayStatistic);
+//                    break;
+//                case 4:
+//                    result.setFriday(dayStatistic);
+//                    break;
+//                case 5:
+//                    result.setSaturday(dayStatistic);
+//                    break;
+//                case 6:
+//                    result.setSunday(dayStatistic);
+//                    break;
+//                default:
+//                    break;
+//            }
+//            indexDay = DateUtil.addDays(indexDay, 1);
+//            strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
+//        }
 
-        List<UnionOpportunity> unPaidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_NO);
-        BigDecimal unPaidIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(unPaidIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : unPaidIncomeOpportunityList) {
-                unPaidIncome = BigDecimalUtil.add(unPaidIncome, opportunity.getBrokerageMoney());
-            }
-        }
-        result.setUnPaidIncome(BigDecimalUtil.toDouble(unPaidIncome));
-
-        BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
-        result.setIncomeSum(BigDecimalUtil.toDouble(incomeSum));
-        // 获取已接受的推荐给我的商机，区分是否已支付
-        List<UnionOpportunity> expenseOpportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
-        List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
-        BigDecimal paidExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(paidExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : paidExpenseOpportunityList) {
-                paidExpense = BigDecimalUtil.add(paidExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        result.setPaidExpense(BigDecimalUtil.toDouble(paidExpense));
-
-        List<UnionOpportunity> unPaidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_NO);
-        BigDecimal unPaidExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(unPaidExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : unPaidExpenseOpportunityList) {
-                unPaidExpense = BigDecimalUtil.add(unPaidExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        result.setUnPaidExpense(BigDecimalUtil.toDouble(unPaidExpense));
-
-        BigDecimal expenseSum = BigDecimalUtil.add(paidExpense, unPaidExpense);
-        result.setExpenseSum(BigDecimalUtil.toDouble(expenseSum));
-        // 获取一周内商机收支信息
-        Date indexDay = DateUtil.getMondayInWeek();
-        String strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-        for (int i = 0; i < 7; i++) {
-            OpportunityStatisticsDay dayStatistic = new OpportunityStatisticsDay();
-            String strDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-            Date beginDate = DateUtil.parseDate(strIndexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
-            Date endDate = DateUtil.parseDate(strIndexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
-            List<UnionOpportunity> dayIncomeOpportunityList = filterBetweenTime(paidIncomeOpportunityList, beginDate, endDate);
-            BigDecimal dayIncome = BigDecimal.ZERO;
-            if (ListUtil.isNotEmpty(dayIncomeOpportunityList)) {
-                for (UnionOpportunity opportunity : dayIncomeOpportunityList) {
-                    dayIncome = BigDecimalUtil.add(dayIncome, opportunity.getBrokerageMoney());
-                }
-            }
-            dayStatistic.setPaidIncome(BigDecimalUtil.toDouble(dayIncome));
-            List<UnionOpportunity> dayExpenseOpportunityList = filterBetweenTime(paidExpenseOpportunityList, beginDate, endDate);
-            BigDecimal dayExpense = BigDecimal.ZERO;
-            if (ListUtil.isNotEmpty(dayExpenseOpportunityList)) {
-                for (UnionOpportunity opportunity : dayExpenseOpportunityList) {
-                    dayExpense = BigDecimalUtil.add(dayExpense, opportunity.getBrokerageMoney());
-                }
-            }
-            dayStatistic.setPaidExpense(BigDecimalUtil.toDouble(dayExpense));
-            switch (i) {
-                case 0:
-                    result.setMonday(dayStatistic);
-                    break;
-                case 1:
-                    result.setTuesday(dayStatistic);
-                    break;
-                case 2:
-                    result.setWednesday(dayStatistic);
-                    break;
-                case 3:
-                    result.setThursday(dayStatistic);
-                    break;
-                case 4:
-                    result.setFriday(dayStatistic);
-                    break;
-                case 5:
-                    result.setSaturday(dayStatistic);
-                    break;
-                case 6:
-                    result.setSunday(dayStatistic);
-                    break;
-                default:
-                    break;
-            }
-            indexDay = DateUtil.addDays(indexDay, 1);
-            strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-        }
-
-        return result;
+//        return result;
+        // TODO
+        return null;
     }
 
     //********************************************* Base On Business - list ********************************************

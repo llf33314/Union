@@ -2,12 +2,10 @@ package com.gt.union.api.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.sms.constant.SmsConstant;
-import com.gt.union.api.client.sms.impl.SmsServiceImpl;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.service.IUnionCardService;
@@ -16,11 +14,8 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
-import com.gt.union.union.member.entity.UnionMember;
-import com.gt.union.union.member.service.IUnionMemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author hongjiye
@@ -95,10 +89,11 @@ public class SmsApiController {
 			}
 			try{
 				UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
-				CardApplyVO vo = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fan.getId(), null);
-				if(vo == null){
-					return GtJsonResult.instanceErrorMsg("您已办理联盟卡");
-				}
+				// TODO
+//				CardApplyVO vo = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fan.getId(), null);
+//				if(vo == null){
+//					return GtJsonResult.instanceErrorMsg("您已办理联盟卡");
+//				}
 			}catch (Exception e){
 				logger.error("办理联盟卡发送短信校验是否办卡校验出错", e);
 			}

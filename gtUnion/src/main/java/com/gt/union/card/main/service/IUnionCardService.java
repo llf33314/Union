@@ -3,9 +3,7 @@ package com.gt.union.card.main.service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.main.entity.UnionCard;
-import com.gt.union.card.main.entity.UnionCardFan;
-import com.gt.union.card.main.vo.CardApplyVO;
-import com.gt.union.card.main.vo.CardPhoneVO;
+import com.gt.union.card.main.vo.*;
 import com.gt.union.union.main.vo.UnionPayVO;
 
 import java.util.List;
@@ -20,15 +18,13 @@ public interface IUnionCardService {
     //********************************************* Base On Business - get *********************************************
 
     /**
-     * 前台-办理联盟卡-查询联盟和联盟卡
+     * 前台-办理联盟卡-联盟卡列表
      *
-     * @param busId      商家id
-     * @param fanId      粉丝id
-     * @param optUnionId 联盟id
+     * @param busId 商家id
      * @return CardApplyVO
      * @throws Exception 统一处理异常
      */
-    CardApplyVO getCardApplyVOByBusIdAndFanId(Integer busId, Integer fanId, Integer optUnionId) throws Exception;
+    CardApplyVO getCardApplyVOByBusId(Integer busId) throws Exception;
 
     /**
      * 获取未删除的未过期的联盟卡信息
@@ -52,17 +48,18 @@ public interface IUnionCardService {
      */
     UnionCard getValidUnexpiredByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
 
+    //********************************************* Base On Business - list ********************************************
+
     /**
      * 获取活动卡信息
-     * @param unionId      联盟id
-     * @param fanId        粉丝id
-     * @param activityId    活动id
+     *
+     * @param unionId    联盟id
+     * @param fanId      粉丝id
+     * @param activityId 活动id
      * @return UnionCard
      * @throws Exception 统一处理异常
      */
-    List<UnionCard> listValidByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId)  throws Exception;
-
-    //********************************************* Base On Business - list ********************************************
+    List<UnionCard> listValidByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
 
     /**
      * 获取未删除的未过期的联盟卡列表信息
@@ -95,20 +92,36 @@ public interface IUnionCardService {
      */
     List<UnionCard> listValidUnexpiredByFanIdAndType(Integer fanId, Integer type) throws Exception;
 
+    /**
+     * 财务-数据统计-联盟折扣卡领卡统计
+     *
+     * @param busId 商家id
+     * @return DiscountCardStatisticsVO
+     * @throws Exception 统一处理异常
+     */
+    List<DiscountCardStatisticsVO> listDiscountCardStatisticsVOByBusId(Integer busId) throws Exception;
+
+    /**
+     * 财务-数据统计-联盟活动卡发售统计
+     *
+     * @param busId 商家id
+     * @return ActivityCardStatisticsVO
+     * @throws Exception 统一处理异常
+     */
+    List<ActivityCardStatisticsVO> listActivityCardStatisticsVOByBusId(Integer busId) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
 
     /**
      * 前台-办理联盟卡-确定
      *
      * @param busId                 商家id
-     * @param unionId               联盟id
-     * @param fanId                 粉丝id
-     * @param activityIdList        活动id列表
+     * @param applyPostVO           办理联盟卡对象
      * @param unionCardApplyService 支付回调策略接口
      * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception;
+    UnionPayVO saveApplyByBusId(Integer busId, CardPhoneResponseVO applyPostVO, IUnionCardApplyService unionCardApplyService) throws Exception;
 
     /**
      * 前台-办理联盟卡-校验手机验证码
@@ -117,7 +130,7 @@ public interface IUnionCardService {
      * @return UnionCardFan
      * @throws Exception 统一处理异常
      */
-    UnionCardFan checkCardPhoneVO(CardPhoneVO vo) throws Exception;
+    CardPhoneResponseVO checkCardPhoneVO(CardPhoneVO vo) throws Exception;
 
     //********************************************* Base On Business - remove ******************************************
 

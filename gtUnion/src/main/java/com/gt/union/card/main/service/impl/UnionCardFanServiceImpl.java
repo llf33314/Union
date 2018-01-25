@@ -86,21 +86,22 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         List<UnionCard> cardList = unionCardService.listValidUnexpiredByUnionIdAndFanId(unionId, fanId);
         List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_DISCOUNT);
         CardFanDetailVO result = new CardFanDetailVO();
-        if (ListUtil.isNotEmpty(discountCardList)) {
-            UnionCard discountCard = discountCardList.get(0);
-            result.setDiscountCard(discountCard);
-            UnionMember discountCardMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-            result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
-        }
-        // 获取有效的活动卡信息，并按时间倒序排序
-        List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_ACTIVITY);
-        Collections.sort(activityCardList, new Comparator<UnionCard>() {
-            @Override
-            public int compare(UnionCard o1, UnionCard o2) {
-                return o2.getCreateTime().compareTo(o1.getCreateTime());
-            }
-        });
-        result.setActivityCardList(activityCardList);
+        // TODO
+//        if (ListUtil.isNotEmpty(discountCardList)) {
+//            UnionCard discountCard = discountCardList.get(0);
+//            result.setDiscountCard(discountCard);
+//            UnionMember discountCardMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+//            result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
+//        }
+//        // 获取有效的活动卡信息，并按时间倒序排序
+//        List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_ACTIVITY);
+//        Collections.sort(activityCardList, new Comparator<UnionCard>() {
+//            @Override
+//            public int compare(UnionCard o1, UnionCard o2) {
+//                return o2.getCreateTime().compareTo(o1.getCreateTime());
+//            }
+//        });
+//        result.setActivityCardList(activityCardList);
 
         return result;
     }
@@ -160,6 +161,10 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         // 获取消费多少积分可以抵扣1元配置
         Double exchangeIntegral = dictService.getExchangeIntegral();
         result.setExchangeIntegral(exchangeIntegral);
+        
+        // 获取消费1元赠送多少积分
+        Double giveIntegral = dictService.getGiveIntegral();
+        result.setGiveIntegral(giveIntegral);
 
         return result;
     }

@@ -27,6 +27,9 @@ public class CardFanSearchVO {
     @ApiModelProperty(value = "消耗多少积分可抵扣1元")
     private Double exchangeIntegral;
 
+    @ApiModelProperty(value = "消费1元可赠送多少积分")
+    private Double giveIntegral;
+
     @ApiModelProperty(value = "可选联盟列表")
     private List<UnionMain> unionList;
 
@@ -61,6 +64,14 @@ public class CardFanSearchVO {
 
     public void setExchangeIntegral(Double exchangeIntegral) {
         this.exchangeIntegral = exchangeIntegral;
+    }
+
+    public Double getGiveIntegral() {
+        return giveIntegral;
+    }
+
+    public void setGiveIntegral(Double giveIntegral) {
+        this.giveIntegral = giveIntegral;
     }
 
     public List<UnionMain> getUnionList() {

@@ -10,7 +10,7 @@ import java.util.*;
  * @version 2017-11-22 17:45:00
  */
 public class MockUtil {
-    private static final int DEFAULT_LIST_SITE = 15;
+    private static final int DEFAULT_LIST_SITE = 3;
 
     private static final String BASIC_BYTE = "byte";
     private static final String BASIC_SHORT = "short";
