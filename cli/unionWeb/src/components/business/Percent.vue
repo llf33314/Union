@@ -115,7 +115,6 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
-            console.log(this.tableData);
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.ratioFromMe = v.ratioFromMe * 100 || 0;
