@@ -6,6 +6,7 @@ import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.vo.*;
 import com.gt.union.union.main.vo.UnionPayVO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,7 +52,30 @@ public interface IUnionCardService {
     //********************************************* Base On Business - list ********************************************
 
     /**
-     * 获取活动卡信息
+     * 获取未删除的联盟列表信息
+     *
+     * @param unionId      联盟id
+     * @param memberIdList 盟员id列表
+     * @param type         联盟卡类型
+     * @param geCreateTime 大于等于创建时间
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByUnionIdAndMemberIdListAndTypeAndGECreateTime(Integer unionId, List<Integer> memberIdList, Integer type, Date geCreateTime) throws Exception;
+
+    /**
+     * 获取未删除的联盟卡列表信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @param type    联盟卡类型
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
+
+    /**
+     * 获取未删除的活动卡列表信息
      *
      * @param unionId    联盟id
      * @param fanId      粉丝id
@@ -95,11 +119,14 @@ public interface IUnionCardService {
     /**
      * 财务-数据统计-联盟折扣卡领卡统计
      *
-     * @param busId 商家id
+     * @param busId          商家id
+     * @param statisticsType 统计类型:1按天统计;2按月统计
+     * @param beginTime      统计开始时间
+     * @param endTime        统计结束时间
      * @return DiscountCardStatisticsVO
      * @throws Exception 统一处理异常
      */
-    List<DiscountCardStatisticsVO> listDiscountCardStatisticsVOByBusId(Integer busId) throws Exception;
+    List<DiscountCardStatisticsVO> listDiscountCardStatisticsVOByBusId(Integer busId, Integer statisticsType, Date beginTime, Date endTime) throws Exception;
 
     /**
      * 财务-数据统计-联盟活动卡发售统计
@@ -149,6 +176,16 @@ public interface IUnionCardService {
     String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 统计未杉树的联盟卡数量
+     *
+     * @param unionId 联盟id
+     * @param type    联盟卡类型
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countValidByUnionIdAndType(Integer unionId, Integer type) throws Exception;
 
     /**
      * 统计未删除的活动卡数量
@@ -232,6 +269,17 @@ public interface IUnionCardService {
      * @throws Exception 统一处理异常
      */
     List<UnionCard> filterExpired(List<UnionCard> cardList) throws Exception;
+
+    /**
+     * 根据时间段进行过滤
+     *
+     * @param cardList     数据源
+     * @param optBeginTime 开始时间
+     * @param optEndTime   结束时间
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterBetweenTime(List<UnionCard> cardList, Date optBeginTime, Date optEndTime) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 

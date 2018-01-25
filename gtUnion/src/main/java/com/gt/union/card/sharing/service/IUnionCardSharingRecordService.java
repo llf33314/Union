@@ -51,6 +51,15 @@ public interface IUnionCardSharingRecordService {
 
     //********************************************* Base On Business - other *******************************************
 
+    /**
+     * 累计售卡佣金
+     *
+     * @param unionId 联盟id
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumValidByUnionId(Integer unionId) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**

@@ -20,6 +20,7 @@ import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
+import com.gt.union.opportunity.main.vo.OpportunityStatisticsDetail;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
 import com.gt.union.union.main.entity.UnionMain;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -93,116 +95,99 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
     @Override
     public OpportunityStatisticsVO getOpportunityStatisticsVOByBusId(Integer busId) throws Exception {
-//        if (busId == null || unionId == null) {
-//            throw new ParamException(CommonConstant.PARAM_ERROR);
-//        }
-//        // 获取我的盟员信息
-//        List<UnionMember> memberList = unionMemberService.listByBusIdAndUnionId(busId, unionId);
-//        if (ListUtil.isEmpty(memberList)) {
-//            throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
-//        }
-//        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
-//        // 获取已接受的我推荐的商机，区分是否已支付
-//        OpportunityStatisticsVO result = new OpportunityStatisticsVO();
-//        List<UnionOpportunity> incomeOpportunityList = listValidByUnionIdAndFromMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
-//        List<UnionOpportunity> paidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_YES);
-//        BigDecimal paidIncome = BigDecimal.ZERO;
-//        if (ListUtil.isNotEmpty(paidIncomeOpportunityList)) {
-//            for (UnionOpportunity opportunity : paidIncomeOpportunityList) {
-//                paidIncome = BigDecimalUtil.add(paidIncome, opportunity.getBrokerageMoney());
-//            }
-//        }
-//        result.setPaidIncome(BigDecimalUtil.toDouble(paidIncome));
-//
-//        List<UnionOpportunity> unPaidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_NO);
-//        BigDecimal unPaidIncome = BigDecimal.ZERO;
-//        if (ListUtil.isNotEmpty(unPaidIncomeOpportunityList)) {
-//            for (UnionOpportunity opportunity : unPaidIncomeOpportunityList) {
-//                unPaidIncome = BigDecimalUtil.add(unPaidIncome, opportunity.getBrokerageMoney());
-//            }
-//        }
-//        result.setUnPaidIncome(BigDecimalUtil.toDouble(unPaidIncome));
-//
-//        BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
-//        result.setIncomeSum(BigDecimalUtil.toDouble(incomeSum));
-//        // 获取已接受的推荐给我的商机，区分是否已支付
-//        List<UnionOpportunity> expenseOpportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
-//        List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
-//        BigDecimal paidExpense = BigDecimal.ZERO;
-//        if (ListUtil.isNotEmpty(paidExpenseOpportunityList)) {
-//            for (UnionOpportunity opportunity : paidExpenseOpportunityList) {
-//                paidExpense = BigDecimalUtil.add(paidExpense, opportunity.getBrokerageMoney());
-//            }
-//        }
-//        result.setPaidExpense(BigDecimalUtil.toDouble(paidExpense));
-//
-//        List<UnionOpportunity> unPaidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_NO);
-//        BigDecimal unPaidExpense = BigDecimal.ZERO;
-//        if (ListUtil.isNotEmpty(unPaidExpenseOpportunityList)) {
-//            for (UnionOpportunity opportunity : unPaidExpenseOpportunityList) {
-//                unPaidExpense = BigDecimalUtil.add(unPaidExpense, opportunity.getBrokerageMoney());
-//            }
-//        }
-//        result.setUnPaidExpense(BigDecimalUtil.toDouble(unPaidExpense));
-//
-//        BigDecimal expenseSum = BigDecimalUtil.add(paidExpense, unPaidExpense);
-//        result.setExpenseSum(BigDecimalUtil.toDouble(expenseSum));
-//        // 获取一周内商机收支信息
-//        Date indexDay = DateUtil.getMondayInWeek();
-//        String strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-//        for (int i = 0; i < 7; i++) {
-//            OpportunityStatisticsDay dayStatistic = new OpportunityStatisticsDay();
-//            String strDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-//            Date beginDate = DateUtil.parseDate(strIndexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
-//            Date endDate = DateUtil.parseDate(strIndexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
-//            List<UnionOpportunity> dayIncomeOpportunityList = filterBetweenTime(paidIncomeOpportunityList, beginDate, endDate);
-//            BigDecimal dayIncome = BigDecimal.ZERO;
-//            if (ListUtil.isNotEmpty(dayIncomeOpportunityList)) {
-//                for (UnionOpportunity opportunity : dayIncomeOpportunityList) {
-//                    dayIncome = BigDecimalUtil.add(dayIncome, opportunity.getBrokerageMoney());
-//                }
-//            }
-//            dayStatistic.setPaidIncome(BigDecimalUtil.toDouble(dayIncome));
-//            List<UnionOpportunity> dayExpenseOpportunityList = filterBetweenTime(paidExpenseOpportunityList, beginDate, endDate);
-//            BigDecimal dayExpense = BigDecimal.ZERO;
-//            if (ListUtil.isNotEmpty(dayExpenseOpportunityList)) {
-//                for (UnionOpportunity opportunity : dayExpenseOpportunityList) {
-//                    dayExpense = BigDecimalUtil.add(dayExpense, opportunity.getBrokerageMoney());
-//                }
-//            }
-//            dayStatistic.setPaidExpense(BigDecimalUtil.toDouble(dayExpense));
-//            switch (i) {
-//                case 0:
-//                    result.setMonday(dayStatistic);
-//                    break;
-//                case 1:
-//                    result.setTuesday(dayStatistic);
-//                    break;
-//                case 2:
-//                    result.setWednesday(dayStatistic);
-//                    break;
-//                case 3:
-//                    result.setThursday(dayStatistic);
-//                    break;
-//                case 4:
-//                    result.setFriday(dayStatistic);
-//                    break;
-//                case 5:
-//                    result.setSaturday(dayStatistic);
-//                    break;
-//                case 6:
-//                    result.setSunday(dayStatistic);
-//                    break;
-//                default:
-//                    break;
-//            }
-//            indexDay = DateUtil.addDays(indexDay, 1);
-//            strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-//        }
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // 获取我的盟员信息
+        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        if (ListUtil.isEmpty(memberList)) {
+            throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
+        }
+        List<Integer> unionIdList = unionMemberService.getUnionIdList(memberList);
+        unionIdList = ListUtil.unique(unionIdList);
+        OpportunityStatisticsVO result = new OpportunityStatisticsVO();
+        if (ListUtil.isNotEmpty(unionIdList)) {
+            BigDecimal unPaidIncome = BigDecimal.ZERO;
+            BigDecimal paidIncome = BigDecimal.ZERO;
+            BigDecimal unPaidExpense = BigDecimal.ZERO;
+            BigDecimal paidExpense = BigDecimal.ZERO;
+            List<OpportunityStatisticsDetail> unPaidIncomeDetailList = new ArrayList<>();
+            List<OpportunityStatisticsDetail> paidIncomeDetailList = new ArrayList<>();
+            List<OpportunityStatisticsDetail> unPaidExpenseDetailList = new ArrayList<>();
+            List<OpportunityStatisticsDetail> paidExpenseDetailList = new ArrayList<>();
+            for (Integer unionId : unionIdList) {
+                UnionMain union = unionMainService.getById(unionId);
+                List<UnionMember> unionMemberList = unionMemberService.filterByUnionId(memberList, unionId);
+                List<Integer> unionMemberIdList = unionMemberService.getIdList(unionMemberList);
+                // 获取已接受的我推荐的商机，区分是否已支付
+                List<UnionOpportunity> incomeOpportunityList = listValidByUnionIdAndFromMemberIdListAndAcceptStatus(unionId, unionMemberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+                // 未结算佣金收入
+                List<UnionOpportunity> unPaidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_NO);
+                BigDecimal unPaidIncomeMoneySum = BigDecimal.ZERO;
+                if (ListUtil.isNotEmpty(unPaidIncomeOpportunityList)) {
+                    for (UnionOpportunity opportunity : unPaidIncomeOpportunityList) {
+                        unPaidIncomeMoneySum = BigDecimalUtil.add(unPaidIncomeMoneySum, opportunity.getBrokerageMoney());
+                    }
+                }
+                unPaidIncome = BigDecimalUtil.add(unPaidIncome, unPaidIncomeMoneySum);
+                OpportunityStatisticsDetail unPaidIncomeDetail = new OpportunityStatisticsDetail();
+                unPaidIncomeDetail.setUnion(union);
+                unPaidIncomeDetail.setMoneySum(unPaidIncomeMoneySum.doubleValue());
+                unPaidIncomeDetailList.add(unPaidIncomeDetail);
+                // 已结算佣金收入
+                List<UnionOpportunity> paidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_YES);
+                BigDecimal paidIncomeMoneySum = BigDecimal.ZERO;
+                if (ListUtil.isNotEmpty(paidIncomeOpportunityList)) {
+                    for (UnionOpportunity opportunity : paidIncomeOpportunityList) {
+                        paidIncomeMoneySum = BigDecimalUtil.add(paidIncomeMoneySum, opportunity.getBrokerageMoney());
+                    }
+                }
+                paidIncome = BigDecimalUtil.add(paidIncome, paidIncomeMoneySum);
+                OpportunityStatisticsDetail paidIncomeDetail = new OpportunityStatisticsDetail();
+                paidIncomeDetail.setUnion(union);
+                paidIncomeDetail.setMoneySum(paidIncomeMoneySum.doubleValue());
+                paidIncomeDetailList.add(paidIncomeDetail);
 
-//        return result;
-        // TODO
-        return null;
+                // 获取已接受的推荐给我的商机，区分是否已支付
+                List<UnionOpportunity> expenseOpportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, unionMemberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+                // 未结算的佣金支出
+                List<UnionOpportunity> unPaidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_NO);
+                BigDecimal unPaidExpenseMoneySum = BigDecimal.ZERO;
+                if (ListUtil.isNotEmpty(unPaidExpenseOpportunityList)) {
+                    for (UnionOpportunity opportunity : unPaidExpenseOpportunityList) {
+                        unPaidExpenseMoneySum = BigDecimalUtil.add(unPaidExpenseMoneySum, opportunity.getBrokerageMoney());
+                    }
+                }
+                unPaidExpense = BigDecimalUtil.add(unPaidExpense, unPaidExpenseMoneySum);
+                OpportunityStatisticsDetail unPaidExpenseDetail = new OpportunityStatisticsDetail();
+                unPaidExpenseDetail.setUnion(union);
+                unPaidExpenseDetail.setMoneySum(unPaidExpenseMoneySum.doubleValue());
+                unPaidExpenseDetailList.add(unPaidExpenseDetail);
+                // 已结算的佣金支出
+                List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
+                BigDecimal paidExpenseMoneySum = BigDecimal.ZERO;
+                if (ListUtil.isNotEmpty(paidExpenseOpportunityList)) {
+                    for (UnionOpportunity opportunity : paidExpenseOpportunityList) {
+                        paidExpenseMoneySum = BigDecimalUtil.add(paidExpenseMoneySum, opportunity.getBrokerageMoney());
+                    }
+                }
+                paidExpense = BigDecimalUtil.add(paidExpense, paidExpenseMoneySum);
+                OpportunityStatisticsDetail paidExpenseDetail = new OpportunityStatisticsDetail();
+                paidExpenseDetail.setUnion(union);
+                paidExpenseDetail.setMoneySum(paidExpenseMoneySum.doubleValue());
+                paidExpenseDetailList.add(paidExpenseDetail);
+            }
+            result.setUnPaidIncome(unPaidIncome.doubleValue());
+            result.setPaidIncome(paidIncome.doubleValue());
+            result.setUnPaidExpense(unPaidExpense.doubleValue());
+            result.setPaidExpense(paidExpense.doubleValue());
+            result.setUnPaidIncomeDetailList(unPaidIncomeDetailList);
+            result.setPaidIncomeDetailList(paidIncomeDetailList);
+            result.setUnPaidExpenseDetailList(unPaidExpenseDetailList);
+            result.setPaidExpenseDetailList(paidExpenseDetailList);
+        }
+
+        return result;
     }
 
     //********************************************* Base On Business - list ********************************************

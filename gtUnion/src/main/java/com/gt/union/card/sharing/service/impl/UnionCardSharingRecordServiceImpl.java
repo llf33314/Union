@@ -117,6 +117,22 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
     //********************************************* Base On Business - other *******************************************
 
+    @Override
+    public Double sumValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
+
+        entityWrapper.setSqlSelect("IfNull(SUM(sharing_money),0) sharingMoneySum");
+        Map<String, Object> resultMap = unionCardSharingRecordDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("sharingMoneySum").toString());
+    }
+
     //********************************************* Base On Business - filter ******************************************
 
     @Override

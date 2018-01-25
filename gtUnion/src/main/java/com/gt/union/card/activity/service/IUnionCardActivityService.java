@@ -120,6 +120,15 @@ public interface IUnionCardActivityService {
 
     //********************************************* Base On Business - other *******************************************
 
+    /**
+     * 统计历史发布活动数(只要开始售卖了就算已发布)
+     *
+     * @param unionId 联盟id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countValidGESellBeginTimeByUnionId(Integer unionId) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**

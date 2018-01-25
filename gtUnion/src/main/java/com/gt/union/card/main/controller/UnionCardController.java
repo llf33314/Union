@@ -10,6 +10,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -24,6 +25,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -73,10 +75,10 @@ public class UnionCardController {
             HttpServletRequest request,
             @ApiParam(value = "1:按天统计;2:按月统计", name = "type", required = true)
             @RequestParam(value = "type") Integer type,
-            @ApiParam(value = "统计开始时间", name = "fromTime", required = true)
-            @RequestParam(value = "fromTime") Long fromTime,
-            @ApiParam(value = "统计结束时间", name = "toTime")
-            @RequestParam(value = "toTime", required = false) Long toTime) throws Exception {
+            @ApiParam(value = "统计开始时间", name = "beginTime", required = true)
+            @RequestParam(value = "beginTime") Long beginTime,
+            @ApiParam(value = "统计结束时间", name = "endTime")
+            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -87,7 +89,10 @@ public class UnionCardController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.list(DiscountCardStatisticsVO.class, 3);
         } else {
-            result = unionCardService.listDiscountCardStatisticsVOByBusId(busId);
+            Date begin = beginTime != null ? (new Date(beginTime)) : null;
+            Date end = endTime != null ? (new Date(endTime)) : DateUtil.getCurrentDate();
+            end = DateUtil.parseDate(DateUtil.getDateString(end, DateUtil.DATE_PATTERN) + " 23:59:59", DateUtil.DATETIME_PATTERN);
+            result = unionCardService.listDiscountCardStatisticsVOByBusId(busId, type, begin, end);
         }
 
         return GtJsonResult.instanceSuccessMsg(result).toString();
