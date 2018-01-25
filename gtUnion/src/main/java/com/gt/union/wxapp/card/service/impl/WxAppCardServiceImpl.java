@@ -362,13 +362,14 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             list.add(activityId);
         }
         UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
-        UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
-        if (result != null) {
-            data.put("pay", true);
-            data.put("orderNo", result.getOrderNo());
-            data.put("appid", PropertiesUtil.getUnionAppId());
-            data.put("busId", PropertiesUtil.getDuofenBusId());
-        }
+        // TODO
+//        UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
+//        if (result != null) {
+//            data.put("pay", true);
+//            data.put("orderNo", result.getOrderNo());
+//            data.put("appid", PropertiesUtil.getUnionAppId());
+//            data.put("busId", PropertiesUtil.getDuofenBusId());
+//        }
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }
 

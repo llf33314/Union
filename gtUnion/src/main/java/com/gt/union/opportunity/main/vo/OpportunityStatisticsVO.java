@@ -5,19 +5,27 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.List;
+
 /**
  * 商机佣金统计
  *
  * @author linweicong
  * @version 2017-11-25 09:48:20
  */
-@ApiModel(value = "商机佣金统计")
+@ApiModel(value = "商机佣金统计VO")
 public class OpportunityStatisticsVO {
-    @ApiModelProperty(value = "未支付佣金收入")
+    @ApiModelProperty(value = "未结算佣金收入")
     private Double unPaidIncome;
 
-    @ApiModelProperty(value = "已支付佣金收入")
+    @ApiModelProperty(value = "未结算佣金收入详情列表")
+    private List<OpportunityStatisticsDetail> unPaidIncomeDetailList;
+
+    @ApiModelProperty(value = "已结算佣金收入")
     private Double paidIncome;
+
+    @ApiModelProperty(value = "已结算佣金收入详情列表")
+    private List<OpportunityStatisticsDetail> paidIncomeDetailList;
 
     @ApiModelProperty(value = "总收入")
     private Double incomeSum;
@@ -25,32 +33,17 @@ public class OpportunityStatisticsVO {
     @ApiModelProperty(value = "未支付佣金支出")
     private Double unPaidExpense;
 
+    @ApiModelProperty(value = "未支付佣金支出详情列表")
+    private List<OpportunityStatisticsDetail> unPaidExpenseDetailList;
+
     @ApiModelProperty(value = "已支付佣金支出")
     private Double paidExpense;
 
+    @ApiModelProperty(value = "已支付佣金支出详情列表")
+    private List<OpportunityStatisticsDetail> paidExpenseDetailList;
+
     @ApiModelProperty(value = "总支出")
     private Double expenseSum;
-
-    @ApiModelProperty(value = "星期一收支对象")
-    private OpportunityStatisticsDay monday;
-
-    @ApiModelProperty(value = "星期二收支对象")
-    private OpportunityStatisticsDay tuesday;
-
-    @ApiModelProperty(value = "星期三收支对象")
-    private OpportunityStatisticsDay wednesday;
-
-    @ApiModelProperty(value = "星期四收支对象")
-    private OpportunityStatisticsDay thursday;
-
-    @ApiModelProperty(value = "星期五收支对象")
-    private OpportunityStatisticsDay friday;
-
-    @ApiModelProperty(value = "星期六收支对象")
-    private OpportunityStatisticsDay saturday;
-
-    @ApiModelProperty(value = "星期天收支对象")
-    private OpportunityStatisticsDay sunday;
 
     public Double getUnPaidIncome() {
         return unPaidIncome;
@@ -60,12 +53,28 @@ public class OpportunityStatisticsVO {
         this.unPaidIncome = unPaidIncome;
     }
 
+    public List<OpportunityStatisticsDetail> getUnPaidIncomeDetailList() {
+        return unPaidIncomeDetailList;
+    }
+
+    public void setUnPaidIncomeDetailList(List<OpportunityStatisticsDetail> unPaidIncomeDetailList) {
+        this.unPaidIncomeDetailList = unPaidIncomeDetailList;
+    }
+
     public Double getPaidIncome() {
         return paidIncome;
     }
 
     public void setPaidIncome(Double paidIncome) {
         this.paidIncome = paidIncome;
+    }
+
+    public List<OpportunityStatisticsDetail> getPaidIncomeDetailList() {
+        return paidIncomeDetailList;
+    }
+
+    public void setPaidIncomeDetailList(List<OpportunityStatisticsDetail> paidIncomeDetailList) {
+        this.paidIncomeDetailList = paidIncomeDetailList;
     }
 
     public Double getIncomeSum() {
@@ -84,6 +93,14 @@ public class OpportunityStatisticsVO {
         this.unPaidExpense = unPaidExpense;
     }
 
+    public List<OpportunityStatisticsDetail> getUnPaidExpenseDetailList() {
+        return unPaidExpenseDetailList;
+    }
+
+    public void setUnPaidExpenseDetailList(List<OpportunityStatisticsDetail> unPaidExpenseDetailList) {
+        this.unPaidExpenseDetailList = unPaidExpenseDetailList;
+    }
+
     public Double getPaidExpense() {
         return paidExpense;
     }
@@ -92,68 +109,20 @@ public class OpportunityStatisticsVO {
         this.paidExpense = paidExpense;
     }
 
+    public List<OpportunityStatisticsDetail> getPaidExpenseDetailList() {
+        return paidExpenseDetailList;
+    }
+
+    public void setPaidExpenseDetailList(List<OpportunityStatisticsDetail> paidExpenseDetailList) {
+        this.paidExpenseDetailList = paidExpenseDetailList;
+    }
+
     public Double getExpenseSum() {
         return expenseSum;
     }
 
     public void setExpenseSum(Double expenseSum) {
         this.expenseSum = expenseSum;
-    }
-
-    public OpportunityStatisticsDay getMonday() {
-        return monday;
-    }
-
-    public void setMonday(OpportunityStatisticsDay monday) {
-        this.monday = monday;
-    }
-
-    public OpportunityStatisticsDay getTuesday() {
-        return tuesday;
-    }
-
-    public void setTuesday(OpportunityStatisticsDay tuesday) {
-        this.tuesday = tuesday;
-    }
-
-    public OpportunityStatisticsDay getWednesday() {
-        return wednesday;
-    }
-
-    public void setWednesday(OpportunityStatisticsDay wednesday) {
-        this.wednesday = wednesday;
-    }
-
-    public OpportunityStatisticsDay getThursday() {
-        return thursday;
-    }
-
-    public void setThursday(OpportunityStatisticsDay thursday) {
-        this.thursday = thursday;
-    }
-
-    public OpportunityStatisticsDay getFriday() {
-        return friday;
-    }
-
-    public void setFriday(OpportunityStatisticsDay friday) {
-        this.friday = friday;
-    }
-
-    public OpportunityStatisticsDay getSaturday() {
-        return saturday;
-    }
-
-    public void setSaturday(OpportunityStatisticsDay saturday) {
-        this.saturday = saturday;
-    }
-
-    public OpportunityStatisticsDay getSunday() {
-        return sunday;
-    }
-
-    public void setSunday(OpportunityStatisticsDay sunday) {
-        this.sunday = sunday;
     }
 
     @Override

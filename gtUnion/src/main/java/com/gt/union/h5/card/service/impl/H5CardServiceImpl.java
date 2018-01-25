@@ -411,11 +411,12 @@ public class H5CardServiceImpl implements IH5CardService {
 			list.add(activityId);
 		}
 		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
-		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
-		data.put("phone", 1);
-		if(result != null){
-			data.put("payUrl", result.getPayUrl());
-		}
+		// TODO
+//		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
+//		data.put("phone", 1);
+//		if(result != null){
+//			data.put("payUrl", result.getPayUrl());
+//		}
 		return GtJsonResult.instanceSuccessMsg(data).toString();
 	}
 

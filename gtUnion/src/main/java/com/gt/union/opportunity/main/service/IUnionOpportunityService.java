@@ -44,14 +44,13 @@ public interface IUnionOpportunityService {
     UnionOpportunity getValidByIdAndUnionIdAndToMemberIdAndAcceptStatus(Integer opportunityId, Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception;
 
     /**
-     * 商机-数据统计图
+     * 财务-数据统计-商机佣金统计
      *
-     * @param busId   商家id
-     * @param unionId 联盟id
+     * @param busId 商家id
      * @return OpportunityStatisticsVO
      * @throws Exception 统一处理异常
      */
-    OpportunityStatisticsVO getOpportunityStatisticsVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+    OpportunityStatisticsVO getOpportunityStatisticsVOByBusId(Integer busId) throws Exception;
 
     //********************************************* Base On Business - list ********************************************
 
@@ -118,7 +117,7 @@ public interface IUnionOpportunityService {
      * @throws Exception 统一处理异常
      */
     List<UnionOpportunity> listValidByUnionIdAndToMemberIdListAndAcceptStatus(Integer unionId, List<Integer> toMemberIdList, Integer acceptStatus) throws Exception;
-    
+
     /**
      * 列表：我的佣金收入来源
      *

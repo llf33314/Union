@@ -3,18 +3,15 @@ package com.gt.union.card.main.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.user.IBusUserService;
-import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardService;
-import com.gt.union.card.main.vo.CardApplyVO;
-import com.gt.union.card.main.vo.CardPhoneVO;
+import com.gt.union.card.main.vo.*;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.QRcodeKit;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.util.entity.result.wx.ApiWxApplet;
 import io.swagger.annotations.Api;
@@ -51,14 +48,9 @@ public class UnionCardController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/fanId/{fanId}/apply", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getCardApplyVO(
-            HttpServletRequest request,
-            @ApiParam(value = "粉丝id", name = "fanId", required = true)
-            @PathVariable("fanId") Integer fanId,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+    @ApiOperation(value = "前台-办理联盟卡-联盟卡列表", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/apply", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getCardApplyVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -69,7 +61,52 @@ public class UnionCardController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(CardApplyVO.class);
         } else {
-            result = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
+            result = unionCardService.getCardApplyVOByBusId(busId);
+        }
+
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "财务-数据统计-联盟折扣卡领卡统计", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/discountCard/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getDiscountCardStatisticsVO(
+            HttpServletRequest request,
+            @ApiParam(value = "1:按天统计;2:按月统计", name = "type", required = true)
+            @RequestParam(value = "type") Integer type,
+            @ApiParam(value = "统计开始时间", name = "fromTime", required = true)
+            @RequestParam(value = "fromTime") Long fromTime,
+            @ApiParam(value = "统计结束时间", name = "toTime")
+            @RequestParam(value = "toTime", required = false) Long toTime) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<DiscountCardStatisticsVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(DiscountCardStatisticsVO.class, 3);
+        } else {
+            result = unionCardService.listDiscountCardStatisticsVOByBusId(busId);
+        }
+
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "财务-数据统计-联盟活动卡发售统计", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/activityCard/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getActivityCardStatisticsVO(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<ActivityCardStatisticsVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(ActivityCardStatisticsVO.class, 3);
+        } else {
+            result = unionCardService.listActivityCardStatisticsVOByBusId(busId);
         }
 
         return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -84,7 +121,7 @@ public class UnionCardController {
             busId = busUser.getPid();
         }
         ApiWxApplet wxApplet = busUserService.getBusIdAndIndustry(busId, PropertiesUtil.getAppIndustry());
-        if(wxApplet!= null){
+        if (wxApplet != null) {
             String imgUrl = PropertiesUtil.getResourceUrl() + wxApplet.getExperienceQrUrl();
             return GtJsonResult.instanceSuccessMsg(imgUrl).toString();
         }
@@ -102,9 +139,9 @@ public class UnionCardController {
             @ApiParam(value = "表单内容", name = "cardPhoneVO", required = true)
             @RequestBody CardPhoneVO vo) throws Exception {
         // mock
-        UnionCardFan result;
+        CardPhoneResponseVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(UnionCardFan.class);
+            result = MockUtil.get(CardPhoneResponseVO.class);
         } else {
             result = unionCardService.checkCardPhoneVO(vo);
         }
@@ -112,15 +149,11 @@ public class UnionCardController {
     }
 
     @ApiOperation(value = "前台-办理联盟卡-确定", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/fanId/{fanId}/unionId/{unionId}/apply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/apply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveApplyByUnionId(
             HttpServletRequest request,
-            @ApiParam(value = "粉丝id", name = "fanId", required = true)
-            @PathVariable("fanId") Integer fanId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "活动id列表", name = "activityIdList", required = true)
-            @RequestBody List<Integer> activityIdList) throws Exception {
+            @ApiParam(value = "办理联盟卡对象", name = "applyPostVO", required = true)
+            @RequestBody CardPhoneResponseVO applyPostVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -131,7 +164,7 @@ public class UnionCardController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionPayVO.class);
         } else {
-            result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList, unionCardApplyService);
+            result = unionCardService.saveApplyByBusId(busId, applyPostVO, unionCardApplyService);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

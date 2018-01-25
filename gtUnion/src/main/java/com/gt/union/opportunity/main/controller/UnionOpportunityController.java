@@ -141,12 +141,9 @@ public class UnionOpportunityController {
         }
     }
 
-    @ApiOperation(value = "商机-数据统计图", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getStatisticsByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+    @ApiOperation(value = "财务-数据统计-商机佣金统计", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getStatisticsByUnionId(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -157,7 +154,7 @@ public class UnionOpportunityController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(OpportunityStatisticsVO.class);
         } else {
-            result = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
+            result = unionOpportunityService.getOpportunityStatisticsVOByBusId(busId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
