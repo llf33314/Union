@@ -3,15 +3,9 @@ package com.gt.union.user.introduction.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
-import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
-import com.gt.union.union.main.vo.UnionVO;
 import com.gt.union.user.introduction.entity.UnionUserIntroduction;
 import com.gt.union.user.introduction.service.IUnionUserIntroductionService;
-import com.gt.union.user.introduction.vo.UnionUserIntroductionVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * 联盟商家简介 前端控制器
@@ -45,7 +38,7 @@ public class UnionUserIntroductionController {
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
 			busId = busUser.getPid();
 		}
-		List<UnionUserIntroduction> result = unionUserIntroductionService.listValidByBusId(busId);
+		UnionUserIntroduction result = unionUserIntroductionService.getValidByBusId(busId);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
@@ -56,14 +49,14 @@ public class UnionUserIntroductionController {
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String updateUnionMainVOById(
 			HttpServletRequest request,
-			@ApiParam(value = "表单信息", name = "unionUserIntroductionVO", required = true)
-			@RequestBody UnionUserIntroductionVO unionUserIntroductionVO) throws Exception {
+			@ApiParam(value = "表单信息", name = "UnionUserIntroduction", required = true)
+			@RequestBody UnionUserIntroduction unionUserIntroduction) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
 		Integer busId = busUser.getId();
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
 			busId = busUser.getPid();
 		}
-		unionUserIntroductionService.saveOrUpdate(busId, unionUserIntroductionVO);
+		unionUserIntroductionService.saveOrUpdate(busId, unionUserIntroduction);
 		return GtJsonResult.instanceSuccessMsg().toString();
 	}
 

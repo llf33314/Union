@@ -66,13 +66,6 @@ public class UnionUserIntroduction extends Model<UnionUserIntroduction> {
     @TableField("content")
     private String content;
 
-    /**
-     * 类型 1：图片 2：文字
-     */
-    @ApiModelProperty(value = "类型 1：图片 2：文字")
-    @TableField("type")
-    private Integer type;
-
 
     public Integer getId() {
         return id;
@@ -120,14 +113,6 @@ public class UnionUserIntroduction extends Model<UnionUserIntroduction> {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     @Override
