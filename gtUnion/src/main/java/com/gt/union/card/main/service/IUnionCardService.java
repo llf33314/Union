@@ -55,13 +55,12 @@ public interface IUnionCardService {
      * 获取未删除的联盟列表信息
      *
      * @param unionId      联盟id
-     * @param memberIdList 盟员id列表
      * @param type         联盟卡类型
      * @param geCreateTime 大于等于创建时间
      * @return List<UnionCard>
      * @throws Exception 统一处理异常
      */
-    List<UnionCard> listValidByUnionIdAndMemberIdListAndTypeAndGECreateTime(Integer unionId, List<Integer> memberIdList, Integer type, Date geCreateTime) throws Exception;
+    List<UnionCard> listValidByUnionIdAndTypeAndGECreateTime(Integer unionId, Integer type, Date geCreateTime) throws Exception;
 
     /**
      * 获取未删除的联盟卡列表信息
