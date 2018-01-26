@@ -12,7 +12,7 @@ import java.util.Date;
  * @version 2017-11-22 17:45:00
  */
 public class DateUtil {
-    public static final String YEAR_MONTH_PATTERN = "yyyy-mm";
+    public static final String YEAR_MONTH_PATTERN = "yyyy-MM";
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static final String SERIAL_PATTERN = "yyyyMMddHHmmssSSS";
@@ -137,5 +137,5 @@ public class DateUtil {
         int offset = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7;
         return DateUtil.addDays(DateUtil.getCurrentDate(), 0 - offset);
     }
-    
+
 }

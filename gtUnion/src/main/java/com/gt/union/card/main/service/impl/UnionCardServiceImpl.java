@@ -222,16 +222,14 @@ public class UnionCardServiceImpl implements IUnionCardService {
     //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<UnionCard> listValidByUnionIdAndMemberIdListAndTypeAndGECreateTime(Integer unionId, List<Integer> memberIdList, Integer type, Date geCreateTime) throws Exception {
-        if (unionId == null || memberIdList == null || type == null || geCreateTime == null) {
+    public List<UnionCard> listValidByUnionIdAndTypeAndGECreateTime(Integer unionId, Integer type, Date geCreateTime) throws Exception {
+        if (unionId == null || type == null || geCreateTime == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
-                .in(ListUtil.isNotEmpty(memberIdList), "member_id", memberIdList)
-                .eq(ListUtil.isEmpty(memberIdList), "member_id", null)
                 .eq("type", type)
                 .ge("create_time", geCreateTime);
 
@@ -351,9 +349,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 discountCardStatisticsVO.setUnion(union);
 
                 List<DiscountCardStatisticsSpot> spotList = new ArrayList<>();
-                List<UnionMember> unionMemberList = unionMemberService.filterByUnionId(memberList, unionId);
-                List<Integer> unionMemberIdList = unionMemberService.getIdList(unionMemberList);
-                List<UnionCard> discountCardList = listValidByUnionIdAndMemberIdListAndTypeAndGECreateTime(unionId, unionMemberIdList, CardConstant.TYPE_DISCOUNT, beginTime);
+                List<UnionCard> discountCardList = listValidByUnionIdAndTypeAndGECreateTime(unionId, CardConstant.TYPE_DISCOUNT, beginTime);
                 if (ListUtil.isNotEmpty(dateSpotList)) {
                     switch (statisticsType) {
                         case CardConstant.STATISTICS_TYPE_DAY:
