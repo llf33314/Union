@@ -35,6 +35,8 @@ import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.union.user.introduction.entity.UnionUserIntroduction;
+import com.gt.union.user.introduction.service.IUnionUserIntroductionService;
 import com.gt.union.wxapp.card.constant.WxAppCardConstant;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
@@ -100,6 +102,8 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
     @Autowired
     private IUnionConsumeProjectService unionConsumeProjectService;
 
+    @Autowired
+    private IUnionUserIntroductionService unionUserIntroductionService;
 
     @Override
     public Page listWxAppCardPage(String phone, Integer busId, Page page) throws Exception {
@@ -512,4 +516,9 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         data.put("signType", "MD5");
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }
+
+	@Override
+	public UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception {
+		return unionUserIntroductionService.getValidByBusId(busId);
+	}
 }
