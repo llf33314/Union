@@ -137,7 +137,7 @@
             </el-form-item>
             <el-form-item label="消费赠送积分：">
               <span> ￥
-                <span>{{ price1 * form.giveIntegral  }}联盟积分 </span>
+                <span>{{ price1 * form.giveIntegral | formatPrice }}联盟积分 </span>
               </span>
             </el-form-item>
             <div class="discountsProject">

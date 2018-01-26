@@ -49,6 +49,18 @@ export default {
         legend: {
           data: this.unionList
         },
+        color: [
+          '#20a0ff',
+          '#2ec38a',
+          '#507baf',
+          '#e24c61',
+          '#fe6d6c',
+          '#ff9348',
+          '#ffbf4c',
+          '#fdd451',
+          '#b177f2',
+          '#47d09c'
+        ],
         xAxis: {
           // todo
           // type: 'time',

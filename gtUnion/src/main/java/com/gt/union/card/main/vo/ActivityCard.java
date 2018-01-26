@@ -18,6 +18,9 @@ public class ActivityCard {
     @ApiModelProperty(value = "活动卡对象")
     private UnionCard card;
 
+    @ApiModelProperty(value = "是否已过期")
+    private Integer isExpired;
+    
     @ApiModelProperty(value = "活动对象")
     private UnionCardActivity activity;
 
@@ -33,6 +36,14 @@ public class ActivityCard {
 
     public void setCard(UnionCard card) {
         this.card = card;
+    }
+
+    public Integer getIsExpired() {
+        return isExpired;
+    }
+
+    public void setIsExpired(Integer isExpired) {
+        this.isExpired = isExpired;
     }
 
     public UnionCardActivity getActivity() {
