@@ -7,6 +7,7 @@ import com.gt.api.util.HttpClienUtils;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
+import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
@@ -40,6 +41,7 @@ import com.gt.union.user.introduction.service.IUnionUserIntroductionService;
 import com.gt.union.wxapp.card.constant.WxAppCardConstant;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +106,9 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
 
     @Autowired
     private IUnionUserIntroductionService unionUserIntroductionService;
+
+    @Autowired
+    private ShopService shopService;
 
     @Override
     public Page listWxAppCardPage(String phone, Integer busId, Page page) throws Exception {
@@ -520,5 +525,10 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
 	@Override
 	public UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception {
 		return unionUserIntroductionService.getValidByBusId(busId);
+	}
+
+	@Override
+	public List<WsWxShopInfoExtend> listShopByBusId(Integer busId) {
+		return shopService.listByBusId(busId);
 	}
 }

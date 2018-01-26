@@ -13,6 +13,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.ApiResultHandlerUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,7 @@ public class ErpServiceImpl implements ErpService {
 		if(ListUtil.isEmpty(list)){
 			return false;
 		}
-		List<ShopVO> shops = shopService.listByBusId(busId);
+		List<WsWxShopInfoExtend> shops = shopService.listByBusId(busId);
 		if(ListUtil.isEmpty(shops)){
 			return false;
 		}

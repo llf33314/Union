@@ -6,6 +6,8 @@ import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.shop.vo.ShopVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.ListUtil;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,8 +41,17 @@ public class ShopApiController {
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
 			busId = busUser.getPid();
 		}
-		List<ShopVO> list = shopService.listByBusId(busId);
-		return GtJsonResult.instanceSuccessMsg(list);
+		List<WsWxShopInfoExtend> list = shopService.listByBusId(busId);
+		List<ShopVO> dataList = new ArrayList<ShopVO>();
+		if(ListUtil.isEmpty(list)){
+			for(WsWxShopInfoExtend info : list){
+				ShopVO vo = new ShopVO();
+				vo.setName(info.getBusinessName());
+				vo.setId(info.getId());
+				dataList.add(vo);
+			}
+		}
+		return GtJsonResult.instanceSuccessMsg(dataList);
 	}
 
 
