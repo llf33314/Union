@@ -29,7 +29,7 @@ public class ShopServiceImpl implements ShopService {
 
 
 	@Override
-	public List<ShopVO> listByBusId(Integer busId) {
+	public List<WsWxShopInfoExtend> listByBusId(Integer busId) {
 		logger.info("根据商家id获取门店列表信息，busId:{}", busId);
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
 		try {
@@ -38,14 +38,7 @@ public class ShopServiceImpl implements ShopService {
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
 			logger.info("根据商家id获取门店列表信息，结果：{}", result);
 			List<WsWxShopInfoExtend> list = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
-			List<ShopVO> dataList = new ArrayList<ShopVO>();
-			for(WsWxShopInfoExtend info : list){
-				ShopVO vo = new ShopVO();
-				vo.setName(info.getBusinessName());
-				vo.setId(info.getId());
-				dataList.add(vo);
-			}
-			return dataList;
+			return list;
 		}catch (Exception e){
 			logger.error("根据商家id获取门店列表信息错误", e);
 			return null;
