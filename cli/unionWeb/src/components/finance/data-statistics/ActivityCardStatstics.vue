@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>联盟卡佣金统计</h3>
+    <h3>联盟活动卡发售统计</h3>
     <div>
       <div id="publishCountStatistics" style="width:500px;height:300px;"></div>
       <div id="sellBrokerageStatistics" style="width:500px;height:300px;"></div>
@@ -48,6 +48,18 @@ export default {
           x: 'left',
           data: this.unionList
         },
+        color: [
+          '#20a0ff',
+          '#2ec38a',
+          '#507baf',
+          '#e24c61',
+          '#fe6d6c',
+          '#ff9348',
+          '#ffbf4c',
+          '#fdd451',
+          '#b177f2',
+          '#47d09c'
+        ],
         series: [
           {
             name: '',
@@ -94,6 +106,18 @@ export default {
           x: 'left',
           data: this.unionList
         },
+        color: [
+          '#20a0ff',
+          '#2ec38a',
+          '#507baf',
+          '#e24c61',
+          '#fe6d6c',
+          '#ff9348',
+          '#ffbf4c',
+          '#fdd451',
+          '#b177f2',
+          '#47d09c'
+        ],
         series: [
           {
             name: '',
