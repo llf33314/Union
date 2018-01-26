@@ -372,12 +372,14 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         try {
             List<UnionBrokeragePay> payList = listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(payList)) {
-                throw new BusinessException("没有支付信息");
+                result.put("code", -1);
+                result.put("msg", "不存在商机支付信息");
+                return JSONObject.toJSONString(result);
             }
             for (UnionBrokeragePay pay : payList) {
                 Integer payStatus = pay.getStatus();
                 if (BrokerageConstant.PAY_STATUS_SUCCESS == payStatus || BrokerageConstant.PAY_STATUS_FAIL == payStatus) {
-                    result.put("code", 0);
+                    result.put("code", -1);
                     result.put("msg", "重复处理");
                     return JSONObject.toJSONString(result);
                 }
