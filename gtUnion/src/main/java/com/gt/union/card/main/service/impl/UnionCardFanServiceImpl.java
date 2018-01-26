@@ -31,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * 联盟卡根信息 服务实现类
@@ -117,9 +114,12 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
                 }
             });
             List<ActivityCard> activityCardList = new ArrayList<>();
+            Date currentDate = DateUtil.getCurrentDate();
             for (UnionCard typeActivityCard : typeActivityCardList) {
                 ActivityCard activityCard = new ActivityCard();
                 activityCard.setCard(typeActivityCard);
+                
+                activityCard.setIsExpired(currentDate.compareTo(typeActivityCard.getValidity()));
 
                 Integer activityId = typeActivityCard.getActivityId();
                 UnionCardActivity activity = unionCardActivityService.getById(activityId);

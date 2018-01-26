@@ -28,6 +28,8 @@ import Business from '@/components/business/Business';
 import Finance from '@/components/finance/Finance';
 import Front from '@/components/front/Front';
 import NoUnion from '@/components/public-components/NoUnion';
+import userIntroduction from '@/components/businessIntroduction/userIntroduction';
+
 
 Vue.use(Router);
 
@@ -151,6 +153,13 @@ export default new Router({
       path: '/front/index',
       name: 'FrontIndex',
       component: Front
-    }
+    },
+    //商家简介
+    {
+      path: '/businessIntroduction/userIntroduction',
+      name: 'userIntroduction',
+      component: userIntroduction
+    },
+
   ]
 });
