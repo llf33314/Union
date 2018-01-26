@@ -137,6 +137,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 discountCard.setUnion(unionMainService.getById(unionId));
 
                 List<UnionMember> discountCardMemberList = unionMemberService.listValidReadByUnionId(unionId);
+                unionMemberService.sortByDiscountAndCreateTime(discountCardMemberList);
                 discountCard.setMemberList(discountCardMemberList);
 
                 discountCardList.add(discountCard);

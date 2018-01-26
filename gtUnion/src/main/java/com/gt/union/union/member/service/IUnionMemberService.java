@@ -372,6 +372,14 @@ public interface IUnionMemberService {
      */
     boolean existValidByBusIdAndUnionIdAndStatus(Integer busId, Integer unionId, Integer status) throws Exception;
 
+    /**
+     * 先按有折扣>无折扣，再按创建时间顺序
+     *
+     * @param memberList 数据源
+     * @throws Exception 统一处理异常
+     */
+    void sortByDiscountAndCreateTime(List<UnionMember> memberList) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**
