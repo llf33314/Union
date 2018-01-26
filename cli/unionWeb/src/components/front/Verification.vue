@@ -130,9 +130,14 @@
               </span>
               <span> （消耗{{ deductionIntegral | formatPrice }}积分） </span>
             </el-form-item>
-            <el-form-item label="实收金额：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
+            <el-form-item label="实收金额：">
               <span> ￥
                 <span class="color_">{{ price1 | formatPrice }} </span>
+              </span>
+            </el-form-item>
+            <el-form-item label="消费赠送积分：">
+              <span> ￥
+                <span>{{ price1 * form.giveIntegral  }}联盟积分 </span>
               </span>
             </el-form-item>
             <div class="discountsProject">
@@ -215,6 +220,7 @@ export default {
         fan: {},
         integral: '',
         exchangeIntegral: '',
+        giveIntegral: '',
         currentUnion: {},
         unionList: [],
         currentUnion: {},
