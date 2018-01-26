@@ -33,28 +33,57 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper"
+      :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 详情 -->
     <el-dialog title="联盟卡详情" :visible.sync="visible" size="tiny">
       <hr>
-      <div if="detailData.discountCard">
-        <div> {{ detailData.discountCard.name }} </div>
-        <p> 办理时间：
-          <span>{{ detailData.discountCard.createTime }}</span>
-        </p>
-        <p> 享受折扣：
-          <span>{{ detailData.discount * 10 }} 折</span>
-        </p>
+      <p>顾客已拥有联盟卡：</p>
+      <!-- 左侧联盟卡 -->
+      <el-radio-group v-model="unionCardId">
+        <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id" :label="detailData.disCountCard.card.id">
+          <div class="UnionDiscountCard"></div>
+          <div>{{detailData.disCountCard.card.name}}</div>
+        </el-radio-button>
+        <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
+          <div class="UnionDiscountCard"></div>
+          <div>{{item.card.name}}</div>
+          <div v-if="item.isExpired">已过期</div>
+        </el-radio-button>
+      </el-radio-group>
+      <!-- 右侧联盟卡详情 -->
+      <div v-if="detailData.disCountCard" v-show="unionCardId===detailData.disCountCard.card.id">
+        <p>{{detailData.disCountCard.card.name}}</p>
+        <p>办卡时间 {{detailData.disCountCard.createTime}}</p>
+        <p>消费特权：可在下列商家消费时享受折扣</p>
+        <ol>
+          <li v-for="item in detailData.disCountCard.memberList" :key="item.id" :label="item.id">
+            <span>{{item.enterpriseName}}</span>
+            <span v-if="item.discount">{{(item.discount*10).toFixed(1)}}折</span>
+            <span v-else> 无折扣</span>
+          </li>
+        </ol>
       </div>
-      <div v-for="item in detailData.activityCardList" :key="item.id">
-        <div> {{ item.name }} </div>
-        <p> 办理时间：
-          <span>{{ item.createTime }} </span>
-        </p>
-        <p> 有效时间：
-          <span>{{ item.validity }}</span>
-        </p>
+      <div v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id"
+        v-show="unionCardId === item.card.id">
+        <p>{{item.card.name}}</p>
+        <p>办卡时间 {{item.card.createTime}}</p>
+        <p>有效时间 {{item.card.validity}}</p>
+        <p>优惠项目：共{{item.projectItemCount}}项</p>
+        <ol>
+          <li v-for="item1 in item.cardProjectList" :key="item1.member.id" :label="item1.member.id">
+            <span>{{item1.member.enterpriseName}}</span>
+            <ul>
+              <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
+                <span>{{item2.name}}</span>
+                <!-- todo * 样式更换 -->
+                <span>*{{item2.number}}</span>
+              </li>
+            </ul>
+          </li>
+        </ol>
+
       </div>
     </el-dialog>
   </div>
@@ -83,10 +112,10 @@ export default {
       currentPage: 1,
       totalAll: 0,
       visible: false,
+      unionCardId: '',
       detailData: {
         discountCard: {},
-        discount: '',
-        activityCardList: []
+        discount: ''
       }
     };
   },
@@ -132,7 +161,12 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
         });
     },
     // 带条件查询联盟卡
@@ -159,15 +193,24 @@ export default {
           if (res.data.data) {
             this.detailData = res.data.data;
             this.visible = true;
-            this.detailData.discountCard.createTime = timeFilter(this.detailData.discountCard.createTime);
-            this.detailData.activityCardList.forEach((v, i) => {
-              v.createTime = timeFilter(v.createTime);
-              v.validity = timeFilter(v.validity);
-            });
+            if (this.detailData.discountCard) {
+              this.detailData.discountCard.card.createTime = timeFilter(this.detailData.discountCard.createTime);
+            }
+            if (this.detailData.activityCardList) {
+              this.detailData.activityCardList.forEach((v, i) => {
+                v.card.createTime = timeFilter(v.card.createTime);
+                v.card.validity = timeFilter(v.card.validity);
+              });
+            }
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
         });
     }
   }
