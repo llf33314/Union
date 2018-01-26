@@ -24,7 +24,7 @@ export default {
       myChart: '',
       option: '',
       timeRange: '近七天',
-      fromTime: '',
+      beginTime: '',
       countType: '',
       unionList: [],
       xAxisData: [],
@@ -51,7 +51,8 @@ export default {
         },
         xAxis: {
           // todo
-          type: 'time',
+          // type: 'time',
+          type: 'category',
           boundaryGap: false,
           data: this.xAxisData,
           axisLabel: {
@@ -69,28 +70,28 @@ export default {
     getData() {
       switch (this.timeRange) {
         case '近七天':
-          this.fromTime = new Date().getTime() - 7 * 24 * 3600 * 1000;
+          this.beginTime = new Date().getTime() - 7 * 24 * 3600 * 1000;
           this.countType = 1;
           this.interval = 0;
           break;
         case '近一月':
-          this.fromTime = new Date().getTime() - 30 * 24 * 3600 * 1000;
+          this.beginTime = new Date().getTime() - 30 * 24 * 3600 * 1000;
           this.countType = 1;
           this.interval = 2;
           break;
         case '近半年':
-          this.fromTime = new Date().getTime() - 6 * 30 * 24 * 3600 * 1000;
+          this.beginTime = new Date().getTime() - 6 * 30 * 24 * 3600 * 1000;
           this.countType = 2;
           this.interval = 0;
           break;
         case '近一年':
-          this.fromTime = new Date().getTime() - 12 * 30 * 24 * 3600 * 1000;
+          this.beginTime = new Date().getTime() - 12 * 30 * 24 * 3600 * 1000;
           this.countType = 2;
           this.interval = 0;
           break;
       }
       $http
-        .get(`/unionCard/discountCard/statistics?type=${this.countType}&fromTime=${this.fromTime}`)
+        .get(`/unionCard/discountCard/statistics?type=${this.countType}&beginTime=${this.beginTime}`)
         .then(res => {
           if (res.data.data) {
             this.unionList = [];
