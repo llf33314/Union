@@ -702,6 +702,23 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         return getValidByBusIdAndUnionIdAndStatus(busId, unionId, status) != null;
     }
 
+    @Override
+    public void sortByDiscountAndCreateTime(List<UnionMember> memberList) throws Exception {
+        Collections.sort(memberList, new Comparator<UnionMember>() {
+            @Override
+            public int compare(UnionMember o1, UnionMember o2) {
+                Double discount1 = o1.getDiscount();
+                Double discount2 = o2.getDiscount();
+                boolean isCompareByCreateTime = (discount1 == null && discount2 == null) || (discount1 != null && discount2 != null);
+                if (isCompareByCreateTime) {
+                    return o1.getCreateTime().compareTo(o2.getCreateTime());
+                } else {
+                    return discount1 == null ? 1 : -1;
+                }
+            }
+        });
+    }
+
     //********************************************* Base On Business - filter ******************************************
 
     @Override

@@ -100,6 +100,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             discountCard.setCard(typeDiscountCard);
 
             List<UnionMember> memberList = unionMemberService.listValidReadByUnionId(unionId);
+            unionMemberService.sortByDiscountAndCreateTime(memberList);
             discountCard.setMemberList(memberList);
 
             result.setDiscountCard(discountCard);
@@ -118,7 +119,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             for (UnionCard typeActivityCard : typeActivityCardList) {
                 ActivityCard activityCard = new ActivityCard();
                 activityCard.setCard(typeActivityCard);
-                
+
                 activityCard.setIsExpired(currentDate.compareTo(typeActivityCard.getValidity()));
 
                 Integer activityId = typeActivityCard.getActivityId();
