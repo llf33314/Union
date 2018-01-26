@@ -15,6 +15,7 @@ import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.user.introduction.entity.UnionUserIntroduction;
 import com.gt.union.wxapp.card.service.ITokenApiService;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
@@ -155,6 +156,17 @@ public class WxAppCardController {
 		Member member = memberService.getById(memberId);
 		Page result = wxAppCardService.pageConsumeByPhone(page, member.getPhone());
 		return GtJsonResult.instanceSuccessMsg(result).toString();
+	}
+
+	@ApiOperation(value = "联盟卡-商家简介", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/userIntroduction/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String userIntroduction(HttpServletRequest request,
+								@ApiParam(value = "版本号", name = "version", required = true)
+								@PathVariable("version") String version,
+								@ApiParam(value = "商家id", name = "busId", required = true)
+								@PathVariable("busId") Integer busId) throws Exception {
+		UnionUserIntroduction userIntroduction = wxAppCardService.getUserIntroduction(busId);
+		return GtJsonResult.instanceSuccessMsg(userIntroduction).toString();
 	}
 
 

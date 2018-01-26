@@ -429,7 +429,6 @@ CREATE TABLE `t_union_user_introduction` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
   `bus_id` int(11) DEFAULT NULL COMMENT '商家id',
-  `content` varchar(1000) DEFAULT NULL COMMENT '内容',
-  `type` int(2) DEFAULT NULL COMMENT '类型 1：图片 2：文字',
+  `content` text COMMENT '内容',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟商家简介';

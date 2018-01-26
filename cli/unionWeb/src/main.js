@@ -7,12 +7,10 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-default/index.css';
 import './assets/css/index.less';
 import store from './store/index.js';
-import echarts from 'echarts';
 import $ from 'jquery';
 import iconfont from './assets/iconfont/iconfont.css';
 
 Vue.use(ElementUI);
-Vue.use(echarts);
 
 Vue.config.productionTip = false;
 

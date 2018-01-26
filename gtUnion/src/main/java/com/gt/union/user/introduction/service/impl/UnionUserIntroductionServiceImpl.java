@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
@@ -13,7 +14,6 @@ import com.gt.union.user.introduction.dao.IUnionUserIntroductionDao;
 import com.gt.union.user.introduction.entity.UnionUserIntroduction;
 import com.gt.union.user.introduction.service.IUnionUserIntroductionService;
 import com.gt.union.user.introduction.util.UnionUserIntroductionCacheUtil;
-import com.gt.union.user.introduction.vo.UnionUserIntroductionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,22 +38,22 @@ public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionS
     private RedisCacheUtil redisCacheUtil;
 
 	@Override
-	public List<UnionUserIntroduction> listValidByBusId(Integer busId) throws Exception{
+	public UnionUserIntroduction getValidByBusId(Integer busId) throws Exception{
 		if(busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
-		List<UnionUserIntroduction> result = null;
+		UnionUserIntroduction result = null;
 		String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
 		String data = redisCacheUtil.get(key);
 		if(StringUtil.isNotEmpty(data)){
-			result = JSONArray.parseArray(data, UnionUserIntroduction.class);
+			result = JSONArray.parseObject(data, UnionUserIntroduction.class);
 		}
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("bus_id", busId)
 				.eq("del_status", CommonConstant.DEL_STATUS_NO)
 				.orderBy("id", true);
-		result = unionUserIntroductionDao.selectList(wrapper);
-		if(ListUtil.isNotEmpty(result)){
+		result = unionUserIntroductionDao.selectOne(wrapper);
+		if(CommonUtil.isNotEmpty(result)){
 			redisCacheUtil.set(key, result);
 		}
 		return result;
@@ -61,43 +61,32 @@ public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionS
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void saveOrUpdate(Integer busId, UnionUserIntroductionVO unionUserIntroductionVO) throws Exception{
-		if(busId == null || unionUserIntroductionVO == null){
+	public void saveOrUpdate(Integer busId, UnionUserIntroduction unionUserIntroduction) throws Exception{
+		if(busId == null || unionUserIntroduction == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
-		List<UnionUserIntroduction> introductionList = unionUserIntroductionVO.getUserIntroductionList();
-		if(ListUtil.isEmpty(introductionList)){
-			throw new ParamException("请填写商家简介信息");
-		}
-		List<UnionUserIntroduction> list = listValidByBusId(busId);
+		UnionUserIntroduction userIntroduction = getValidByBusId(busId);
 		String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
-		if(ListUtil.isNotEmpty(list)){
+		if(CommonUtil.isNotEmpty(userIntroduction)){
 			//编辑 删除以前的
-			List<UnionUserIntroduction> delList = new ArrayList<UnionUserIntroduction>();
-			for(UnionUserIntroduction introduction : list){
-				UnionUserIntroduction userIntroduction = new UnionUserIntroduction();
-				userIntroduction.setId(introduction.getId());
-				userIntroduction.setDelStatus(CommonConstant.DEL_STATUS_YES);
-				delList.add(userIntroduction);
-			}
-			unionUserIntroductionDao.updateBatchById(delList);
+			UnionUserIntroduction introduction = new UnionUserIntroduction();
+			introduction.setId(userIntroduction.getId());
+			introduction.setDelStatus(CommonConstant.DEL_STATUS_YES);
+			unionUserIntroductionDao.updateById(introduction);
 			redisCacheUtil.remove(key);
 		}
-		for(UnionUserIntroduction introduction : introductionList){
-			if(introduction.getType() == UserIntroductionConstant.INTRODUCTION_TEXT_TYPE){
-				if (StringUtil.getStringLength(introduction.getContent()) > 300) {
-					throw new BusinessException("商家简介文字描述不可大于300字");
-				}
-			}
-			introduction.setId(null);
-			introduction.setBusId(busId);
-			introduction.setCreateTime(new Date());
-			introduction.setModifyTime(new Date());
-			introduction.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		}
-		unionUserIntroductionDao.insertBatch(introductionList);
-		if(ListUtil.isNotEmpty(introductionList)){
-			redisCacheUtil.set(key, introductionList);
+
+		UnionUserIntroduction saveUserIntroduction = new UnionUserIntroduction();
+		saveUserIntroduction.setId(null);
+		saveUserIntroduction.setBusId(busId);
+		saveUserIntroduction.setCreateTime(new Date());
+		saveUserIntroduction.setModifyTime(new Date());
+		saveUserIntroduction.setContent(unionUserIntroduction.getContent());
+		saveUserIntroduction.setDelStatus(CommonConstant.DEL_STATUS_NO);
+
+		unionUserIntroductionDao.insert(saveUserIntroduction);
+		if(CommonUtil.isNotEmpty(saveUserIntroduction)){
+			redisCacheUtil.set(key, saveUserIntroduction);
 		}
 	}
 

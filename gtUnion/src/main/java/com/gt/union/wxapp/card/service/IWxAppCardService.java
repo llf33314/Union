@@ -3,6 +3,7 @@ package com.gt.union.wxapp.card.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.user.introduction.entity.UnionUserIntroduction;
 import com.gt.union.wxapp.card.vo.CardDetailVO;
 import com.gt.union.wxapp.card.vo.MyCardDetailVO;
 import com.gt.union.wxapp.card.vo.NearUserVO;
@@ -110,4 +111,11 @@ public interface IWxAppCardService {
 	 */
 	String getPayParam(Integer duoFenMemberId, String orderNo, String phone) throws Exception;
 
+	/**
+	 * 获取商家简介
+	 * @param busId
+	 * @return
+	 * @throws Exception
+	 */
+	UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception;
 }
