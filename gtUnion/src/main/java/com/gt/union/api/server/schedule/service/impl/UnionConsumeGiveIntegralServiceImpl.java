@@ -77,7 +77,7 @@ public class UnionConsumeGiveIntegralServiceImpl implements IUnionConsumeGiveInt
 							saveIntegral.setCreateTime(new Date());
 							saveIntegral.setFanId(consume.getFanId());
 							saveIntegral.setUnionId(consume.getUnionId());
-							saveIntegral.setIntegral(unionConsume.getGiveIntegral());
+							saveIntegral.setIntegral(CommonUtil.isNotEmpty(unionConsume.getGiveIntegral()) ? unionConsume.getGiveIntegral() : 0);
 							unionCardIntegralService.save(saveIntegral);
 						} else {
 							Double cardIntegral = unionCardIntegral.getIntegral() == null ? 0 : unionCardIntegral.getIntegral();

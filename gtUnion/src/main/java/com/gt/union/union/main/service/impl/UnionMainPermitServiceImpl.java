@@ -164,7 +164,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         } catch (Exception e) {
             logger.error("购买盟主服务，支付回调错误", e);
             result.put("code", -1);
-            result.put("msg", e.getMessage());
+            result.put("msg", "订单不存在");
             return JSONObject.toJSONString(result);
         }
         if (permit == null) {
@@ -175,8 +175,8 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         // 判断permit支付状态
         Integer orderStatus = permit.getOrderStatus();
         if (orderStatus == UnionConstant.PERMIT_ORDER_STATUS_SUCCESS || orderStatus == UnionConstant.PERMIT_ORDER_STATUS_FAIL) {
-            result.put("code", 0);
-            result.put("msg", "重复处理");
+            result.put("code", -1);
+            result.put("msg", "订单已重复处理");
             return JSONObject.toJSONString(result);
         } else {
             UnionMainPermit updatePermit = new UnionMainPermit();

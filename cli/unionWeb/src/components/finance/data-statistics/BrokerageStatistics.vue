@@ -58,7 +58,18 @@ export default {
           x: 'left',
           data: ['已结算佣金', '未结算佣金']
         },
-        color: ['#20A0FF', '#8ad147'],
+        color: [
+          '#20a0ff',
+          '#2ec38a',
+          '#507baf',
+          '#e24c61',
+          '#fe6d6c',
+          '#ff9348',
+          '#ffbf4c',
+          '#fdd451',
+          '#b177f2',
+          '#47d09c'
+        ],
         series: [
           {
             name: '',
@@ -117,7 +128,18 @@ export default {
           x: 'left',
           data: ['已支付佣金', '未支付佣金']
         },
-        color: ['#20A0FF', '#8ad147'],
+        color: [
+          '#20a0ff',
+          '#2ec38a',
+          '#507baf',
+          '#e24c61',
+          '#fe6d6c',
+          '#ff9348',
+          '#ffbf4c',
+          '#fdd451',
+          '#b177f2',
+          '#47d09c'
+        ],
         series: [
           {
             name: '',

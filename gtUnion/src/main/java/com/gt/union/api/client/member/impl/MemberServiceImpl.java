@@ -101,7 +101,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("phone",phone);
 		param.put("busId",busId);
 		param.put("memberId",memberId);
-		logger.info("小程序粉丝用户手机号登录，请求参数：{}", JSON.toJSONString(param));
+		logger.info("小程序粉丝绑定手机号，请求参数：{}", JSON.toJSONString(param));
 		try {
 			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
 			if(StringUtil.isEmpty(data)){
