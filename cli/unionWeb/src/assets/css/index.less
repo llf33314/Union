@@ -418,28 +418,74 @@ hr{
     }
   }
   .el-dialog--tiny{
-    width:900px ;
+    width:700px ;
+    .el-dialog__header{
+      padding: 20px 20px 15px;
+      border-bottom: 1px solid #eee;
+    }
     .el-dialog__body{
-      padding: 0;
-      margin-top: 15px;
-      height: 500px;
+      padding: 0 30px;
+      height: 400px;
       overflow-y: auto;
-      >div{
-        width: 830px;
-        height: 125px;
-        background-color: #ffffff;
-        border: solid 1px #dfe6ec;
-        margin: 30px;
-        >div{
-          padding: 10px 0 10px 31px;
-          background-color:#EEF1F6;
-          color: #333333;
-          font-weight: bold;
+      box-sizing: border-box;
+      nav{
+        margin: 20px 0 15px 0;
+      }
+      .unionCardDetails{
+        display: flex;
+        //详情左边样式
+        .el-radio-group{
+          width: 200px;
+          margin-right: 35px;
+          margin-top: 4px;
+          .el-radio-button, .el-radio-button__inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 10px;
+            height: 87px;
+            .el-radio-button__inner{
+              border: 1px solid #bfcbd9!important;
+              border-radius: 4px;
+            }
+          }
         }
-        >p{
-          margin: 18px 30px;
-          span{
-            margin-left: 25px;
+        //详情右边样式
+        .unionCardDetailsRight{
+          width:350px;
+          height:280px;
+          border: 1px solid #BFCBD9;
+          padding: 20px 10px 20px 30px;
+          box-sizing: border-box;
+          border-radius: 4px;
+          line-height: 2;
+          >div{
+            height: 240px;
+            overflow-y: auto;
+            .DetailsName{
+              color: #333;
+              font-weight: bold;
+            }
+            .DetailsTime{
+              color: #999;
+            }
+            .DetailsItems{
+              color: #333;
+            }
+            .companyName {
+              >li{
+                margin-left: 25px;
+                color: #999;
+              }
+              .circle {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #ccc;
+              }
+            }
           }
         }
       }
@@ -2184,10 +2230,7 @@ hr{
       }
     }
   }
-
 }
-
-
 
 //财务页面所有样式---------------------------------------------------------------------------------------------3
 #finance{
