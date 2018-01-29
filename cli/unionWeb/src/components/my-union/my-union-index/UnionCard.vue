@@ -48,8 +48,8 @@
           </el-radio-button>
           <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
             <div class="UnionDiscountCard"></div>
-            <div>{{item.card.name}}</div>
-            <div v-if="item.isExpired">已过期</div>
+            <div>{{item.card.name}}fsdfdf</div>
+            <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
           </el-radio-button>
         </el-radio-group>
         <!-- 右侧联盟卡详情 -->

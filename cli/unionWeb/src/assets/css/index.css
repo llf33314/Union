@@ -404,7 +404,14 @@ hr {
 #myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button .el-radio-button__inner,
 #myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button__inner .el-radio-button__inner {
   border: 1px solid #bfcbd9!important;
-  border-radius: 4px;
+  border-radius: 6px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button .outOfDate,
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button__inner .outOfDate {
+  width: 38px;
+  position: absolute;
+  right: 6px;
+  top: 3px;
 }
 #myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight {
   width: 350px;
