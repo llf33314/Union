@@ -15,6 +15,7 @@ export default {
   data() {
     return {
       unionNotice: '',
+      unionNotice_: '',
       unionNoticeMaxlength: 160
     };
   },
@@ -45,8 +46,10 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.unionNotice = res.data.data.content;
+            this.unionNotice_ = res.data.data.content;
           } else {
             this.unionNotice = '';
+            this.unionNotice_ = '';
           }
         })
         .catch(err => {
@@ -74,12 +77,14 @@ export default {
       if (valueLength > 80) {
         return false;
       } else {
-        $http
-          .put(`/unionMainNotice/unionId/${this.unionId}`, this.unionNotice)
-          .then(res => {})
-          .catch(err => {
-            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
-          });
+        if (this.unionNotice !== this.unionNotice_) {
+          $http
+            .put(`/unionMainNotice/unionId/${this.unionId}`, this.unionNotice)
+            .then(res => {})
+            .catch(err => {
+              this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+            });
+        }
       }
     },
     unionNoticeKeydown(e) {
@@ -97,10 +102,10 @@ export default {
 </script>
 
 <style scoped lang='less' rel="stylesheet/less">
-  .grid-content {
-    font-family: 'Microsoft YaHei';
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 13px;
-  }
+.grid-content {
+  font-family: 'Microsoft YaHei';
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 13px;
+}
 </style>

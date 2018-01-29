@@ -47,9 +47,15 @@
           <div>{{detailData.disCountCard.card.name}}</div>
         </el-radio-button>
         <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
-          <div class="UnionDiscountCard"></div>
-          <div>{{item.card.name}}</div>
-          <div v-if="item.isExpired">已过期</div>
+          <div v-if="item.isExpired">
+            <div class="UnionDiscountCard"></div>
+            <div>{{item.card.name}}</div>
+            <div><span>已过期</span></div>
+          </div>
+          <div v-else>
+            <div class="UnionDiscountCard"></div>
+            <div>{{item.card.name}}</div>
+          </div>
         </el-radio-button>
       </el-radio-group>
       <!-- 右侧联盟卡详情 -->
@@ -83,7 +89,6 @@
             </ul>
           </li>
         </ol>
-
       </div>
     </el-dialog>
   </div>
