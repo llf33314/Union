@@ -328,17 +328,18 @@ export default {
     checkListChange1() {},
     // 活动卡更改
     checkListChange2() {
-      let activityCheckList_;
+      this.payPrice = 0;
+      let activityCheckList_ = [];
       this.checkList2.forEach(v => {
-        activityCheckList_ = this.unionCardList.activityCardList.filter(item => {
-          return item.activity.id === v;
+        this.unionCardList.activityCardList.forEach(val => {
+          if (val.activity.id === v) {
+            activityCheckList_.push(val.activity.price);
+          }
         });
       });
-      this.payPrice = 0;
-      console.log(activityCheckList_, 111);
       if (activityCheckList_) {
         activityCheckList_.forEach(v => {
-          this.payPrice += v.activity.price - 0;
+          this.payPrice += v - 0;
         });
       }
       this.payPrice = this.payPrice.toFixed(2);
@@ -346,7 +347,7 @@ export default {
     del1(item) {
       let delIndex;
       this.checkList1.forEach((v, i) => {
-        if (v.union.id === item.union.id) {
+        if (v === item.union.id) {
           delIndex = i;
         }
       });
@@ -355,7 +356,7 @@ export default {
     del2(item) {
       let delIndex;
       this.checkList2.forEach((v, i) => {
-        if (v.activity.id === item.activity.id) {
+        if (v === item.activity.id) {
           delIndex = i;
         }
       });
