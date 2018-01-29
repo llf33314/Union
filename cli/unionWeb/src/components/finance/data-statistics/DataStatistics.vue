@@ -1,6 +1,5 @@
 <template>
-  <div>
-    数据统计
+  <div class="DataStatistics">
     <brokerage-statistics></brokerage-statistics>
     <discount-card-statistics></discount-card-statistics>
     <activity-card-statstics></activity-card-statstics>

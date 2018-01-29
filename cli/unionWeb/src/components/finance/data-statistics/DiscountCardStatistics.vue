@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="DiscountCardStatistics">
     <h3>联盟折扣卡领卡统计</h3>
-    <div>
+    <div class="btnGroup">
       <el-radio-group v-model="timeRange" @change="getData">
-        <el-radio-button label="近七天"></el-radio-button>
-        <el-radio-button label="近一月"></el-radio-button>
-        <el-radio-button label="近半年"></el-radio-button>
-        <el-radio-button label="近一年"></el-radio-button>
+        <el-radio-button label="近七天" ></el-radio-button>
+        <el-radio-button label="近一月" ></el-radio-button>
+        <el-radio-button label="近半年" ></el-radio-button>
+        <el-radio-button label="近一年" ></el-radio-button>
       </el-radio-group>
     </div>
     <div id="discountCardStatistics" style="width:1080px;height:400px;">
@@ -41,13 +41,20 @@ export default {
     init() {
       this.option = {
         title: {
-          text: ''
+          text: '',
+          subtext: '数量（张）',
+          padding:[0,0,0,70],
+          subtextStyle: {
+            color: '#666'
+          }
         },
         tooltip: {
           trigger: 'axis'
         },
         legend: {
-          data: this.unionList
+          data: this.unionList,
+          x:'right',
+          padding:[0,120,0,0]
         },
         color: [
           '#20a0ff',

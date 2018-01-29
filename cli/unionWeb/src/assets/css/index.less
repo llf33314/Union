@@ -2191,47 +2191,82 @@ hr{
 
 //财务页面所有样式---------------------------------------------------------------------------------------------3
 #finance{
-  .el-table .cell {
-    padding-left: 30px;
-  }
-  //弹出框样式
-  .el-dialog--tiny{
-    width:650px;
-    height: 360px;
-  }
-  .footer_{
-    .code_{
-      .el-dialog--tiny{
-        height: 400px;
+  //佣金样式
+  .BroKerage {
+    .el-table .cell {
+      padding-left: 30px;
+    }
+    //弹出框样式
+    .el-dialog--tiny {
+      width: 650px;
+      height: 360px;
+    }
+    .footer_ {
+      .code_ {
+        .el-dialog--tiny {
+          height: 400px;
+        }
+      }
+      .el-dialog--tiny {
+        height: 445px;
       }
     }
-    .el-dialog--tiny{
-      height: 445px;
+    .el-dialog__body {
+      padding: 0;
+      margin-top: 15px;
     }
-  }
-  .el-dialog__body {
-    padding: 0;
-    margin-top: 15px;
-  }
-  .Popup_ {
-    margin-top:30px;
-    padding-left: 50px;
-    .el-form-item__error{
-      top: 20%;
-      left: 40%;
-    }
-  }
-  .model_1{
-    .el-dialog--tiny{
-      width:560px;
-      img{
-        width:200px;
-        height:200px;
+    .Popup_ {
+      margin-top: 30px;
+      padding-left: 50px;
+      .el-form-item__error {
+        top: 20%;
+        left: 40%;
       }
     }
+    .model_1 {
+      .el-dialog--tiny {
+        width: 560px;
+        img {
+          width: 200px;
+          height: 200px;
+        }
+      }
+    }
+    .el-form-item__error:nth-child(3) {
+      left: 62%;
+    }
   }
-  .el-form-item__error:nth-child(3){
-    left: 62%;
+  .DataStatistics{
+    .BrokerageStatistics{
+      >nav{
+        display: flex;
+      }
+      >h3{
+        margin: 20px 0 15px 0;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+    }
+    .DiscountCardStatistics{
+      >h3{
+        margin: 30px 0 20px 0;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+      .btnGroup{
+        margin:0 0 20px 395px ;
+      }
+    }
+    .ActivityCardStatstics{
+      >h3{
+        margin: 20px 0 15px 0;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+      >nav{
+        display: flex;
+      }
+    }
   }
 }
 
