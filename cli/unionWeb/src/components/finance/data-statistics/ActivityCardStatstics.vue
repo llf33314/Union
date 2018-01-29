@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="ActivityCardStatstics">
     <h3>联盟活动卡发售统计</h3>
-    <div>
+    <nav>
       <div id="publishCountStatistics" style="width:500px;height:300px;"></div>
       <div id="sellBrokerageStatistics" style="width:500px;height:300px;"></div>
-    </div>
+    </nav>
   </div>
 </template>
 

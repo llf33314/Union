@@ -1937,40 +1937,64 @@ hr {
 #front #transaction .model_1 .el-dialog__body {
   padding: 0;
 }
-#finance .el-table .cell {
+#finance .BroKerage .el-table .cell {
   padding-left: 30px;
 }
-#finance .el-dialog--tiny {
+#finance .BroKerage .el-dialog--tiny {
   width: 650px;
   height: 360px;
 }
-#finance .footer_ .code_ .el-dialog--tiny {
+#finance .BroKerage .footer_ .code_ .el-dialog--tiny {
   height: 400px;
 }
-#finance .footer_ .el-dialog--tiny {
+#finance .BroKerage .footer_ .el-dialog--tiny {
   height: 445px;
 }
-#finance .el-dialog__body {
+#finance .BroKerage .el-dialog__body {
   padding: 0;
   margin-top: 15px;
 }
-#finance .Popup_ {
+#finance .BroKerage .Popup_ {
   margin-top: 30px;
   padding-left: 50px;
 }
-#finance .Popup_ .el-form-item__error {
+#finance .BroKerage .Popup_ .el-form-item__error {
   top: 20%;
   left: 40%;
 }
-#finance .model_1 .el-dialog--tiny {
+#finance .BroKerage .model_1 .el-dialog--tiny {
   width: 560px;
 }
-#finance .model_1 .el-dialog--tiny img {
+#finance .BroKerage .model_1 .el-dialog--tiny img {
   width: 200px;
   height: 200px;
 }
-#finance .el-form-item__error:nth-child(3) {
+#finance .BroKerage .el-form-item__error:nth-child(3) {
   left: 62%;
+}
+#finance .DataStatistics .BrokerageStatistics > nav {
+  display: flex;
+}
+#finance .DataStatistics .BrokerageStatistics > h3 {
+  margin: 20px 0 15px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+#finance .DataStatistics .DiscountCardStatistics > h3 {
+  margin: 30px 0 20px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+#finance .DataStatistics .DiscountCardStatistics .btnGroup {
+  margin: 0 0 20px 395px ;
+}
+#finance .DataStatistics .ActivityCardStatstics > h3 {
+  margin: 20px 0 15px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+#finance .DataStatistics .ActivityCardStatstics > nav {
+  display: flex;
 }
 #noRegister .model_1 .el-dialog--tiny {
   width: 450px;

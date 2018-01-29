@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="BroKerage">
     <div id="union_people">
       <ul class="clearfix">
         <li>

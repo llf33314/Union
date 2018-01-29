@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'first',
+      activeName: 'second',
       fullscreenLoading: true,
       loadingVisible: false
     };
