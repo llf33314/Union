@@ -5,7 +5,6 @@ import * as $store from '@/store/index.js';
 
 // axios 配置
 axios.defaults.baseURL = $store.default.state.baseUrl;
-
 axios.defaults.timeout = 5000;
 
 // http request 拦截器
@@ -65,35 +64,52 @@ function checkCode(res) {
   return res;
 }
 
+// 设置缓存时间和缓存请求数组
+var requestUrl = [];
+var saveTime = 1000;
+
 export default {
   post(url, data) {
-    return axios({
-      method: 'post',
-      url,
-      data: data,
-      timeout: 10000,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json; charset=UTF-8'
-      }
-    })
-      .then(res => {
-        return checkStatus(res);
-      })
-      .then(res => {
-        return checkCode(res);
-      })
-      .then(res => {
-        if (res.data.redirectUrl && res.data.redirectUrl !== '') {
-          top.window.location = res.data.redirectUrl;
+    let nowTime = new Date().getTime();
+    requestUrl = requestUrl.filter(item => {
+      return item.setTime + saveTime > nowTime;
+    });
+    let sessionUrl = requestUrl.filter(item => {
+      return item.url === url;
+    });
+    if (sessionUrl.length > 0) {
+      return new Promise((res, rej) => {});
+    } else {
+      let item = { url: url, setTime: new Date().getTime() };
+      requestUrl.push(item);
+      return axios({
+        method: 'post',
+        url: url,
+        data: data,
+        timeout: 10000,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json; charset=UTF-8'
         }
-        return res;
-      });
+      })
+        .then(res => {
+          return checkStatus(res);
+        })
+        .then(res => {
+          return checkCode(res);
+        })
+        .then(res => {
+          if (res.data.redirectUrl && res.data.redirectUrl !== '') {
+            top.window.location = res.data.redirectUrl;
+          }
+          return res;
+        });
+    }
   },
   del(url, data) {
     return axios({
       method: 'delete',
-      url,
+      url: url,
       data: data,
       timeout: 10000,
       headers: {
@@ -117,7 +133,7 @@ export default {
   put(url, data) {
     return axios({
       method: 'put',
-      url,
+      url: url,
       data: data,
       timeout: 10000,
       headers: {
@@ -141,7 +157,7 @@ export default {
   get(url, params) {
     return axios({
       method: 'get',
-      url,
+      url: url,
       params, // get 请求时带的参数
       timeout: 10000,
       headers: {
