@@ -113,7 +113,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "联盟卡-我的详情", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardDetail/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardDetail/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							   @ApiParam(value = "版本号", name = "version", required = true)
 							   @PathVariable("version") String version,
@@ -127,7 +127,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-我的详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardDetail/list/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardDetail/list/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							   @ApiParam(value = "版本号", name = "version", required = true)
 							   @PathVariable("version") String version,
@@ -140,7 +140,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-消费记录", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardConsume/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardConsume/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardConsume(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
@@ -153,7 +153,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-商家简介", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/userIntroduction/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/userIntroduction/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String userIntroduction(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
@@ -164,13 +164,18 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-商家门店", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/userShop/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/userShop/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String userShop(HttpServletRequest request,
 								   @ApiParam(value = "版本号", name = "version", required = true)
 								   @PathVariable("version") String version,
 								   @ApiParam(value = "商家id", name = "busId", required = true)
 								   @PathVariable("busId") Integer busId) throws Exception {
 		List<WsWxShopInfoExtend> list = wxAppCardService.listShopByBusId(busId);
+		if(ListUtil.isNotEmpty(list)){
+			for(WsWxShopInfoExtend shopInfo : list){
+				shopInfo.setImageUrl(StringUtil.isNotEmpty(shopInfo.getImageUrl()) ? (PropertiesUtil.getResourceUrl() + shopInfo.getImageUrl()) : null);
+			}
+		}
 		return GtJsonResult.instanceSuccessMsg(list).toString();
 	}
 
@@ -186,7 +191,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "发送短信验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/sms", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/{busId}/sms", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String sendMsg(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
@@ -210,7 +215,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "绑定手机号", notes = "绑定手机号", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/bind/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/{busId}/bind/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String bindCardPhone(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version
 			, @ApiParam(name="phone", value = "手机号", required = true) @RequestParam("phone") String phone
@@ -222,7 +227,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "办理联盟卡", notes = "办理联盟卡", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/transaction/{busId}/{unionId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/transaction/{busId}/{unionId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String cardTransaction(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version
 			,@ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
@@ -233,7 +238,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "获取支付参数", notes = "获取支付参数", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/payParam/{duoFenMemberId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
+	@RequestMapping(value = "/payParam/{duoFenMemberId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
 	public String payParam(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version,
 			 @ApiParam(value = "多粉粉丝用户id", name = "duoFenMemberId", required = true) @PathVariable("duoFenMemberId") Integer duoFenMemberId,

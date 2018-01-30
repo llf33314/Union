@@ -19,5 +19,5 @@ public interface IUnionCardApplyService {
 	 * @param activityIdList
 	 * @return
 	 */
-	UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, Integer unionId, List<Integer> activityIdList);
+	UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList);
 }
