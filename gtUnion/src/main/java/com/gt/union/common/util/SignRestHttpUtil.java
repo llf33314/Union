@@ -80,6 +80,15 @@ public class SignRestHttpUtil {
 		}
 	}
 
+	public static String reqPostUTF8(String url, String jsonObject) throws Exception{
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Accept", MediaType.APPLICATION_JSON_UTF8.toString());
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(jsonObject, headers);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		return result;
+	}
+
 
 	/**
 	 *
@@ -107,6 +116,16 @@ public class SignRestHttpUtil {
 	public static String reqGetUTF8(String url, String jsonObject) throws Exception{
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Accept", MediaType.APPLICATION_JSON_UTF8.toString());
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(jsonObject, headers);
+		String result = restTemplate.getForObject(url, String.class, httpEntity);
+		return result;
+	}
+
+	public static String reqTokenGetUTF8(String url, String jsonObject, String token) throws Exception{
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Accept", MediaType.APPLICATION_JSON_UTF8.toString());
+		headers.add("token", token);
 		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 		HttpEntity<String> httpEntity = new HttpEntity<String>(jsonObject, headers);
 		String result = restTemplate.getForObject(url, String.class, httpEntity);

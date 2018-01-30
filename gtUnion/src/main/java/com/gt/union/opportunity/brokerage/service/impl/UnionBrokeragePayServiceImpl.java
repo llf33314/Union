@@ -304,6 +304,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        logger.info("商机支付请求参数信息：busId == " + busId + ", verifierId == " + verifierId + ", opportunityIdList : " +JSONObject.toJSONString(opportunityIdList) + ", memberId == " + memberId);
+        logger.info("商机支付模块：=====>" + unionBrokeragePayStrategyService.getClass().getName());
         // 校验参数有效性
         List<UnionBrokeragePay> savePayList = new ArrayList<>();
         BigDecimal brokerageSum = BigDecimal.ZERO;
