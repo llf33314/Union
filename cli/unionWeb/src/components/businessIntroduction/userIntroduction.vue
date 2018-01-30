@@ -1,16 +1,12 @@
-
 <template>
   <div id="merchantDescription">
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="保存到小程序中...">
     </div>
       <nav class="descriptionNav">商家简介</nav>
-      <p class="nav">下面的编辑信息，编辑完后，将在商家联盟粉丝端进行展示</p>
-      <div class="infoCommon">
-        <img class="imagePhone" src="~assets/images/Phone1.png">
+      <p class="nav">下面的编辑信息，编辑完之后，将在商家联盟粉丝端进行展示</p>
         <div class="dr" style="height: 520px;">
           <vqEditor @getValue = "getContent"></vqEditor>
         </div>
-      </div>
       <div class="save">
           <el-button type="primary" @click="comfirmAddInfo">保存</el-button>
       </div>
@@ -98,12 +94,7 @@
       }
     }
   }
-  .imagePhone{
-    position: absolute;
-    left: 299px;
-    top: 189px;
-  }
   .save{
-    margin: 0 0 50px 405px;
+    margin: 41px 0 50px 130px;
   }
 </style>
