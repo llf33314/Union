@@ -2,6 +2,7 @@ package com.gt.union.api.client.shop.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.gt.api.bean.sign.SignBean;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.shop.ShopService;
@@ -9,10 +10,14 @@ import com.gt.union.api.client.shop.vo.ShopVO;
 import com.gt.union.common.util.ApiResultHandlerUtil;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +32,8 @@ public class ShopServiceImpl implements ShopService {
 
 	private Logger logger = LoggerFactory.getLogger(ShopServiceImpl.class);
 
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Override
 	public List<WsWxShopInfoExtend> listByBusId(Integer busId) {
@@ -35,7 +42,7 @@ public class ShopServiceImpl implements ShopService {
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(busId);
-			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.reqPostUTF8(url, JSON.toJSONString(req), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据商家id获取门店列表信息，结果：{}", result);
 			List<WsWxShopInfoExtend> list = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			return list;
@@ -52,7 +59,7 @@ public class ShopServiceImpl implements ShopService {
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(list);
-			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(req), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据门店id列表获取门店列表信息，结果：{}", result);
 			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			return shops;
@@ -71,7 +78,7 @@ public class ShopServiceImpl implements ShopService {
 			list.add(id);
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(list);
-			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(req), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据门店id获取门店信息，结果：{}", result);
 			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			return CommonUtil.isNotEmpty(shops) ? shops.get(0) : null;

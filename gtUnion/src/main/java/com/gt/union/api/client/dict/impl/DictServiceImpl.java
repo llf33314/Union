@@ -83,7 +83,7 @@ public class DictServiceImpl implements IDictService {
 		Double exchange = null;
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List<Map> dict = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isEmpty(dict)){
@@ -150,7 +150,7 @@ public class DictServiceImpl implements IDictService {
 		Double exchange = null;
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			if(StringUtil.isEmpty(result)){
 				return null;
 			}
@@ -186,7 +186,7 @@ public class DictServiceImpl implements IDictService {
 		param.put("style",itemKey);
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List list = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isNotEmpty(list)){

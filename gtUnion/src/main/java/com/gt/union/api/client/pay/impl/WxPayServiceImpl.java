@@ -11,6 +11,8 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.util.entity.param.pay.ApiEnterprisePayment;
 import com.gt.util.entity.param.pay.SubQrPayParams;
 import org.slf4j.Logger;
@@ -113,7 +115,7 @@ public class WxPayServiceImpl implements WxPayService {
 	}
 
 	@Override
-    public GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource){
+    public GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource) throws Exception{
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("amount", amount);
         data.put("desc", desc);
@@ -127,11 +129,12 @@ public class WxPayServiceImpl implements WxPayService {
         param.put("reqdata", data);
         logger.info("商家提现请求参数：{}",JSONObject.toJSONString(param));
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
-        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, PropertiesUtil.getWxmpSignKey());
-        logger.info("商家提现，结果：{}", result.toString());
-        if(CommonUtil.isEmpty(result)){
+        String dataStr = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
+        logger.info("商家提现，结果：{}", dataStr);
+        if(StringUtil.isEmpty(dataStr)){
             return GtJsonResult.instanceErrorMsg("提现失败");
         }
+        Map result = JSONObject.parseObject(dataStr, Map.class);
         if(CommonUtil.toInteger(result.get("code")) == 0){
             return GtJsonResult.instanceSuccessMsg();
         }else {
