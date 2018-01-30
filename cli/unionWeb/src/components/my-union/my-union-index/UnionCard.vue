@@ -43,21 +43,24 @@
         <!-- 左侧联盟卡 -->
         <div class="step3">
           <el-radio-group v-model="unionCardId">
-            <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id" :label="detailData.disCountCard.card.id">
+            <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id"
+             :label="detailData.disCountCard.card.id">
               <div style="z-index: 10;color:#fff">{{detailData.disCountCard.card.name}}</div>
-              <div class="dddddd">
+              <div class="choiceShadow">
                 <div class="bgcolor1" style=""></div>
-                <div class="UnionDiscountCard"></div>
+                <div class="shadow"></div>
                 <img src="~assets/images/images3.png"></img>
               </div>
             </el-radio-button>
-            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
+            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" 
+            :label="item.card.id">
               <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
               <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
-              <div class="dddddd">
+              <div class="choiceShadow">
                 <!--//backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'-->
-                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}" style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
-                <div class="UnionDiscountCard"></div>
+                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}" 
+                style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
+                <div class="shadow"></div>
                 <img src="~assets/images/images3.png" style="display: none"></img>
               </div>
             </el-radio-button>

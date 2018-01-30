@@ -1,6 +1,6 @@
 <template>
   <div id="merchantDescription">
-    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="保存到小程序中...">
+    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="保存到微信小程序中...">
     </div>
       <nav class="descriptionNav">商家简介</nav>
       <p class="nav">下面的编辑信息，编辑完之后，将在商家联盟粉丝端进行展示</p>
@@ -95,6 +95,6 @@
     }
   }
   .save{
-    margin: 41px 0 50px 130px;
+    margin: 100px 0 50px 130px;
   }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <div id="transaction" class="clearfix">
+  <div id="transaction">
     <!-- 手机号，验证码 -->
-    <div class="uninCardContent">
-      <p>办卡信息</p>
+    <nav class="handleCardInformation">
+      <p class="cardInformation">办卡信息</p>
       <el-form :label-position="'right'" :model="form1" :rules="rules1" ref="ruleForm" label-width="120px">
         <el-form-item label="办卡手机号：" prop="phone">
           <el-col style="width: 250px;margin-right: 20px;">
@@ -18,11 +18,13 @@
         </el-form-item>
         <el-button type="primary" @click="confirmCode('ruleForm')" style="position: relative;top: -58px;left: 390px;" id="affirm">确认</el-button>
       </el-form>
-    </div>
+    </nav>
     <!-- 联盟卡列表 -->
-    <div>
+    <main class="unionCardList">
+      <p class="cardInformation">联名卡列表</p>
+    <div class="unionCardListStatic">
       <el-checkbox-group v-model="checkList1" @change="checkListChange1">
-        <el-checkbox v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag||visible1">
+        <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag">
           <p v-show="item.disabled">已办理</p>
           <p>{{item.union.name}}</p>
           <p>免费</p>
@@ -38,10 +40,10 @@
               </li>
             </ol>
           </div>
-        </el-checkbox>
+        </el-checkbox-button>
       </el-checkbox-group>
       <el-checkbox-group v-model="checkList2" @change="checkListChange2">
-        <el-checkbox v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag||visible1">
+        <el-checkbox-button v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag">
           <p v-show="item.disabled">已办理</p>
           <p>{{item.activity.name}}</p>
           <p>{{item.activity.price}}</p>
@@ -62,10 +64,13 @@
               </ul>
             </li>
           </ol>
-        </el-checkbox>
+        </el-checkbox-button>
       </el-checkbox-group>
+    </div>
+    </main>
+    <footer>
       <div v-if="checkList1.length||checkList2.length">
-        <P>办卡列表</P>
+        <p class="cardInformation">办卡列表</p>
         <p v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" v-show="checkList1.indexOf(item.union.id)> -1">
           <span>{{item.union.name}}</span>
           <span>免费</span>
@@ -83,7 +88,8 @@
         <p>合计：￥{{payPrice}}</p>
         <el-button type="primary" @click="submitForm">确定</el-button>
       </div>
-    </div>
+
+  </footer>
 
     <!-- 弹出框 付款 -->
     <div class="model_1">
