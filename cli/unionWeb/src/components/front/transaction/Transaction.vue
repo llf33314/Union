@@ -1,132 +1,151 @@
 <template>
   <div id="transaction" class="clearfix">
+    <!-- 手机号，验证码 -->
     <div class="uninCardContent">
-      <div>
-        <p>办理联盟卡</p>
-        <!-- 手机号，验证码 -->
-        <el-form :label-position="labelPosition" :model="form1" :rules="rules" ref="ruleForm" label-width="120px">
-          <el-form-item label="手机号码：" prop="phone">
-            <el-col style="width: 250px;margin-right: 20px;">
-              <el-input v-model="form1.phone" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')" @keyup.enter.native="getVerificationCode"></el-input>
-            </el-col>
-            <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime>0?form1.countDownTime+'s':'获取验证码' }}</el-button>
-          </el-form-item>
-          <el-form-item label="短信验证码：" prop="code">
-            <el-row style="width: 250px;">
-              <el-input v-model="form1.code" @keyup.enter.native="confirmCode('ruleForm')"></el-input>
-            </el-row>
-          </el-form-item>
-          <el-button type="primary" @click="confirmCode('ruleForm')" style="position: relative;top: -58px;left: 390px;" id="affirm">确认</el-button>
-        </el-form>
-      </div>
-      <!-- 其他办理联盟卡信息 -->
-      <el-form :label-position="labelPosition" :model="form2" v-show="visible2" ref="ruleForm2" label-width="120px">
-        <div class="selectUnion" v-show="form2.unionList.length>1">
-          <p>选择联盟</p>
-          <el-form-item label="选择联盟:">
-            <el-radio-group v-model="unionId" style="margin-top:10px;margin-bottom: 20px;" @change="unionIdChange">
-              <el-radio-button v-for="item in form2.unionList" :key="item.id" :label="item.id">
-                <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
-                  <div class="dddddd clearfix">
-                    <img v-bind:src="item.img" alt="" class="fl unionImg">
-                    <i></i>
-                  </div>
-                </el-tooltip>
-              </el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-        </div>
-        <div class="selectUnionCard">
-          <p>选择联盟卡</p>
-          <el-form-item>
-            <div class="SwitchAround">
-              <i class="forward" style="font-style:normal"> &lt;</i>
-              <i class="backward" style="font-style:normal"> &gt;</i>
-              <div>
-                <el-checkbox-group v-model="activityCheckList">
-                  <el-checkbox-button v-if="isDiscountCard" :label="0" disabled>
-                    <div class="clearfix SelectunionImg1">
-                      <span  class="fl SelectunionImg " style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)"></span>
-                      <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
-                        <h6 style="margin-bottom: 17px;color: #333333"> 联盟折扣卡 </h6>
-                      </div>
-                      <i></i>
-                    </div>
-                  </el-checkbox-button>
-                  <el-checkbox-button v-for="(item,index1) in form2.activityList" :key="item.activity.id" :label="item.activity.id">
-                    <div class="clearfix">
-                      <span  class="fl SelectunionImg" :class="'m'+item.activity.color2+index1"></span>
-                      <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
-                        <h6 style="margin-bottom: 17px;color: #333333">{{item.activity.name}}</h6>
-                      </div>
-                      <i></i>
-                    </div>
-                  </el-checkbox-button>
-                </el-checkbox-group>
-              </div>
-            </div>
-          </el-form-item>
-        </div>
-        <!-- 活动卡详情 -->
-        <div class="ActivityCardDetails">
-          <!--联盟卡折扣-->
-          <div class="UnionDiscountCard" v-if="isDiscountCard">
-            <p>联盟折扣卡</p>
-            <div v-if="discount != 1">享受折扣： {{ discount * 10 }}折 </div>
-            <div v-if="discount == 1">享受折扣： 无 </div>
-          </div>
-          <!--活动卡服务-->
-          <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id)> -1">
-            <p> {{ item.activity.name }} </p>
-            <div style="margin-left: 82px;cursor: pointer;color: #2a2a2a;">服务项目：
-              <span @click="showDetail(item.activity.id)">
-                <strong style="cursor: pointer;color: #20A0FF;"> {{ item.itemCount }} </strong>个</span>
-            </div>
-            <div>联盟卡有效天数：
-              <span> {{ item.activity.validityDay }} 天</span>
-            </div>
-            <div style="margin-left: 112px;">价格：
-              <span> ￥{{ (item.activity.price).toFixed(2) }}</span>
-            </div>
-          </div>
-        </div>
-        <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm2')">确定</el-button>
-          <el-button @click="cancel('ruleForm2')">取消</el-button>
+      <p>办卡信息</p>
+      <el-form :label-position="'right'" :model="form1" :rules="rules1" ref="ruleForm" label-width="120px">
+        <el-form-item label="办卡手机号：" prop="phone">
+          <el-col style="width: 250px;margin-right: 20px;">
+            <el-input v-model="form1.phone" placeholder="请输入需要办理联盟卡的手机号" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')"
+              @keyup.enter.native="getVerificationCode" @change="phoneChange"></el-input>
+          </el-col>
+          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{form1.countDownTime>0?form1.countDownTime+'s':'获取验证码'}}</el-button>
         </el-form-item>
+        <el-form-item label="短信验证码：" prop="code">
+          <el-row style="width: 250px;">
+            <el-input v-model="form1.code" placeholder="请输入短信验证码" @keyup.enter.native="confirmCode('ruleForm')"></el-input>
+          </el-row>
+        </el-form-item>
+        <el-button type="primary" @click="confirmCode('ruleForm')" style="position: relative;top: -58px;left: 390px;" id="affirm">确认</el-button>
       </el-form>
     </div>
-    <!-- 公众号信息 -->
-    <is-follow></is-follow>
+    <!-- 联盟卡列表 -->
+    <!-- 静态 联盟卡列表 -->
+    <div v-show="visible1">
+      <!-- 折扣卡 -->
+      <div v-if="unionCardList.discountCardList.length">
+        <div v-for="item in unionCardList.discountCardList" :key="item.union.id">
+          <p>{{item.union.name}}</p>
+          <p>免费</p>
+          <!-- 折扣卡详情 -->
+          <div>
+            <p>{{item.union.name}}</p>
+            <p>消费特权：可在下列商家消费时享受折扣</p>
+            <ol>
+              <li v-for="item1 in item.memberList" :key="item1.id">
+                <span>{{item1.enterpriseName}}</span>
+                <span v-if="item1.discount">{{(item1.discount*10).toFixed(1)}}折</span>
+                <span v-else> 无折扣</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <!-- 活动卡 -->
+      <div v-if="unionCardList.activityCardList.length">
+        <div v-for="item in unionCardList.activityCardList" :key="item.activity.id">
+          <p>{{item.activity.name}}</p>
+          <p>{{item.activity.price}}</p>
+          <p>{{item.activity.color}}</p>
+          <!-- 活动卡详情 -->
+          <p>{{item.activity.name}}</p>
+          <p>有效期：购买后{{item.activity.validityDay}}天内</p>
+          <p>优惠项目：共{{item.projectItemCount}}项</p>
+          <ol>
+            <li v-for="item1 in item.cardProjectList" :key="item1.member.id">
+              <span>{{item1.member.enterpriseName}}</span>
+              <ul>
+                <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
+                  <span>{{item2.name}}</span>
+                  <!-- todo * 样式更换 -->
+                  <span>*{{item2.number}}</span>
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <!-- 选择框 联盟卡列表 -->
+    <div v-show="!visible1">
+      <el-checkbox-group v-model="checkList1" @change="checkListChange1">
+        <el-checkbox v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag">
+          <p>{{item.union.name}}</p>
+          <p>免费</p>
+          <!-- 折扣卡详情 -->
+          <div>
+            <p>{{item.union.name}}</p>
+            <p>消费特权：可在下列商家消费时享受折扣</p>
+            <ol>
+              <li v-for="item1 in item.memberList" :key="item1.id">
+                <span>{{item1.enterpriseName}}</span>
+                <span v-if="item1.discount">{{(item1.discount*10).toFixed(1)}}折</span>
+                <span v-else> 无折扣</span>
+              </li>
+            </ol>
+          </div>
+        </el-checkbox>
+      </el-checkbox-group>
+      <el-checkbox-group v-model="checkList2" @change="checkListChange2">
+        <el-checkbox v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag">
+          <p>{{item.activity.name}}</p>
+          <p>{{item.activity.price}}</p>
+          <p>{{item.activity.color}}</p>
+          <!-- 活动卡详情 -->
+          <p>{{item.activity.name}}</p>
+          <p>有效期：购买后{{item.activity.validityDay}}天内</p>
+          <p>优惠项目：共{{item.projectItemCount}}项</p>
+          <ol>
+            <li v-for="item1 in item.cardProjectList" :key="item1.member.id">
+              <span>{{item1.member.enterpriseName}}</span>
+              <ul>
+                <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
+                  <span>{{item2.name}}</span>
+                  <!-- todo * 样式更换 -->
+                  <span>*{{item2.number}}</span>
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </el-checkbox>
+      </el-checkbox-group>
+      <div>
+        <P>办卡列表</P>
+        <p v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" v-show="checkList1.indexOf(item.union.id)> -1">
+          <span>{{item.union.name}}</span>
+          <span>免费</span>
+          <span>
+            <el-button @click="del1(item)">删除</el-button>
+          </span>
+        </p>
+        <p v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" v-show="checkList2.indexOf(item.activity.id)> -1">
+          <span>{{item.activity.name}}</span>
+          <span>{{item.activity.price}}</span>
+          <span>
+            <el-button @click="del2(item)">删除</el-button>
+          </span>
+        </p>
+        <p>合计：￥{{payPrice}}</p>
+      </div>
+      <el-button type="primary" @click="submitForm">确定</el-button>
+      <el-button @click="cancel">取消</el-button>
+    </div>
+
     <!-- 弹出框 付款 -->
     <div class="model_1">
-      <el-dialog title="付款" :visible.sync="visible3" size="tiny">
+      <el-dialog title="付款" :visible.sync="visible2" size="tiny">
         <hr>
         <div class="model_">
-          <p><img v-bind:src="codeSrc" class="codeImg"></p>
-          <p>￥<span style="color: red;">{{ payPrice }}</span>
+          <p>
+            <img v-bind:src="codeSrc" class="codeImg">
+          </p>
+          <p>￥
+            <span style="color: red;">{{ payPrice }}</span>
           </p>
           <p style="margin-bottom: 50px;">请使用微信扫描该二维码付款</p>
         </div>
       </el-dialog>
     </div>
-    <!-- 弹出框 查看项目详情 -->
-    <el-dialog title="查看项目" :visible.sync="detaiVisible">
-      <hr>
-      <el-table :data="detailTableData">
-        <el-table-column prop="member.enterpriseName" label="企业名称"></el-table-column>
-        <el-table-column prop="nameList" label="活动卡项目名称">
-          <template slot-scope="scope">
-            <el-popover trigger="hover" placement="bottom">
-              <p v-for="item in scope.row.itemList" :key="item.id">项目名称：{{ item.name }}, 数量：{{ item.number }}</p>
-              <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.itemList_ }}</span>
-              </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
   </div>
 </template>
 
@@ -134,36 +153,42 @@
 import io from 'socket.io-client';
 import $http from '@/utils/http.js';
 import { cellPhonePass } from '@/utils/validator.js';
-import IsFollow from '@/components/front/transaction/IsFollow';
 export default {
   name: 'transaction',
-  components: {
-    IsFollow
-  },
   data() {
     return {
-      labelPosition: 'right',
-      fanId: '',
       form1: {
         phone: '',
         code: '',
         getVerificationCode: false,
         countDownTime: ''
       },
-      rules: {
-        code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
-        phone: [{ validator: cellPhonePass, trigger: 'blur' }]
+      rules1: {
+        code: [
+          {
+            required: true,
+            message: '验证码不能为空，请重新输入',
+            trigger: 'blur'
+          }
+        ],
+        phone: [
+          {
+            validator: cellPhonePass,
+            trigger: 'blur'
+          }
+        ]
       },
+      unionCardList: {
+        discountCardList: [],
+        activityCardList: []
+      },
+      visible1: true,
+      fandId: '',
+      unionIdList: '',
+      activityIdList: '',
+      checkList1: [],
+      checkList2: [],
       visible2: false,
-      form2: {
-        unionList: [],
-        activityList: []
-      },
-      unionId: '',
-      activityCheckList: [],
-      isDiscountCard: '',
-      discount: '',
-      visible3: false,
       codeSrc: '',
       socket: '',
       socketKey: '',
@@ -174,51 +199,46 @@ export default {
         status: ''
       },
       timeEnd: '',
-      detaiVisible: false,
-      detailTableData: [],
       payPrice: ''
     };
   },
   mounted: function() {
-    // 切换tab清空输入数据
+    // 切换tab清空输入数据 todo
     eventBus.$on('tabChange3', () => {
       if (this.timeEnd) {
         clearInterval(this.timeEnd);
       }
       this.init();
     });
-    const LIWIDTH = 200; //宽度
-    const OFFSET = 13; //起始的距离
-    var moved = 0; //左移的卡片个数
-    var this_ = this;
-    var i = 0; //左移次数
-    var j = 0; //右移次数
-    $('.forward').click(() => {
-      var COUNT = this_.form2.activityList.length;
-      if (parseFloat(COUNT) / 3 > 1 && j < 0) {
-        i--;
-        j++;
-        moved -= 1;
-        var offesetLength = -moved * (LIWIDTH + OFFSET);
-        $('.SwitchAround .el-checkbox-group').css({
-          left: offesetLength + 'px'
-        });
-      }
-    });
-    $('.backward').click(() => {
-      var COUNT = this_.form2.activityList.length;
-      if (parseFloat(COUNT) / 3 > 1 && parseFloat(COUNT) / 3 > i + 1) {
-        i++;
-        j--;
-        moved += 4;
-        var offesetLength = -moved * (LIWIDTH + OFFSET);
-        $('.SwitchAround .el-checkbox-group').css({
-          left: offesetLength + 'px'
-        });
-      }
-    });
+    this.getUnionCardList();
   },
   methods: {
+    // 获取联盟卡列表
+    getUnionCardList() {
+      $http
+        .get(`/unionCard/apply`)
+        .then(res => {
+          if (res.data.data) {
+            this.unionCardList = res.data.data;
+          } else {
+            this.unionCardList = '';
+          }
+        })
+        .catch(err => {
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
+        });
+    },
+    // 手机号更改
+    phoneChange() {
+      this.visible1 = true;
+      this.checkList1 = [];
+      this.checkList2 = [];
+    },
     // 获取验证码
     getVerificationCode() {
       $http
@@ -239,13 +259,20 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
         });
     },
     // 确认验证码
     confirmCode(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          this.checkList1 = [];
+          this.checkList2 = [];
           let url = `/unionCard/apply/phone`;
           let data = {
             phone: this.form1.phone,
@@ -259,130 +286,102 @@ export default {
                 //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
                 this.form1.countDownTime = '';
                 this.form1.getVerificationCode = false;
-                this.fanId = res.data.data.id;
-                $http
-                  .get(`/unionCard/fanId/${this.fanId}/apply`)
-                  .then(res => {
-                    if (res.data.data) {
-                      this.form2 = res.data.data;
-                      this.form2.unionList = res.data.data.unionList;
-                      // 给unionId 赋初始值
-                      // this.unionId = this.form2.unionList[0].id;
-                      this.unionId = res.data.data.currentUnion.id;
-                      this.form2.activityList = res.data.data.cardActivityApplyVOList;
-                      if (this.form2.activityList) {
-                        this.form2.activityList.forEach((v, i) => {
-                          let color1 = (v.activity.color1 = v.activity.color.split(',')[0]);
-                          let color2 = (v.activity.color2 = v.activity.color.split(',')[1]);
-                          let mDiv = 'm' + color2 + i;
-                          setTimeout(function() {
-                            $(
-                              '.' + mDiv
-                            )[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                          }, 0);
-                        });
+                this.fanId = res.data.data.fan.id;
+                // 判断已办理联盟卡
+                this.unionIdList = res.data.data.unionIdList;
+                this.activityIdList = res.data.data.activityIdList;
+                if (this.unionIdList && this.unionCardList.discountCardList.length) {
+                  this.unionIdList.forEach(v => {
+                    this.unionCardList.discountCardList.forEach(val => {
+                      if (val.union.id === v.id) {
+                        val.disabledFlag = true;
                       }
-                      this.activityCheckList = [];
-                      this.isDiscountCard = res.data.data.isDiscountCard;
-                      this.discount = res.data.data.currentMember.discount || 1;
-                      this.visible2 = true;
-                    } else {
-                      this.form2.unionList = [];
-                      this.form2.activityList = [];
-                      this.isDiscountCard = '';
-                      this.discount = 1;
-                      this.visible2 = false;
-                      this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 3000 });
-                    }
-                  })
-                  .catch(err => {
-                    this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+                    });
                   });
-              } else {
-                this.visible2 = false;
+                }
+                if (this.activityIdList && this.unionCardList.activityCardList.length) {
+                  this.activityIdList.forEach(v => {
+                    this.unionCardList.activityCardList.forEach(val => {
+                      if (val.activity.id === v.id) {
+                        val.disabledFlag = true;
+                      }
+                    });
+                  });
+                }
+                this.visible1 = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+              this.$message({
+                showClose: true,
+                message: '网络错误',
+                type: 'error',
+                duration: 3000
+              });
             });
         } else {
           return false;
         }
       });
     },
-    // 更换选择联盟
-    unionIdChange() {
-      if (this.unionId) {
-        $http
-          .get(`/unionCard/fanId/${this.fanId}/apply?unionId=${this.unionId}`)
-          .then(res => {
-            if (res.data.data) {
-              this.form2.activityList = res.data.data.cardActivityApplyVOList;
-              //底部切换回到原始的位置;
-              $('.SwitchAround .el-checkbox-group').css({
-                left: 0 + 'px'
-              });
-              if (this.form2.activityList) {
-                this.form2.activityList.forEach((v, i) => {
-                  let color1 = (v.activity.color1 = v.activity.color.split(',')[0]);
-                  let color2 = (v.activity.color2 = v.activity.color.split(',')[1]);
-                  let mDiv = 'm' + color2 + i;
-                  setTimeout(function() {
-                    $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                  }, 0);
-                });
-              }
-              this.activityCheckList = [];
-              this.isDiscountCard = res.data.data.isDiscountCard;
-              this.discount = res.data.data.currentMember.discount || 1;
-              this.visible2 = true;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
-          });
-      }
-    },
-    // 显示项目详情
-    showDetail(id) {
-      $http
-        .get(`/unionCardActivity/${id}/unionId/${this.unionId}/apply/itemCount`)
-        .then(res => {
-          if (res.data.data) {
-            this.detailTableData = res.data.data;
-            this.detailTableData.forEach(v => {
-              v.itemList_ = [];
-              v.itemList.forEach(val => {
-                v.itemList_.push(val.name);
-              });
-              v.itemList_ = v.itemList_.join(',');
-            });
-            this.detaiVisible = true;
-          } else {
-            this.detailTableData = [];
+    // 折扣卡更改
+    checkListChange1() {},
+    // 活动卡更改
+    checkListChange2() {
+      this.payPrice = 0;
+      let activityCheckList_ = [];
+      this.checkList2.forEach(v => {
+        this.unionCardList.activityCardList.forEach(val => {
+          if (val.activity.id === v) {
+            activityCheckList_.push(val.activity.price);
           }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
+      });
+      if (activityCheckList_) {
+        activityCheckList_.forEach(v => {
+          this.payPrice += v - 0;
+        });
+      }
+      this.payPrice = this.payPrice.toFixed(2);
+    },
+    del1(item) {
+      let delIndex;
+      this.checkList1.forEach((v, i) => {
+        if (v === item.union.id) {
+          delIndex = i;
+        }
+      });
+      this.checkList1.splice(delIndex, 1);
+    },
+    del2(item) {
+      let delIndex;
+      this.checkList2.forEach((v, i) => {
+        if (v === item.activity.id) {
+          delIndex = i;
+        }
+      });
+      this.checkList2.splice(delIndex, 1);
     },
     // 提交
-    submitForm(formName) {
+    submitForm() {
       let url = `/unionCard/fanId/${this.fanId}/unionId/${this.unionId}/apply`;
-      let data = [];
-      if (!this.isDiscountCard && this.activityCheckList.length < 1) {
-        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 3000 });
+      let data = {};
+      data.unionIdList = [];
+      data.activityIdList = [];
+      if (!this.isDiscountCard && this.checkList1.length < 1 && this.checkList2.length < 1) {
+        this.$message({
+          showClose: true,
+          message: '请选择联盟卡',
+          type: 'error',
+          duration: 3000
+        });
         return false;
       } else {
-        this.activityCheckList.forEach(v => {
-          data.push(v);
+        this.checkList1.forEach(v => {
+          data.unionIdList.push(v);
         });
-        let activityCheckList_ = this.form2.activityList.filter(item => {
-          return this.activityCheckList.indexOf(item.activity.id) > -1;
-        });
-        this.payPrice = 0;
-        activityCheckList_.forEach(v => {
-          this.payPrice += v.activity.price - 0;
+        this.checkList2.forEach(v => {
+          data.activityIdList.push(v);
         });
       }
       $http
@@ -392,15 +391,19 @@ export default {
             this.codeSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
             this.orderNo = res.data.data.orderNo;
-            this.visible3 = true;
-            this.payPrice = this.payPrice.toFixed(2);
+            this.visible2 = true;
             var _this = this;
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
-              this.socket = io.connect(socketUrl, { reconnect: true });
+              this.socket = io.connect(socketUrl, {
+                reconnect: true
+              });
               var socketKey = this.socketKey;
               this.socket.on('connect', function() {
-                let jsonObject = { userId: socketKey, message: '0' };
+                let jsonObject = {
+                  userId: socketKey,
+                  message: '0'
+                };
                 _this.socket.emit('auth', jsonObject);
               });
               //重连机制
@@ -427,22 +430,35 @@ export default {
                 ) {
                   if (_this.socketKey == msg.socketKey && _this.orderNo == msg.orderNo) {
                     if (msg.status == '1') {
-                      _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
+                      _this.$message({
+                        showClose: true,
+                        message: '支付成功',
+                        type: 'success',
+                        duration: 3000
+                      });
                       _this.socketFlag.socketKey = msg.socketKey;
                       _this.socketFlag.status = msg.status;
                       _this.socketFlag.orderNo = msg.orderNo;
-                      eventBus.$emit('newUnionCard');
                       _this.init();
                     } else if (msg.status == '0') {
-                      _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 3000 });
+                      _this.$message({
+                        showClose: true,
+                        message: '支付失败',
+                        type: 'warning',
+                        duration: 3000
+                      });
                     }
                   }
                 }
               });
             }
           } else if (res.data.success) {
-            this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 3000 });
-            eventBus.$emit('newUnionCard');
+            this.$message({
+              showClose: true,
+              message: '办理成功',
+              type: 'success',
+              duration: 3000
+            });
             clearInterval(this.timeEnd);
             //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
             this.init();
@@ -455,15 +471,17 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
         });
     },
     // 取消
-    cancel(formName) {
-      this.$refs[formName].resetFields();
-      eventBus.$emit('newUnionCard');
+    cancel() {
       this.init();
-      affirm.style.display = 'block';
     },
     // 初始化
     init() {
@@ -471,8 +489,8 @@ export default {
       this.form1.code = '';
       this.form1.getVerificationCode = false;
       this.form1.countDownTime = 0;
+      this.visible1 = true;
       this.visible2 = false;
-      this.visible3 = false;
     }
   }
 };

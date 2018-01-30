@@ -38,53 +38,58 @@
     </el-pagination>
     <!-- 弹出框 详情 -->
     <el-dialog title="联盟卡详情" :visible.sync="visible" size="tiny">
-      <hr>
-      <p>顾客已拥有联盟卡：</p>
-      <!-- 左侧联盟卡 -->
-      <el-radio-group v-model="unionCardId">
-        <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id" :label="detailData.disCountCard.card.id">
-          <div class="UnionDiscountCard"></div>
-          <div>{{detailData.disCountCard.card.name}}</div>
-        </el-radio-button>
-        <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
-          <div class="UnionDiscountCard"></div>
-          <div>{{item.card.name}}</div>
-          <div v-if="item.isExpired">已过期</div>
-        </el-radio-button>
-      </el-radio-group>
-      <!-- 右侧联盟卡详情 -->
-      <div v-if="detailData.disCountCard" v-show="unionCardId===detailData.disCountCard.card.id">
-        <p>{{detailData.disCountCard.card.name}}</p>
-        <p>办卡时间 {{detailData.disCountCard.createTime}}</p>
-        <p>消费特权：可在下列商家消费时享受折扣</p>
-        <ol>
-          <li v-for="item in detailData.disCountCard.memberList" :key="item.id" :label="item.id">
-            <span>{{item.enterpriseName}}</span>
-            <span v-if="item.discount">{{(item.discount*10).toFixed(1)}}折</span>
-            <span v-else> 无折扣</span>
-          </li>
-        </ol>
-      </div>
-      <div v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id"
-        v-show="unionCardId === item.card.id">
-        <p>{{item.card.name}}</p>
-        <p>办卡时间 {{item.card.createTime}}</p>
-        <p>有效时间 {{item.card.validity}}</p>
-        <p>优惠项目：共{{item.projectItemCount}}项</p>
-        <ol>
-          <li v-for="item1 in item.cardProjectList" :key="item1.member.id" :label="item1.member.id">
-            <span>{{item1.member.enterpriseName}}</span>
-            <ul>
-              <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
-                <span>{{item2.name}}</span>
-                <!-- todo * 样式更换 -->
-                <span>*{{item2.number}}</span>
+      <nav>顾客已拥有联盟卡：</nav>
+      <main class="unionCardDetails">
+        <!-- 左侧联盟卡 -->
+        <el-radio-group v-model="unionCardId">
+          <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id" :label="detailData.disCountCard.card.id">
+            <div class="UnionDiscountCard"></div>
+            <div>{{detailData.disCountCard.card.name}}</div>
+          </el-radio-button>
+          <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
+            <div class="UnionDiscountCard"></div>
+            <div>{{item.card.name}}fsdfdf</div>
+            <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
+          </el-radio-button>
+        </el-radio-group>
+        <!-- 右侧联盟卡详情 -->
+        <div class="unionCardDetailsRight">
+          <!--折扣卡详情-->
+          <div v-if="detailData.disCountCard" v-show="unionCardId===detailData.disCountCard.card.id">
+            <p class="DetailsName">{{detailData.disCountCard.card.name}}</p>
+            <p class="DetailsTime">办卡时间 {{detailData.disCountCard.createTime}}</p>
+            <p>消费特权：可在下列商家消费时享受折扣</p>
+            <ol>
+              <li v-for="item in detailData.disCountCard.memberList" :key="item.id" :label="item.id">
+                <span>{{item.enterpriseName}}</span>
+                <span v-if="item.discount">{{(item.discount*10).toFixed(1)}}折</span>
+                <span v-else> 无折扣</span>
               </li>
-            </ul>
-          </li>
-        </ol>
-
-      </div>
+            </ol>
+          </div>
+          <!--活动卡详情-->
+          <div v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id"
+          v-show="unionCardId === item.card.id">
+            <p class="DetailsName">{{item.card.name}}</p>
+            <p class="DetailsTime">办卡时间： {{item.card.createTime}}</p>
+            <p class="DetailsTime">有效时间： {{item.card.validity}}</p>
+            <p class="DetailsItems">优惠项目： 共{{item.projectItemCount}}项</p>
+            <ol>
+              <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id" :label="item1.member.id">
+                <span>{{index+1+'. '}}{{item1.member.enterpriseName}}</span>
+                <ul class="companyName">
+                  <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
+                    <i class="circle"></i>
+                    <span>{{item2.name}}</span>
+                    <!-- todo * 样式更换 -->
+                    <span>{{item2.number}}</span>
+                  </li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </main>
     </el-dialog>
   </div>
 </template>
@@ -217,5 +222,17 @@ export default {
 };
 </script>
 <style scoped lang='less' rel="stylesheet/less">
-
+  /*滚动条样式*/
+  .unionCardDetailsRight>div::-webkit-scrollbar {/*滚动条整体样式*/
+    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
+    height: 4px;
+  }
+  .unionCardDetailsRight>div::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.2);
+  }
+  .unionCardDetailsRight>div::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+  }
 </style>

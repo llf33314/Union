@@ -369,32 +369,83 @@ hr {
   color: #ffffff;
 }
 #myUnionCard1 .el-dialog--tiny {
-  width: 900px ;
+  width: 700px ;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__header {
+  padding: 20px 20px 15px;
+  border-bottom: 1px solid #eee;
 }
 #myUnionCard1 .el-dialog--tiny .el-dialog__body {
-  padding: 0;
-  margin-top: 15px;
-  height: 500px;
+  padding: 0 30px;
+  height: 400px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body nav {
+  margin: 20px 0 15px 0;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails {
+  display: flex;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group {
+  width: 200px;
+  margin-right: 35px;
+  margin-top: 4px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button,
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+  height: 87px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button .el-radio-button__inner,
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button__inner .el-radio-button__inner {
+  border: 1px solid #bfcbd9!important;
+  border-radius: 6px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button .outOfDate,
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button__inner .outOfDate {
+  width: 38px;
+  position: absolute;
+  right: 6px;
+  top: 3px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight {
+  width: 350px;
+  height: 280px;
+  border: 1px solid #BFCBD9;
+  padding: 20px 10px 20px 30px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  line-height: 2;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div {
+  height: 240px;
   overflow-y: auto;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div {
-  width: 830px;
-  height: 125px;
-  background-color: #ffffff;
-  border: solid 1px #dfe6ec;
-  margin: 30px;
-}
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > div {
-  padding: 10px 0 10px 31px;
-  background-color: #EEF1F6;
-  color: #333333;
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .DetailsName {
+  color: #333;
   font-weight: bold;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > p {
-  margin: 18px 30px;
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .DetailsTime {
+  color: #999;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > p span {
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .DetailsItems {
+  color: #333;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .companyName > li {
   margin-left: 25px;
+  color: #999;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .companyName .circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
 }
 #apply_for .apply_select .el-table_1_column_8 .cell {
   width: 155px;
