@@ -20,6 +20,7 @@ import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.entity.UnionCardRecord;
 import com.gt.union.card.main.service.*;
+import com.gt.union.card.main.vo.CardPhoneResponseVO;
 import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
@@ -42,6 +43,7 @@ import com.gt.union.wxapp.card.constant.WxAppCardConstant;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -366,19 +368,27 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             data.put("phone", 0);
             return GtJsonResult.instanceSuccessMsg(data).toString();
         }
-        List list = new ArrayList<>();
+        List activityList = new ArrayList<>();
         if (CommonUtil.isNotEmpty(activityId)) {
-            list.add(activityId);
+            activityList.add(activityId);
         }
         UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
-        // TODO
-//        UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
-//        if (result != null) {
-//            data.put("pay", true);
-//            data.put("orderNo", result.getOrderNo());
-//            data.put("appid", PropertiesUtil.getUnionAppId());
-//            data.put("busId", PropertiesUtil.getDuofenBusId());
-//        }
+
+        CardPhoneResponseVO vo = new CardPhoneResponseVO();
+        vo.setFan(fan);
+        vo.setActivityIdList(activityList);
+
+        List unionList = new ArrayList<>();
+        unionList.add(unionId);
+        vo.setUnionIdList(unionList);
+
+        UnionPayVO result = unionCardService.saveApplyByBusId(busId, vo, unionCardApplyService);
+        if (result != null) {
+            data.put("pay", true);
+            data.put("orderNo", result.getOrderNo());
+            data.put("appid", PropertiesUtil.getUnionAppId());
+            data.put("busId", PropertiesUtil.getDuofenBusId());
+        }
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }
 

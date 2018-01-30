@@ -418,43 +418,13 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）判断opportunityId有效性
-        UnionOpportunity opportunity = unionOpportunityService.getValidByIdAndUnionIdAndToMemberId(opportunityId, unionId, member.getId());
-        if (opportunity == null) {
-            throw new BusinessException("找不到商机信息");
-        }
-        if (OpportunityConstant.IS_CLOSE_NO != opportunity.getIsClose()) {
-            throw new BusinessException("商机不是未结算状态");
-        }
-        // （3）生成支付中记录
-        UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
-        if (fromMember == null) {
-            throw new BusinessException("找不到商机推荐者信息");
-        }
 
-        UnionBrokeragePay savePay = new UnionBrokeragePay();
-        savePay.setDelStatus(CommonConstant.COMMON_NO);
-        savePay.setCreateTime(DateUtil.getCurrentDate());
-        savePay.setStatus(BrokerageConstant.PAY_STATUS_PAYING);
-        savePay.setFromMemberId(member.getId());
-        savePay.setToMemberId(fromMember.getId());
-        savePay.setUnionId(opportunity.getUnionId());
-        savePay.setFromBusId(member.getBusId());
-        savePay.setToBusId(fromMember.getBusId());
-        String orderNo = "LM" + ConfigConstant.PAY_MODEL_OPPORTUNITY + DateUtil.getSerialNumber();
-        savePay.setSysOrderNo(orderNo);
-        savePay.setOpportunityId(opportunityId);
-        savePay.setMoney(opportunity.getBrokerageMoney());
-
+        List<Integer> opportunityIdList = new ArrayList<Integer>();
+        opportunityIdList.add(opportunityId);
 
         // （4）调用支付接口
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney(), memberId, busId);
+        UnionPayVO result =  unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, h5BrokerageUser.getVerifier().getId(), unionBrokeragePayStrategyService, memberId);
 
-        unionBrokeragePayService.save(savePay);
         return result;
     }
 

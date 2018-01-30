@@ -422,7 +422,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
         }
         // 支持0.01元精度失算
-        if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.01) {
+        if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) >= 0.01) {
             throw new BusinessException("实际支付金额错误，请刷新后重试");
         }
         saveConsume.setPayMoney(BigDecimalUtil.toDouble(payMoney));

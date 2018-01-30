@@ -387,13 +387,18 @@ hr {
 #myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails {
   display: flex;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group {
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group {
   width: 200px;
-  margin-right: 35px;
-  margin-top: 4px;
+  margin: 0 35px 0 0;
+  min-height: 295px;
+  overflow-y: auto;
+  border-radius: 6px;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button,
-#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button__inner {
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button__inner:hover {
+  color: inherit;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button,
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button__inner {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -401,10 +406,54 @@ hr {
   margin-bottom: 10px;
   height: 87px;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button .el-radio-button__inner,
-#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .el-radio-group .el-radio-button__inner .el-radio-button__inner {
-  border: 1px solid #bfcbd9!important;
-  border-radius: 4px;
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button .el-radio-button__inner,
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button__inner .el-radio-button__inner {
+  border: none!important;
+  border-radius: 6px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button .outOfDate,
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button__inner .outOfDate {
+  width: 38px;
+  position: absolute;
+  right: 6px;
+  top: 3px;
+  z-index: 10;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .bgcolor1 {
+  background-image: linear-gradient(90deg, #FD7157 0%, #EB3C3F 100%);
+  width: 198px;
+  height: 80px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 6px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button:first-child .el-radio-button__inner {
+  position: absolute;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  color: #1f2d3d;
+  background-color: #fbfdff;
+  border: 1px solid #20a0ff;
+  box-shadow: none;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button__orig-radio:checked + .el-radio-button__inner .dddddd .UnionDiscountCard {
+  border-radius: 5px;
+  width: 198px;
+  height: 85px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .step3 .el-radio-group .el-radio-button__orig-radio:checked + .el-radio-button__inner .dddddd img {
+  display: block!important;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+  border-radius: 0 0 6px 0;
 }
 #myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight {
   width: 350px;
@@ -2107,5 +2156,22 @@ hr {
   }
   #sellCard #ActivityCardSellDivide .contentList .el-button--small {
     padding: 6px 4px!important;
+  }
+}
+@media screen and (min-width: 1680px) {
+  #brokeragePayStatistics {
+    margin-left: 300px;
+  }
+  #sellBrokerageStatistics {
+    margin-left: 300px;
+  }
+  #discountCardStatistics {
+    width: 1650px!important;
+  }
+  #discountCardStatistics > div {
+    width: 1650px!important;
+  }
+  #discountCardStatistics > div canvas {
+    width: 1500px!important;
   }
 }

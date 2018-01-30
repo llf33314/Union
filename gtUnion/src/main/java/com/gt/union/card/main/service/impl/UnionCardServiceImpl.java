@@ -528,7 +528,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 payMoneySum = BigDecimalUtil.add(payMoneySum, activity.getPrice());
             }
         }
-        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, BigDecimalUtil.toDouble(payMoneySum), busId, null, activityIdList);
+        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, BigDecimalUtil.toDouble(payMoneySum), busId, activityIdList);
 
         if (ListUtil.isEmpty(saveDiscountCardList) && ListUtil.isEmpty(saveCardRecordList)) {
             throw new BusinessException("请选择要办理的联盟卡");

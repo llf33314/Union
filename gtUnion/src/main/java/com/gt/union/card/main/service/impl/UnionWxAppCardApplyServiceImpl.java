@@ -23,7 +23,7 @@ public class UnionWxAppCardApplyServiceImpl implements IUnionCardApplyService {
 	private WxPayService wxPayService;
 
 	@Override
-	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, Integer unionId, List<Integer> activityIdList) {
+	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList) {
 		UnionPayVO result = new UnionPayVO();
 		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=";
 

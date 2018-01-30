@@ -38,20 +38,31 @@
     </el-pagination>
     <!-- 弹出框 详情 -->
     <el-dialog title="联盟卡详情" :visible.sync="visible" size="tiny">
-      <nav>顾客已拥有联盟卡：</nav>
+      <nav>顾客已拥有的联盟卡：</nav>
       <main class="unionCardDetails">
         <!-- 左侧联盟卡 -->
-        <el-radio-group v-model="unionCardId">
-          <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id" :label="detailData.disCountCard.card.id">
-            <div class="UnionDiscountCard"></div>
-            <div>{{detailData.disCountCard.card.name}}</div>
-          </el-radio-button>
-          <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
-            <div class="UnionDiscountCard"></div>
-            <div>{{item.card.name}}</div>
-            <div v-if="item.isExpired">已过期</div>
-          </el-radio-button>
-        </el-radio-group>
+        <div class="step3">
+          <el-radio-group v-model="unionCardId">
+            <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id" :label="detailData.disCountCard.card.id">
+              <div style="z-index: 10;color:#fff">{{detailData.disCountCard.card.name}}</div>
+              <div class="dddddd">
+                <div class="bgcolor1" style=""></div>
+                <div class="UnionDiscountCard"></div>
+                <img src="~assets/images/images3.png"></img>
+              </div>
+            </el-radio-button>
+            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id">
+              <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
+              <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
+              <div class="dddddd">
+                <!--//backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'-->
+                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}" style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
+                <div class="UnionDiscountCard"></div>
+                <img src="~assets/images/images3.png" style="display: none"></img>
+              </div>
+            </el-radio-button>
+          </el-radio-group>
+        </div>
         <!-- 右侧联盟卡详情 -->
         <div class="unionCardDetailsRight">
           <!--折扣卡详情-->
@@ -202,9 +213,16 @@ export default {
               this.detailData.discountCard.card.createTime = timeFilter(this.detailData.discountCard.createTime);
             }
             if (this.detailData.activityCardList) {
+              console.log(this.detailData.activityCardList);
               this.detailData.activityCardList.forEach((v, i) => {
                 v.card.createTime = timeFilter(v.card.createTime);
                 v.card.validity = timeFilter(v.card.validity);
+                // let color1 = (v.color1 = v.activity.color.split(',')[0]);
+                // let color2 = (v.color2 = v.activity.color.split(',')[1]);
+                // let mDiv = 'm' + color2 + i;
+                // setTimeout(function() {
+                //   $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                // }, 0);
               });
             }
           }
