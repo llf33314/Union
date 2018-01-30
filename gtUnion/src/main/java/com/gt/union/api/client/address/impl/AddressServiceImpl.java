@@ -8,6 +8,7 @@ import com.gt.union.api.client.address.AddressService;
 import com.gt.union.common.util.ApiResultHandlerUtil;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class AddressServiceImpl implements AddressService {
 		try {
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("reqdata", ids);
-			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, String.class, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据ids获取地址列表，结果：{}", result);
 			return ApiResultHandlerUtil.listDataObject(result, Map.class);
 		}catch (Exception e){
@@ -48,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
 		try {
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("reqdata", city_codes);
-			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, String.class, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据city_code列表获取地址列表，结果：{}", result);
 			return ApiResultHandlerUtil.listDataObject(result, Map.class);
 		}catch (Exception e){

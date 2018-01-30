@@ -332,6 +332,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (busId == null || unionId == null || fanId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        logger.info("联盟卡消费核销参数信息：busId == " + busId + ", unionId == " + unionId + ", fanId == " + fanId + ", ConsumePostVO : " +JSONObject.toJSONString(vo));
         // 判断union有效性
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {

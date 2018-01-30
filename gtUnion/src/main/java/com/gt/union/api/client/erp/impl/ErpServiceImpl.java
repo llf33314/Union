@@ -1,6 +1,7 @@
 package com.gt.union.api.client.erp.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.erp.ErpService;
@@ -13,6 +14,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.ApiResultHandlerUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,7 @@ public class ErpServiceImpl implements ErpService {
 		param.put("loginUc",0);
 		List<ErpTypeVO> dataList = new ArrayList<ErpTypeVO>();
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据商家id获取erp列表，结果：{}", result);
 			Map data = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List<ErpTypeVO> list = JSON.parseArray(data.get("menusLevelList").toString(),ErpTypeVO.class);
