@@ -225,12 +225,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 手机号更改
@@ -259,12 +254,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 确认验证码
@@ -312,12 +302,7 @@ export default {
               }
             })
             .catch(err => {
-              this.$message({
-                showClose: true,
-                message: '网络错误',
-                type: 'error',
-                duration: 3000
-              });
+              this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
             });
         } else {
           return false;
@@ -369,12 +354,7 @@ export default {
       data.unionIdList = [];
       data.activityIdList = [];
       if (!this.isDiscountCard && this.checkList1.length < 1 && this.checkList2.length < 1) {
-        this.$message({
-          showClose: true,
-          message: '请选择联盟卡',
-          type: 'error',
-          duration: 3000
-        });
+        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 3000 });
         return false;
       } else {
         this.checkList1.forEach(v => {
@@ -430,35 +410,20 @@ export default {
                 ) {
                   if (_this.socketKey == msg.socketKey && _this.orderNo == msg.orderNo) {
                     if (msg.status == '1') {
-                      _this.$message({
-                        showClose: true,
-                        message: '支付成功',
-                        type: 'success',
-                        duration: 3000
-                      });
+                      _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
                       _this.socketFlag.socketKey = msg.socketKey;
                       _this.socketFlag.status = msg.status;
                       _this.socketFlag.orderNo = msg.orderNo;
                       _this.init();
                     } else if (msg.status == '0') {
-                      _this.$message({
-                        showClose: true,
-                        message: '支付失败',
-                        type: 'warning',
-                        duration: 3000
-                      });
+                      _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 3000 });
                     }
                   }
                 }
               });
             }
           } else if (res.data.success) {
-            this.$message({
-              showClose: true,
-              message: '办理成功',
-              type: 'success',
-              duration: 3000
-            });
+            this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 3000 });
             clearInterval(this.timeEnd);
             //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
             this.init();
@@ -471,12 +436,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 取消
