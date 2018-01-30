@@ -47,7 +47,7 @@ public class UnionCallBackController {
             @PathVariable("model") String model,
             @RequestParam(value = "socketKey", required = false) String socketKey,
             @RequestBody Map<String, Object> param) throws Exception {
-        logger.info("支付成功后回调参数：{}",JSONObject.toJSONString(param));
+        logger.info("支付成功回调模块：{}，支付成功后回调参数：{}", model, JSONObject.toJSONString(param));
 
         Object objPayType = param.get("payType");
         String payType = objPayType != null ? objPayType.toString().trim() : "";

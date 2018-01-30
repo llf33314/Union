@@ -3,10 +3,7 @@ package com.gt.union.api.erp.jxc.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.union.api.erp.jxc.service.JxcAuthorityService;
 import com.gt.union.api.erp.jxc.util.HttpClientUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,7 @@ public class JxcAuthorityServiceImpl implements JxcAuthorityService{
 		params.put("account", PropertiesUtil.getJxcAccount());
 		params.put("pwd", PropertiesUtil.getJxcPwd());
 		try {
-			JSONObject jsonObject = JSONObject.parseObject(HttpClientUtil.httpPostRequest(url, params));
+			JSONObject jsonObject = JSONObject.parseObject(SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(params)));
 			JSONObject tokens = jsonObject.getJSONObject("data");
 			String token = tokens.getString("token");
 			if(StringUtil.isNotEmpty(token)){

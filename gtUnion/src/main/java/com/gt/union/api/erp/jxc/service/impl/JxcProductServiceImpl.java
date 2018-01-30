@@ -5,12 +5,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.erp.jxc.entity.JxcProduct;
+import com.gt.union.api.erp.jxc.service.JxcAuthorityService;
 import com.gt.union.api.erp.jxc.service.JxcProductService;
 import com.gt.union.api.erp.jxc.util.HttpClientUtil;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
+import com.gt.union.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,9 @@ public class JxcProductServiceImpl implements JxcProductService{
 	private Logger logger = LoggerFactory.getLogger(JxcProductClassServiceImpl.class);
 
 	@Autowired
+	private JxcAuthorityService jxcAuthorityService;
+
+	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
 	@Override
@@ -42,6 +43,8 @@ public class JxcProductServiceImpl implements JxcProductService{
 			String token = redisCacheUtil.get(key);
 			if(CommonUtil.isNotEmpty(token)){
 				token = JSON.parseObject(token,String.class);
+			}else {
+				token = jxcAuthorityService.getJxcAuthority();
 			}
 			Map<String,Object> param = new HashMap<String,Object>();
 			param.put("shopId",shopId);
@@ -51,7 +54,7 @@ public class JxcProductServiceImpl implements JxcProductService{
 			param.put("pageCount",pageCount);
 			logger.info("根据门店id和商品分类id和搜索条件(名称/条码/编码/全拼码) 分页查询商品：{}", JSON.toJSONString(param));
 
-			String result = HttpClientUtil.httpGetRequest(url, param, token);
+			String result = SignRestHttpUtil.reqTokenGetUTF8(url, JSONObject.toJSONString(param), token);
 			logger.info("根据门店id和商品分类id和搜索条件(名称/条码/编码/全拼码) 分页查询商品，结果：{}", result);
 			JSONObject jsonObject = JSONObject.parseObject(result);
 			String data = jsonObject.getJSONObject("data").toJSONString();

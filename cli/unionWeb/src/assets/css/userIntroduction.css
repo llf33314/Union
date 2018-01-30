@@ -3,7 +3,7 @@
 .dr .el-dialog__headerbtn{padding: 4px 8px !important;}
 .dr .el-dialog__headerbtn{padding: 4px 8px !important;}
 .newBorder{border: 1px solid #ccc;border-radius: 4px;margin-left: 10px;}
-.quill-editor { width: 375px;height: 450px;  float: left; }
+.quill-editor { width: 375px;height: 520px;  float: left; }
 .quill-editor:after{ clear: both; }
 .ql-snow.ql-toolbar button svg, .ql-snow .ql-toolbar button svg{ height: 16px !important; margin-top: -5px !important; }
 .infoList .dr button{padding: 9px 11px !important;}

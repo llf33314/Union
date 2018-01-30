@@ -437,6 +437,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (busId == null || applyPostVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        logger.info("办理联盟卡参数信息：busId == " + busId + ", applyPostVO : " +JSONObject.toJSONString(applyPostVO));
+        logger.info("办理联盟卡模块：=====>" + unionCardApplyService.getClass().getName());
         // 判断fanId有效性
         UnionCardFan formFan = applyPostVO.getFan();
         if (formFan == null) {
