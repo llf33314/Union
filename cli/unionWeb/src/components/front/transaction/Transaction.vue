@@ -20,56 +20,9 @@
       </el-form>
     </div>
     <!-- 联盟卡列表 -->
-    <!-- 静态 联盟卡列表 -->
-    <div v-show="visible1">
-      <!-- 折扣卡 -->
-      <div v-if="unionCardList.discountCardList.length">
-        <div v-for="item in unionCardList.discountCardList" :key="item.union.id">
-          <p>{{item.union.name}}</p>
-          <p>免费</p>
-          <!-- 折扣卡详情 -->
-          <div>
-            <p>{{item.union.name}}</p>
-            <p>消费特权：可在下列商家消费时享受折扣</p>
-            <ol>
-              <li v-for="item1 in item.memberList" :key="item1.id">
-                <span>{{item1.enterpriseName}}</span>
-                <span v-if="item1.discount">{{(item1.discount*10).toFixed(1)}}折</span>
-                <span v-else> 无折扣</span>
-              </li>
-            </ol>
-          </div>
-        </div>
-      </div>
-      <!-- 活动卡 -->
-      <div v-if="unionCardList.activityCardList.length">
-        <div v-for="item in unionCardList.activityCardList" :key="item.activity.id">
-          <p>{{item.activity.name}}</p>
-          <p>{{item.activity.price}}</p>
-          <p>{{item.activity.color}}</p>
-          <!-- 活动卡详情 -->
-          <p>{{item.activity.name}}</p>
-          <p>有效期：购买后{{item.activity.validityDay}}天内</p>
-          <p>优惠项目：共{{item.projectItemCount}}项</p>
-          <ol>
-            <li v-for="item1 in item.cardProjectList" :key="item1.member.id">
-              <span>{{item1.member.enterpriseName}}</span>
-              <ul>
-                <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
-                  <span>{{item2.name}}</span>
-                  <!-- todo * 样式更换 -->
-                  <span>*{{item2.number}}</span>
-                </li>
-              </ul>
-            </li>
-          </ol>
-        </div>
-      </div>
-    </div>
-    <!-- 选择框 联盟卡列表 -->
-    <div v-show="!visible1">
+    <div>
       <el-checkbox-group v-model="checkList1" @change="checkListChange1">
-        <el-checkbox v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag">
+        <el-checkbox v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag||visible1">
           <p v-show="item.disabled">{{已办理}}</p>
           <p>{{item.union.name}}</p>
           <p>免费</p>
@@ -88,7 +41,7 @@
         </el-checkbox>
       </el-checkbox-group>
       <el-checkbox-group v-model="checkList2" @change="checkListChange2">
-        <el-checkbox v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag">
+        <el-checkbox v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag||visible1">
           <p v-show="item.disabled">{{已办理}}</p>
           <p>{{item.activity.name}}</p>
           <p>{{item.activity.price}}</p>
@@ -111,7 +64,7 @@
           </ol>
         </el-checkbox>
       </el-checkbox-group>
-      <div>
+      <div v-if="checkList1.length||checkList2.length">
         <P>办卡列表</P>
         <p v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" v-show="checkList1.indexOf(item.union.id)> -1">
           <span>{{item.union.name}}</span>
@@ -128,8 +81,8 @@
           </span>
         </p>
         <p>合计：￥{{payPrice}}</p>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </div>
-      <el-button type="primary" @click="submitForm">确定</el-button>
     </div>
 
     <!-- 弹出框 付款 -->
@@ -357,7 +310,7 @@ export default {
       data.unionIdList = [];
       data.activityIdList = [];
       if (!this.isDiscountCard && this.checkList1.length < 1 && this.checkList2.length < 1) {
-        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 3000 });
+        this.$message({ showClose: true, message: '请选择需办理的联盟卡', type: 'error', duration: 3000 });
         return false;
       } else {
         this.checkList1.forEach(v => {
