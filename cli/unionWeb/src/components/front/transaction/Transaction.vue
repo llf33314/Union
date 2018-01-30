@@ -70,6 +70,7 @@
     <div v-show="!visible1">
       <el-checkbox-group v-model="checkList1" @change="checkListChange1">
         <el-checkbox v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag">
+          <p v-show="item.disabled">{{已办理}}</p>
           <p>{{item.union.name}}</p>
           <p>免费</p>
           <!-- 折扣卡详情 -->
@@ -88,6 +89,7 @@
       </el-checkbox-group>
       <el-checkbox-group v-model="checkList2" @change="checkListChange2">
         <el-checkbox v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag">
+          <p v-show="item.disabled">{{已办理}}</p>
           <p>{{item.activity.name}}</p>
           <p>{{item.activity.price}}</p>
           <p>{{item.activity.color}}</p>
