@@ -14,6 +14,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,32 +103,32 @@ public class UnionCardSharingRecordController {
             voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, begin, end);
         }
         String[] titles = new String[]{"时间", "联盟卡号", "售卡金额(元)", "售卡佣金(元)", "售卡出处"};
-        HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = workbook.getSheetAt(0);
+        SXSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
+        Sheet sheet = workbook.getSheetAt(0);
         if (ListUtil.isNotEmpty(voList)) {
             int rowIndex = 1;
-            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
+            CellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
             for (CardSharingRecordVO vo : voList) {
-                HSSFRow row = sheet.createRow(rowIndex++);
+                Row row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 时间
-                HSSFCell createTimeCell = row.createCell(cellIndex++);
+                Cell createTimeCell = row.createCell(cellIndex++);
                 createTimeCell.setCellValue(DateUtil.getDateString(vo.getSharingRecord().getCreateTime(), DateUtil.DATETIME_PATTERN));
                 createTimeCell.setCellStyle(centerCellStyle);
                 // 联盟卡号
-                HSSFCell cardNumberCell = row.createCell(cellIndex++);
+                Cell cardNumberCell = row.createCell(cellIndex++);
                 cardNumberCell.setCellValue(vo.getFan().getNumber());
                 cardNumberCell.setCellStyle(centerCellStyle);
                 // 售卡金额(元)
-                HSSFCell sellPriceCell = row.createCell(cellIndex++);
+                Cell sellPriceCell = row.createCell(cellIndex++);
                 sellPriceCell.setCellValue(vo.getSharingRecord().getSellPrice());
                 sellPriceCell.setCellStyle(centerCellStyle);
                 // 售卡佣金(元)
-                HSSFCell sharingMoneyCell = row.createCell(cellIndex++);
+                Cell sharingMoneyCell = row.createCell(cellIndex++);
                 sharingMoneyCell.setCellValue(vo.getSharingRecord().getSharingMoney());
                 sharingMoneyCell.setCellStyle(centerCellStyle);
                 // 售卡出处
-                HSSFCell fromMemberCell = row.createCell(cellIndex);
+                Cell fromMemberCell = row.createCell(cellIndex);
                 fromMemberCell.setCellValue(vo.getMember().getEnterpriseName());
                 fromMemberCell.setCellStyle(centerCellStyle);
             }

@@ -19,6 +19,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -122,24 +127,24 @@ public class UnionBrokeragePayController {
             voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
         }
         String[] titles = new String[]{"所属联盟", "盟员名称", "商机往来金额(元)"};
-        HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = workbook.getSheetAt(0);
+        SXSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
+        Sheet sheet = workbook.getSheetAt(0);
         if (ListUtil.isNotEmpty(voList)) {
             int rowIndex = 1;
-            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
+            CellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
             for (BrokeragePayVO vo : voList) {
-                HSSFRow row = sheet.createRow(rowIndex++);
+                Row row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 所属联盟
-                HSSFCell unionNameCell = row.createCell(cellIndex++);
+                Cell unionNameCell = row.createCell(cellIndex++);
                 unionNameCell.setCellValue(vo.getUnion().getName());
                 unionNameCell.setCellStyle(centerCellStyle);
                 // 盟员名称
-                HSSFCell memberNameCell = row.createCell(cellIndex++);
+                Cell memberNameCell = row.createCell(cellIndex++);
                 memberNameCell.setCellValue(vo.getMember().getEnterpriseName());
                 memberNameCell.setCellStyle(centerCellStyle);
                 // 商机往来金额(元)
-                HSSFCell contactMoneyCell = row.createCell(cellIndex);
+                Cell contactMoneyCell = row.createCell(cellIndex);
                 contactMoneyCell.setCellValue(vo.getContactMoney());
                 contactMoneyCell.setCellStyle(centerCellStyle);
             }
@@ -193,28 +198,28 @@ public class UnionBrokeragePayController {
         }
         List<UnionOpportunity> opportunityList = result.getOpportunityList();
         String[] titles = new String[]{"时间", "顾客姓名", "电话", "佣金(元)"};
-        HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = workbook.getSheetAt(0);
+        SXSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
+        Sheet sheet = workbook.getSheetAt(0);
         if (ListUtil.isNotEmpty(opportunityList)) {
             int rowIndex = 1;
-            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
+            CellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
             for (UnionOpportunity opportunity : opportunityList) {
-                HSSFRow row = sheet.createRow(rowIndex++);
+                Row row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 时间
-                HSSFCell createTimeCell = row.createCell(cellIndex++);
+                Cell createTimeCell = row.createCell(cellIndex++);
                 createTimeCell.setCellValue(DateUtil.getDateString(opportunity.getCreateTime(), DateUtil.DATETIME_PATTERN));
                 createTimeCell.setCellStyle(centerCellStyle);
                 // 顾客姓名
-                HSSFCell clientNameCell = row.createCell(cellIndex++);
+                Cell clientNameCell = row.createCell(cellIndex++);
                 clientNameCell.setCellValue(opportunity.getClientName());
                 clientNameCell.setCellStyle(centerCellStyle);
                 // 电话
-                HSSFCell clientPhoneCell = row.createCell(cellIndex++);
+                Cell clientPhoneCell = row.createCell(cellIndex++);
                 clientPhoneCell.setCellValue(opportunity.getClientPhone());
                 clientPhoneCell.setCellStyle(centerCellStyle);
                 // 佣金(元)
-                HSSFCell brokerageMoneyCell = row.createCell(cellIndex);
+                Cell brokerageMoneyCell = row.createCell(cellIndex);
                 brokerageMoneyCell.setCellValue(opportunity.getBrokerageMoney());
                 brokerageMoneyCell.setCellStyle(centerCellStyle);
             }

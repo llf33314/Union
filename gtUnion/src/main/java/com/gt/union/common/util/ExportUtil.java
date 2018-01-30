@@ -1,6 +1,8 @@
 package com.gt.union.common.util;
 
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +30,12 @@ public class ExportUtil {
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    public static void responseExport(HttpServletResponse response, HSSFWorkbook wb, String filename) throws Exception {
+    public static void responseExport(HttpServletResponse response, SXSSFWorkbook wb, String filename) throws Exception {
         response.reset();
         // 先去掉文件名称中的空格,然后转换编码格式为utf-8,保证不出现乱码,这个文件名称用于浏览器的下载框中自动显示的文件名
         OutputStream os = new BufferedOutputStream(response.getOutputStream());
         response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode(filename + DateTimeKit.format(new Date()) + ".xls",
+                "attachment;filename=\"" + URLEncoder.encode(filename + DateTimeKit.format(new Date()) + ".xlsx",
                         "UTF-8") + "\"");
         response.setContentType("application/vnd.ms-excel");
         // 输出文件
@@ -64,18 +66,18 @@ public class ExportUtil {
      * @param titles 标题头
      * @return HSSFWorkbook
      */
-    public static HSSFWorkbook newHSSFWorkbook(String[] titles) {
-        HSSFWorkbook wb = new HSSFWorkbook();
+    public static SXSSFWorkbook newHSSFWorkbook(String[] titles) {
+        SXSSFWorkbook wb = new SXSSFWorkbook();
         //默认样式
-        HSSFCellStyle cellStyle = newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
-        HSSFFont font = newHSSFFont(wb, HSSFFont.BOLDWEIGHT_BOLD, "宋体", (short) 200);
+        CellStyle cellStyle = newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
+        Font font = newHSSFFont(wb, Font.BOLDWEIGHT_BOLD, "宋体", (short) 200);
         cellStyle.setFont(font);
 
         //default
-        HSSFSheet sheet = wb.createSheet("sheet1");
-        HSSFRow rowTitle = sheet.createRow(0);
+        Sheet sheet = wb.createSheet("sheet1");
+        Row rowTitle = sheet.createRow(0);
         for (int i = 0, length = titles.length; i < length; i++) {
-            HSSFCell cellTitle = rowTitle.createCell(i);
+            Cell cellTitle = rowTitle.createCell(i);
             cellTitle.setCellValue(titles[i]);
             cellTitle.setCellStyle(cellStyle);
         }
@@ -89,8 +91,8 @@ public class ExportUtil {
      * @param align
      * @return
      */
-    public static HSSFCellStyle newHSSFCellStyle(HSSFWorkbook wb, short align) {
-        HSSFCellStyle cellStyle = wb.createCellStyle();
+    public static CellStyle newHSSFCellStyle(SXSSFWorkbook wb, short align) {
+        CellStyle cellStyle = wb.createCellStyle();
         cellStyle.setAlignment(align);
         return cellStyle;
     }
@@ -104,8 +106,8 @@ public class ExportUtil {
      * @param fontHeight
      * @return
      */
-    public static HSSFFont newHSSFFont(HSSFWorkbook wb, short boldWeight, String fontName, short fontHeight) {
-        HSSFFont font = wb.createFont();
+    public static Font newHSSFFont(SXSSFWorkbook wb, short boldWeight, String fontName, short fontHeight) {
+        Font font = wb.createFont();
         font.setBoldweight(boldWeight);
         font.setFontName(fontName);
         font.setFontHeight(fontHeight);
