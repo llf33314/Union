@@ -43,7 +43,7 @@ export default {
         title: {
           text: '',
           subtext: '数量（张）',
-          padding:[0,0,0,70],
+          padding: [0, 0, 0, 70],
           subtextStyle: {
             color: '#666'
           }
@@ -53,8 +53,8 @@ export default {
         },
         legend: {
           data: this.unionList,
-          x:'right',
-          padding:[0,120,0,0]
+          x: 'right',
+          padding: [0, 120, 0, 0]
         },
         color: [
           '#20a0ff',
@@ -122,8 +122,8 @@ export default {
               v.spotList.forEach(val => {
                 this.xAxisData.push(val.time);
                 numberData.push(val.number);
-                this.seriesData.push({ name: v.union.name, type: 'line', data: numberData });
               });
+              this.seriesData.push({ name: v.union.name, type: 'line', data: numberData });
             });
           }
         })
