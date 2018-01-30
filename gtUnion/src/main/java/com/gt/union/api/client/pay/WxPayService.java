@@ -45,5 +45,5 @@ public interface WxPayService {
 	 * @param paySource				来源 0—公众号 1—小程序 默认：0
 	 * @return
 	 */
-	GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource);
+	GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource) throws Exception;
 }

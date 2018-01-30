@@ -10,10 +10,7 @@ import com.gt.union.api.client.member.MemberService;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.ApiResultHandlerUtil;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,7 +37,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("busId",busId);
 		param.put("ids",memberIds);
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param, PropertiesUtil.getMemberSignKey());
+			String data = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getMemberSignKey());
 			logger.info("根据商家id和用户ids查询列表信息，结果：{}", data);
 			return ApiResultHandlerUtil.listDataObject(data,Map.class);
 		}catch (Exception e){
@@ -56,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("memberId",memberId);
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param, PropertiesUtil.getMemberSignKey());
+			String data = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getMemberSignKey());
 			logger.info("根据粉丝用户id获取用户信息，结果：{}", data);
 			return ApiResultHandlerUtil.getDataObject(data,Member.class);
 		}catch (Exception e){
@@ -73,7 +70,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("phone",phone);
 		param.put("busId",busId);
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
+			String data = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getMemberSignKey());
 			logger.info("根据手机号和商家id获取用户信息，结果：{}", data);
 			Member member = ApiResultHandlerUtil.getDataObject(data,Member.class);
 			return member;
@@ -103,7 +100,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("memberId",memberId);
 		logger.info("小程序粉丝绑定手机号，请求参数：{}", JSON.toJSONString(param));
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
+			String data = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getMemberSignKey());
 			if(StringUtil.isEmpty(data)){
 				throw new BusinessException("请求失败");
 			}
@@ -144,7 +141,7 @@ public class MemberServiceImpl implements MemberService {
 		getWxPublicMap.put("busId", busId);
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		try{
-			String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
+			String wxpublic = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(getWxPublicMap), PropertiesUtil.getWxmpSignKey());
 			if(StringUtil.isEmpty(wxpublic)){
 				return GtJsonResult.instanceErrorMsg("登录错误");
 			}
@@ -194,7 +191,7 @@ public class MemberServiceImpl implements MemberService {
 		//判断商家信息 1是否过期 2公众号是否变更过
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		try{
-			String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
+			String wxpublic = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(getWxPublicMap), PropertiesUtil.getWxmpSignKey());
 			if(StringUtil.isEmpty(wxpublic)){
 				return GtJsonResult.instanceErrorMsg("登录错误");
 			}
@@ -235,7 +232,7 @@ public class MemberServiceImpl implements MemberService {
 	 */
 	private boolean httpRequestMemberApi(Map param, String url) throws Exception{
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
+			String data = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getMemberSignKey());
 			if(StringUtil.isEmpty(data)){
 				return false;
 			}

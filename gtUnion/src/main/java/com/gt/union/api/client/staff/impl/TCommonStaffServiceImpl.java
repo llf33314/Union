@@ -1,12 +1,14 @@
 package com.gt.union.api.client.staff.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.TCommonStaff;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.staff.ITCommonStaffService;
 import com.gt.union.common.util.ApiResultHandlerUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
 import com.gt.union.finance.verifier.service.IUnionVerifierService;
 import org.slf4j.Logger;
@@ -38,7 +40,7 @@ public class TCommonStaffServiceImpl implements ITCommonStaffService {
 		param.put("shopId", shopId);
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getStaffListShopId.do";
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据门店id获取员工列表，结果：{}", result);
 			Map map = ApiResultHandlerUtil.getDataObject(result, Map.class);
 			List<TCommonStaff> list = JSONArray.parseArray(map.get("staffList").toString(), TCommonStaff.class);
@@ -73,7 +75,7 @@ public class TCommonStaffServiceImpl implements ITCommonStaffService {
 		param.put("staffId", staffId);
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getStaffId.do";
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据员工id获取员工信息，结果：{}", result);
 			return ApiResultHandlerUtil.getDataObject(result, TCommonStaff.class);
 		}catch (Exception e){

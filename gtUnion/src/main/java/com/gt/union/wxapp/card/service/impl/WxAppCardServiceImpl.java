@@ -1,5 +1,6 @@
 package com.gt.union.wxapp.card.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
@@ -527,7 +528,8 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         payParam.setMemberId(duoFenMemberId);
         String obj = wxPayService.wxAppPay(payParam);
         String payUrl = PropertiesUtil.getWxmpUrl() + "/wxPay/79B4DE7C/commonpayVerApplet2_0.do?obj="+obj;
-        Map data = HttpClienUtils.reqGetUTF8(null, payUrl, Map.class);
+        String result = SignRestHttpUtil.reqGetUTF8(payUrl, null);
+        Map data = JSONObject.parseObject(result, Map.class);
         data.put("signType", "MD5");
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }

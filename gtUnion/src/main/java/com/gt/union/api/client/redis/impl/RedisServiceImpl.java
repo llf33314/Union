@@ -1,9 +1,11 @@
 package com.gt.union.api.client.redis.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.redis.RedisService;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,7 @@ public class RedisServiceImpl implements RedisService {
 		logger.info("设置公共redis值，参数：{}", JSON.toJSONString(param));
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/redis/SetExApi.do";
 		try{
-			SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
 			return 0;
 		}

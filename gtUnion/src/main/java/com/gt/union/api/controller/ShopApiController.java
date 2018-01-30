@@ -43,7 +43,7 @@ public class ShopApiController {
 		}
 		List<WsWxShopInfoExtend> list = shopService.listByBusId(busId);
 		List<ShopVO> dataList = new ArrayList<ShopVO>();
-		if(ListUtil.isEmpty(list)){
+		if(ListUtil.isNotEmpty(list)){
 			for(WsWxShopInfoExtend info : list){
 				ShopVO vo = new ShopVO();
 				vo.setName(info.getBusinessName());

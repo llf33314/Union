@@ -45,7 +45,7 @@ public class BusUserServiceImpl implements IBusUserService {
         param.put("userId", busId);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
-            String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
             logger.info("根据商家id获取商家信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class BusUserServiceImpl implements IBusUserService {
         param.put("name", name);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
-            String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
             logger.info("根据账号名称获取商家信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
@@ -77,7 +77,7 @@ public class BusUserServiceImpl implements IBusUserService {
         param.put("reqdata", busId);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
         try{
-            String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
+            String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
             logger.info("根据商家id获取公众号信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, WxPublicUsers.class);
         }catch (Exception e){
@@ -103,17 +103,22 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", data);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
-        String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
-        if(StringUtil.isEmpty(result)){
-            return null;
-        }
-        Map map = JSONObject.parseObject(result,Map.class);
-        String qrurl = "";
-        if(CommonUtil.isNotEmpty(map.get("data"))){
-            qrurl = map.get("data").toString();
-            if (CommonUtil.isNotEmpty(qrurl)) {
-                redisCacheUtil.set(codeKey, qrurl);
+        String qrurl = null;
+        try{
+            String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
+            if(StringUtil.isEmpty(result)){
+                return null;
             }
+            Map map = JSONObject.parseObject(result,Map.class);
+            if(CommonUtil.isNotEmpty(map.get("data"))){
+                qrurl = map.get("data").toString();
+                if (CommonUtil.isNotEmpty(qrurl)) {
+                    redisCacheUtil.set(codeKey, qrurl);
+                }
+            }
+
+        }catch (Exception e){
+            logger.error("获取公众号关注二维码永久链接错误", e);
         }
 		return qrurl;
 	}
@@ -153,7 +158,7 @@ public class BusUserServiceImpl implements IBusUserService {
         param.put("phone", phone);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
-            String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
             logger.info("根据手机号获取商家信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
@@ -172,7 +177,7 @@ public class BusUserServiceImpl implements IBusUserService {
         param.put("reqdata", data);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectBybusIdAndindustry.do";
         try{
-            String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
+            String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
             logger.info("根据商家id和industry获取商家小程序信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, ApiWxApplet.class);
         }catch (Exception e){
@@ -189,7 +194,7 @@ public class BusUserServiceImpl implements IBusUserService {
         param.put("identis", identis);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxmpMenus/isHaveMenus.do";
         try {
-            String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
             logger.info("验证主商家是否拥有该菜单，结果：{}", result);
             return ApiResultHandlerUtil.listDataObject(result, Map.class);
         } catch (Exception e) {
