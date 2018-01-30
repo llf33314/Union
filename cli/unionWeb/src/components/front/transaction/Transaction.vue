@@ -128,7 +128,6 @@
         <p>合计：￥{{payPrice}}</p>
       </div>
       <el-button type="primary" @click="submitForm">确定</el-button>
-      <el-button @click="cancel">取消</el-button>
     </div>
 
     <!-- 弹出框 付款 -->
@@ -329,6 +328,7 @@ export default {
       }
       this.payPrice = this.payPrice.toFixed(2);
     },
+    // 删除折扣卡
     del1(item) {
       let delIndex;
       this.checkList1.forEach((v, i) => {
@@ -338,6 +338,7 @@ export default {
       });
       this.checkList1.splice(delIndex, 1);
     },
+    // 删除活动卡
     del2(item) {
       let delIndex;
       this.checkList2.forEach((v, i) => {
@@ -438,10 +439,6 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
-    },
-    // 取消
-    cancel() {
-      this.init();
     },
     // 初始化
     init() {
