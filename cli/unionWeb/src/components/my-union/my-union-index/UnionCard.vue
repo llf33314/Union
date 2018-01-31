@@ -52,13 +52,13 @@
                 <img src="~assets/images/images3.png"></img>
               </div>
             </el-radio-button>
-            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" 
+            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id"
             :label="item.card.id">
               <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
               <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
               <div class="choiceShadow">
                 <!--//backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'-->
-                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}" 
+                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}"
                 style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
                 <div class="shadow"></div>
                 <img src="~assets/images/images3.png" style="display: none"></img>
@@ -93,7 +93,7 @@
                 <span>{{index+1+'. '}}{{item1.member.enterpriseName}}</span>
                 <ul class="companyName">
                   <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
-                    <i class="circle"></i>
+                    <span class="circle"></span>
                     <span>{{item2.name}}</span>
                     <!-- todo * 样式更换 -->
                     <span>{{item2.number}}</span>
@@ -250,8 +250,8 @@ export default {
   }
   .unionCardDetailsRight>div::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
     border-radius: 5px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    background: rgba(0,0,0,0.2);
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+    background: rgba(0,0,0,.2);
   }
   .unionCardDetailsRight>div::-webkit-scrollbar-track {/*滚动条里面轨道*/
     -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
