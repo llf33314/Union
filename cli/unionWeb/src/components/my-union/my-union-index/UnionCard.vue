@@ -33,29 +33,77 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper"
+      :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 详情 -->
     <el-dialog title="联盟卡详情" :visible.sync="visible" size="tiny">
-      <hr>
-      <div if="detailData.discountCard">
-        <div> {{ detailData.discountCard.name }} </div>
-        <p> 办理时间：
-          <span>{{ detailData.discountCard.createTime }}</span>
-        </p>
-        <p> 享受折扣：
-          <span>{{ detailData.discount * 10 }} 折</span>
-        </p>
-      </div>
-      <div v-for="item in detailData.activityCardList" :key="item.id">
-        <div> {{ item.name }} </div>
-        <p> 办理时间：
-          <span>{{ item.createTime }} </span>
-        </p>
-        <p> 有效时间：
-          <span>{{ item.validity }}</span>
-        </p>
-      </div>
+      <nav>顾客已拥有的联盟卡：</nav>
+      <main class="unionCardDetails">
+        <!-- 左侧联盟卡 -->
+        <div class="step3">
+          <el-radio-group v-model="unionCardId">
+            <el-radio-button v-if="detailData.discountCard" :key="detailData.discountCard.card.id"
+             :label="detailData.discountCard.card.id">
+              <div style="z-index: 10;color:#fff">{{detailData.discountCard.card.name}}</div>
+              <div class="choiceShadow">
+                <div class="bgcolor1" style=""></div>
+                <div class="shadow"></div>
+                <img src="~assets/images/images3.png" />
+              </div>
+            </el-radio-button>
+            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id"
+            :label="item.card.id">
+              <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
+              <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
+              <div class="choiceShadow">
+                <!--//backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'-->
+                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}"
+                style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
+                <div class="shadow"></div>
+                <img src="~assets/images/images3.png" style="display: none" />
+              </div>
+            </el-radio-button>
+          </el-radio-group>
+        </div>
+        <!-- 右侧联盟卡详情 -->
+        <div class="unionCardDetailsRight">
+          <!--折扣卡详情-->
+          <div v-if="detailData.discountCard" v-show="unionCardId===detailData.discountCard.card.id">
+            <p class="DetailsName">{{detailData.discountCard.card.name}}</p>
+            <p class="DetailsTime">办卡时间 {{detailData.discountCard.card.createTime}}</p>
+            <p>消费特权：可在下列商家消费时享受折扣</p>
+            <ol>
+              <li v-for="item in detailData.discountCard.memberList" :key="item.id" :label="item.id">
+                <span>{{item.enterpriseName}}</span>
+                <span v-if="item.discount">{{(item.discount*10).toFixed(1)}}折</span>
+                <span v-else> 无折扣</span>
+              </li>
+            </ol>
+          </div>
+          <!--活动卡详情-->
+          <div v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" :label="item.card.id"
+          v-show="unionCardId === item.card.id">
+            <p class="DetailsName">{{item.card.name}}</p>
+            <p class="DetailsTime">办卡时间： {{item.card.createTime}}</p>
+            <p class="DetailsTime">有效时间： {{item.card.validity}}</p>
+            <p class="DetailsItems">优惠项目： 共{{item.projectItemCount}}项</p>
+            <ol>
+              <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id" :label="item1.member.id">
+                <span>{{index+1+'. '}}{{item1.member.enterpriseName}}</span>
+                <ul class="companyName">
+                  <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
+                    <span class="circle"></span>
+                    <span>{{item2.name}}</span>
+                    <!-- todo * 样式更换 -->
+                    <span>{{item2.number}}</span>
+                  </li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </main>
     </el-dialog>
   </div>
 </template>
@@ -83,11 +131,8 @@ export default {
       currentPage: 1,
       totalAll: 0,
       visible: false,
-      detailData: {
-        discountCard: {},
-        discount: '',
-        activityCardList: []
-      }
+      unionCardId: '',
+      detailData: {}
     };
   },
   computed: {
@@ -159,11 +204,25 @@ export default {
           if (res.data.data) {
             this.detailData = res.data.data;
             this.visible = true;
-            this.detailData.discountCard.createTime = timeFilter(this.detailData.discountCard.createTime);
-            this.detailData.activityCardList.forEach((v, i) => {
-              v.createTime = timeFilter(v.createTime);
-              v.validity = timeFilter(v.validity);
-            });
+            if (this.detailData.discountCard) {
+              this.detailData.discountCard.card.createTime = timeFilter(this.detailData.discountCard.card.createTime);
+              this.unionCardId = this.detailData.discountCard.card.id;
+            }
+            if (this.detailData.activityCardList) {
+              if (!this.detailData.discountCard) {
+                this.unionCardId = this.detailData.activityCardList[0].card.id;
+              }
+              this.detailData.activityCardList.forEach((v, i) => {
+                v.card.createTime = timeFilter(v.card.createTime);
+                v.card.validity = timeFilter(v.card.validity);
+                // let color1 = (v.color1 = v.activity.color.split(',')[0]);
+                // let color2 = (v.color2 = v.activity.color.split(',')[1]);
+                // let mDiv = 'm' + color2 + i;
+                // setTimeout(function() {
+                //   $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                // }, 0);
+              });
+            }
           }
         })
         .catch(err => {
@@ -174,5 +233,22 @@ export default {
 };
 </script>
 <style scoped lang='less' rel="stylesheet/less">
-
+/*滚动条样式*/
+.unionCardDetailsRight > div::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 4px;
+}
+.unionCardDetailsRight > div::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+.unionCardDetailsRight > div::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
 </style>

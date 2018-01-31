@@ -9,6 +9,7 @@ import com.gt.union.api.client.erp.vo.ErpServerVO;
 import com.gt.union.api.erp.car.service.CarErpService;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,8 @@ public class CarErpServiceImpl implements CarErpService {
 		param.put("pageNum",page.getCurrent());
 		param.put("keyValue",search);
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(PropertiesUtil.getCarUrl() + "/openApi/v1/serveItemPage", param,PropertiesUtil.getWxmpSignKey());
+			String url = PropertiesUtil.getCarUrl() + "/openApi/v1/serveItemPage";
+			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
 			logger.info("查询车小算服务项目列表，结果：{}", result);
 			JSONObject jsonObject = JSONObject.parseObject(result);
 			if(jsonObject.get("status").equals(1000)){

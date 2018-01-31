@@ -7,6 +7,7 @@ import com.gt.union.user.introduction.entity.UnionUserIntroduction;
 import com.gt.union.wxapp.card.vo.CardDetailVO;
 import com.gt.union.wxapp.card.vo.MyCardDetailVO;
 import com.gt.union.wxapp.card.vo.NearUserVO;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 
 import java.util.List;
 
@@ -118,4 +119,11 @@ public interface IWxAppCardService {
 	 * @throws Exception
 	 */
 	UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception;
+
+	/**
+	 * 查询商家门店列表
+	 * @param busId
+	 * @return
+	 */
+	List<WsWxShopInfoExtend> listShopByBusId(Integer busId);
 }

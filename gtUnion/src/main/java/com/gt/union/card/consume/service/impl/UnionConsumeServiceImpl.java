@@ -332,6 +332,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (busId == null || unionId == null || fanId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        logger.info("联盟卡消费核销参数信息：busId == " + busId + ", unionId == " + unionId + ", fanId == " + fanId + ", ConsumePostVO : " +JSONObject.toJSONString(vo));
         // 判断union有效性
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
@@ -396,10 +397,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             if (integralExchangeRatio == null) {
                 throw new BusinessException("未设置积分兑换率");
             }
-            if (integral == null) {
-                throw new BusinessException("不存在积分信息，无法使用积分");
-            }
-            if(integral.getIntegral() < 1){
+            if (integral == null || integral.getIntegral() < 1) {
                 throw new BusinessException("积分不足，无法使用积分");
             }
             //抵扣的价格
@@ -422,7 +420,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
         }
         // 支持0.01元精度失算
-        if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.01) {
+        if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) >= 0.01) {
             throw new BusinessException("实际支付金额错误，请刷新后重试");
         }
         saveConsume.setPayMoney(BigDecimalUtil.toDouble(payMoney));

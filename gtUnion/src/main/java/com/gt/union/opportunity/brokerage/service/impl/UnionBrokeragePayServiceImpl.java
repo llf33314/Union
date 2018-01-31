@@ -304,6 +304,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        logger.info("商机支付请求参数信息：busId == " + busId + ", verifierId == " + verifierId + ", opportunityIdList : " +JSONObject.toJSONString(opportunityIdList) + ", memberId == " + memberId);
+        logger.info("商机支付模块：=====>" + unionBrokeragePayStrategyService.getClass().getName());
         // 校验参数有效性
         List<UnionBrokeragePay> savePayList = new ArrayList<>();
         BigDecimal brokerageSum = BigDecimal.ZERO;
@@ -326,7 +328,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 }
                 // 如果已付款过，则报错
                 if (existValidByOpportunityIdAndStatus(opportunityId, BrokerageConstant.PAY_STATUS_SUCCESS)) {
-                    throw new BusinessException("重复支付");
+                    throw new BusinessException("请勿重复支付");
                 }
 
                 brokerageSum = BigDecimalUtil.add(brokerageSum, opportunity.getBrokerageMoney());
@@ -390,6 +392,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
             Date currentDate = DateUtil.getCurrentDate();
             for (UnionBrokeragePay pay : payList) {
+                //商机订单状态
                 UnionBrokeragePay updatePay = new UnionBrokeragePay();
                 updatePay.setId(pay.getId());
                 updatePay.setStatus(CommonConstant.COMMON_YES == isSuccess ? BrokerageConstant.PAY_STATUS_SUCCESS : BrokerageConstant.PAY_STATUS_FAIL);
@@ -402,11 +405,13 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 }
                 updatePayList.add(updatePay);
 
+                //更新商机状态
                 UnionOpportunity updateOpportunity = new UnionOpportunity();
                 updateOpportunity.setId(pay.getOpportunityId());
                 updateOpportunity.setIsClose(CommonConstant.COMMON_YES);
                 updateOpportunityList.add(updateOpportunity);
 
+                //
                 if (CommonConstant.COMMON_YES == isSuccess) {
                     UnionBrokerageIncome saveIncome = new UnionBrokerageIncome();
                     saveIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
@@ -430,6 +435,11 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             if (ListUtil.isNotEmpty(updateOpportunityList)) {
                 unionOpportunityService.updateBatch(updateOpportunityList);
             }
+            for (UnionBrokeragePay pay : payList) {
+
+            }
+            List<Integer> opIds = new ArrayList<Integer>();
+
 
             // socket通知
             if (StringUtil.isNotEmpty(socketKey)) {

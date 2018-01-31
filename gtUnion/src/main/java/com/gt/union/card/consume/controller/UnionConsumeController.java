@@ -18,6 +18,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -111,40 +116,40 @@ public class UnionConsumeController {
             voList = unionConsumeService.listConsumeRecordVOByBusId(busId, unionId, shopId, cardNumber, phone, begin, end);
         }
         String[] titles = new String[]{"所属联盟", "消费门店", "联盟卡号", "手机号", "消费金额(元)", "实收金额(元)", "优惠项目", "支付状态", "消费时间"};
-        HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = workbook.getSheetAt(0);
+        SXSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
+        Sheet sheet = workbook.getSheetAt(0);
         if (ListUtil.isNotEmpty(voList)) {
             int rowIndex = 1;
-            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
+            CellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
             for (ConsumeRecordVO vo : voList) {
-                HSSFRow row = sheet.createRow(rowIndex++);
+                Row row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 所属联盟
-                HSSFCell unionNameCell = row.createCell(cellIndex++);
+                Cell unionNameCell = row.createCell(cellIndex++);
                 unionNameCell.setCellValue(vo.getUnion().getName());
                 unionNameCell.setCellStyle(centerCellStyle);
                 // 消费门店
-                HSSFCell shopNameCell = row.createCell(cellIndex++);
+                Cell shopNameCell = row.createCell(cellIndex++);
                 shopNameCell.setCellValue(vo.getShopName());
                 shopNameCell.setCellStyle(centerCellStyle);
                 // 联盟卡号
-                HSSFCell cardNumberCell = row.createCell(cellIndex++);
+                Cell cardNumberCell = row.createCell(cellIndex++);
                 cardNumberCell.setCellValue(vo.getFan().getNumber());
                 cardNumberCell.setCellStyle(centerCellStyle);
                 // 手机号
-                HSSFCell phoneCell = row.createCell(cellIndex++);
+                Cell phoneCell = row.createCell(cellIndex++);
                 phoneCell.setCellValue(vo.getFan().getPhone());
                 phoneCell.setCellStyle(centerCellStyle);
                 // 消费金额(元)
-                HSSFCell consumeMoneyCell = row.createCell(cellIndex++);
+                Cell consumeMoneyCell = row.createCell(cellIndex++);
                 consumeMoneyCell.setCellValue(vo.getConsume().getConsumeMoney());
                 consumeMoneyCell.setCellStyle(centerCellStyle);
                 // 实收金额(元)
-                HSSFCell payMoneyCell = row.createCell(cellIndex++);
+                Cell payMoneyCell = row.createCell(cellIndex++);
                 payMoneyCell.setCellValue(vo.getConsume().getPayMoney());
                 payMoneyCell.setCellStyle(centerCellStyle);
                 // 优惠项目
-                HSSFCell itemListCell = row.createCell(cellIndex++);
+                Cell itemListCell = row.createCell(cellIndex++);
                 String itemListValue = "";
                 if (ListUtil.isNotEmpty(vo.getNonErpTextList())) {
                     itemListValue = JSONObject.toJSONString(vo.getNonErpTextList());
@@ -164,14 +169,14 @@ public class UnionConsumeController {
                 itemListCell.setCellValue(itemListValue);
                 itemListCell.setCellStyle(centerCellStyle);
                 // 支付状态
-                HSSFCell payStatusCell = row.createCell(cellIndex++);
+                Cell payStatusCell = row.createCell(cellIndex++);
                 Integer payStatus = vo.getConsume().getPayStatus();
                 payStatusCell.setCellValue(ConsumeConstant.PAY_STATUS_PAYING == payStatus ? "支付中"
                         : ConsumeConstant.PAY_STATUS_SUCCESS == payStatus ? "已支付"
                         : ConsumeConstant.PAY_STATUS_FAIL == payStatus ? "已退款" : "");
                 payStatusCell.setCellStyle(centerCellStyle);
                 // 消费时间
-                HSSFCell consumeTimeCell = row.createCell(cellIndex);
+                Cell consumeTimeCell = row.createCell(cellIndex);
                 consumeTimeCell.setCellValue(DateUtil.getDateString(vo.getConsume().getCreateTime(), DateUtil.DATETIME_PATTERN));
                 consumeTimeCell.setCellStyle(centerCellStyle);
 

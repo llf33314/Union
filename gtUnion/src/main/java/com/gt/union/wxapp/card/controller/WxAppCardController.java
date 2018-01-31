@@ -2,23 +2,19 @@ package com.gt.union.wxapp.card.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
-import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.member.MemberService;
-import com.gt.union.api.client.pay.WxPayService;
-import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.sms.constant.SmsConstant;
-import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.user.introduction.entity.UnionUserIntroduction;
-import com.gt.union.wxapp.card.service.ITokenApiService;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,9 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author hongjiye
@@ -119,7 +113,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "联盟卡-我的详情", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardDetail/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardDetail/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							   @ApiParam(value = "版本号", name = "version", required = true)
 							   @PathVariable("version") String version,
@@ -133,7 +127,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-我的详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardDetail/list/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardDetail/list/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							   @ApiParam(value = "版本号", name = "version", required = true)
 							   @PathVariable("version") String version,
@@ -146,7 +140,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-消费记录", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardConsume/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardConsume/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardConsume(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
@@ -159,7 +153,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-商家简介", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/userIntroduction/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/userIntroduction/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String userIntroduction(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
@@ -169,6 +163,21 @@ public class WxAppCardController {
 		return GtJsonResult.instanceSuccessMsg(userIntroduction).toString();
 	}
 
+	@ApiOperation(value = "联盟卡-商家门店", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/userShop/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String userShop(HttpServletRequest request,
+								   @ApiParam(value = "版本号", name = "version", required = true)
+								   @PathVariable("version") String version,
+								   @ApiParam(value = "商家id", name = "busId", required = true)
+								   @PathVariable("busId") Integer busId) throws Exception {
+		List<WsWxShopInfoExtend> list = wxAppCardService.listShopByBusId(busId);
+		if(ListUtil.isNotEmpty(list)){
+			for(WsWxShopInfoExtend shopInfo : list){
+				shopInfo.setImageUrl(StringUtil.isNotEmpty(shopInfo.getImageUrl()) ? (PropertiesUtil.getResourceUrl() + shopInfo.getImageUrl()) : null);
+			}
+		}
+		return GtJsonResult.instanceSuccessMsg(list).toString();
+	}
 
 	@ApiOperation(value = "获取联盟卡二维码", notes = "获取联盟卡二维码", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/qr/cardNo", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
@@ -182,7 +191,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "发送短信验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/sms", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/{busId}/sms", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String sendMsg(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
@@ -206,7 +215,7 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "绑定手机号", notes = "绑定手机号", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/bind/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/{busId}/bind/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String bindCardPhone(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version
 			, @ApiParam(name="phone", value = "手机号", required = true) @RequestParam("phone") String phone
@@ -218,7 +227,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "办理联盟卡", notes = "办理联盟卡", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/transaction/{busId}/{unionId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/transaction/{busId}/{unionId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String cardTransaction(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version
 			,@ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
@@ -229,7 +238,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "获取支付参数", notes = "获取支付参数", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/payParam/{duoFenMemberId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
+	@RequestMapping(value = "/payParam/{duoFenMemberId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
 	public String payParam(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version,
 			 @ApiParam(value = "多粉粉丝用户id", name = "duoFenMemberId", required = true) @PathVariable("duoFenMemberId") Integer duoFenMemberId,

@@ -23,23 +23,23 @@ public class UnionPhoneCardApplyServiceImpl implements IUnionCardApplyService{
 	private WxPayService wxPayService;
 
 	@Override
-	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, Integer unionId, List<Integer> activityIdList) {
+	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList) {
 		UnionPayVO result = new UnionPayVO();
-		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=";
-
-		PayParam payParam = new PayParam();
-		payParam.setTotalFee(payMoneySum.doubleValue());
-		payParam.setOrderNum(orderNo);
-		payParam.setIsreturn(CommonConstant.COMMON_YES);
-		payParam.setReturnUrl(ConfigConstant.CARD_PHONE_BASE_URL + "toActivityCard/" + busId + "/" + activityIdList.get(0) + "/" + unionId);
-		payParam.setNotifyUrl(notifyUrl);
-		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-		payParam.setPayWay(1);
-		payParam.setDesc("办理联盟卡");
-		payParam.setPayDuoFen(true);
-		String payUrl = wxPayService.pay(payParam);
-
-		result.setPayUrl(payUrl);
+//		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=";
+//
+//		PayParam payParam = new PayParam();
+//		payParam.setTotalFee(payMoneySum.doubleValue());
+//		payParam.setOrderNum(orderNo);
+//		payParam.setIsreturn(CommonConstant.COMMON_YES);
+//		payParam.setReturnUrl(ConfigConstant.CARD_PHONE_BASE_URL + "toActivityCard/" + busId + "/" + activityIdList.get(0) + "/" + unionId);
+//		payParam.setNotifyUrl(notifyUrl);
+//		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
+//		payParam.setPayWay(1);
+//		payParam.setDesc("办理联盟卡");
+//		payParam.setPayDuoFen(true);
+//		String payUrl = wxPayService.pay(payParam);
+//
+//		result.setPayUrl(payUrl);
 		return result;
 	}
 }

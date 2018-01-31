@@ -30,7 +30,7 @@
           </el-col>
         </el-form-item>
         <el-form-item label="推荐理由：" prop="reason">
-          <el-input type="textarea" :rows="4" id="feedbackcontent" placeholder="请输入推荐理由" v-model="form.reason" :maxlength="unionNoticeMaxlength"></el-input>
+          <el-input type="textarea" :rows="4" id="feedbackcontent" placeholder="请输入推荐理由" v-model="form.reason"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>

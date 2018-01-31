@@ -1,9 +1,11 @@
 package com.gt.union.api.client.socket.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SignRestHttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class SocketServiceImpl implements SocketService{
 
 	@Override
 	public boolean socketCommonSendMessage(String socketKey,String message,String pushStyle) {
+		String url = PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do";
 		try {
 			Map<String,Object> params = new HashMap<>();
 			if(pushStyle == null){
@@ -31,7 +34,7 @@ public class SocketServiceImpl implements SocketService{
 			params.put("pushMsg", message);
 			params.put("pushName",socketKey);
 			logger.info("socket推送参数：{}", JSON.toJSONString(params));
-			SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
+			SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(params), PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
 			logger.error("socket公用推送错误",e);
 			return false;
@@ -41,6 +44,7 @@ public class SocketServiceImpl implements SocketService{
 
 	@Override
 	public boolean socketPaySendMessage(String socketKey, Integer status, String pushStyle, String orderNo) {
+		String url = PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do";
 		try {
 			Map<String,Object> params = new HashMap<>();
 			if(pushStyle == null){
@@ -56,7 +60,7 @@ public class SocketServiceImpl implements SocketService{
 			params.put("pushMsg", JSON.toJSONString(data));
 			params.put("pushName",socketKey);
 			logger.info("socket推送参数：{}", JSON.toJSONString(params));
-			SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
+			SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(params), PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
 			logger.error("socket支付推送错误",e);
 			return false;

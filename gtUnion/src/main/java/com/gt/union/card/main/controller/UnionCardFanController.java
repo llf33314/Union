@@ -21,6 +21,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -99,24 +104,24 @@ public class UnionCardFanController {
             voList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
         }
         String[] titles = new String[]{"盟员卡号", "手机号", "联盟积分"};
-        HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = workbook.getSheetAt(0);
+        SXSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
+        Sheet sheet = workbook.getSheetAt(0);
         if (ListUtil.isNotEmpty(voList)) {
             int rowIndex = 1;
-            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
+            CellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
             for (CardFanVO vo : voList) {
-                HSSFRow row = sheet.createRow(rowIndex++);
+                Row row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 盟员卡号
-                HSSFCell cardNumberCell = row.createCell(cellIndex++);
+                Cell cardNumberCell = row.createCell(cellIndex++);
                 cardNumberCell.setCellValue(vo.getFan().getNumber());
                 cardNumberCell.setCellStyle(centerCellStyle);
                 // 手机号
-                HSSFCell phoneCell = row.createCell(cellIndex++);
+                Cell phoneCell = row.createCell(cellIndex++);
                 phoneCell.setCellValue(vo.getFan().getPhone());
                 phoneCell.setCellStyle(centerCellStyle);
                 // 联盟积分
-                HSSFCell integralCell = row.createCell(cellIndex);
+                Cell integralCell = row.createCell(cellIndex);
                 integralCell.setCellValue(vo.getIntegral());
                 integralCell.setCellStyle(centerCellStyle);
             }

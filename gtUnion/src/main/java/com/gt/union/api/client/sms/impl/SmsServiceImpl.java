@@ -8,9 +8,7 @@ import com.gt.api.util.RequestUtils;
 import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.client.sms.SmsService;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +36,11 @@ public class SmsServiceImpl implements SmsService {
 		try {
 			RequestUtils requestUtils = new RequestUtils<PhoneMessage>();
 			requestUtils.setReqdata(phoneMessage);
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
-			if(CommonUtil.isEmpty(result)){
+			String data = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(requestUtils), PropertiesUtil.getWxmpSignKey());
+			if(StringUtil.isEmpty(data)){
 				return false;
 			}
+			Map result = JSONObject.parseObject(data,Map.class);
 			if(CommonUtil.toInteger(result.get("code")) != 0){
 				return false;
 			}
@@ -59,10 +58,11 @@ public class SmsServiceImpl implements SmsService {
 		try {
 			RequestUtils requestUtils = new RequestUtils<TemplateSmsMessage>();
 			requestUtils.setReqdata(templateSmsMessage);
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
-			if(CommonUtil.isEmpty(result)){
+			String data = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(requestUtils), PropertiesUtil.getWxmpSignKey());
+			if(StringUtil.isEmpty(data)){
 				return false;
 			}
+			Map result = JSONObject.parseObject(data,Map.class);
 			if(CommonUtil.toInteger(result.get("code")) != 0){
 				return false;
 			}

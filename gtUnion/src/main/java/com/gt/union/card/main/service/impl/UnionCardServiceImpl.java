@@ -437,6 +437,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (busId == null || applyPostVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        logger.info("办理联盟卡参数信息：busId == " + busId + ", applyPostVO : " +JSONObject.toJSONString(applyPostVO));
+        logger.info("办理联盟卡模块：=====>" + unionCardApplyService.getClass().getName());
         // 判断fanId有效性
         UnionCardFan formFan = applyPostVO.getFan();
         if (formFan == null) {
@@ -528,7 +530,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 payMoneySum = BigDecimalUtil.add(payMoneySum, activity.getPrice());
             }
         }
-        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, BigDecimalUtil.toDouble(payMoneySum), busId, null, activityIdList);
+        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, BigDecimalUtil.toDouble(payMoneySum), busId, activityIdList);
 
         if (ListUtil.isEmpty(saveDiscountCardList) && ListUtil.isEmpty(saveCardRecordList)) {
             throw new BusinessException("请选择要办理的联盟卡");

@@ -320,6 +320,74 @@ hr {
 .verSuccess .el-dialog__body .ddd img {
   margin-right: 20px;
 }
+.step3 .el-radio-group {
+  width: 200px;
+  margin: 0 35px 0 0;
+  min-height: 295px;
+  overflow-y: auto;
+  border-radius: 6px;
+}
+.step3 .el-radio-group .el-radio-button__inner:hover {
+  color: inherit;
+}
+.step3 .el-radio-group .el-radio-button,
+.step3 .el-radio-group .el-radio-button__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+  height: 87px;
+}
+.step3 .el-radio-group .el-radio-button .el-radio-button__inner,
+.step3 .el-radio-group .el-radio-button__inner .el-radio-button__inner {
+  border: none!important;
+  border-radius: 6px;
+}
+.step3 .el-radio-group .el-radio-button .outOfDate,
+.step3 .el-radio-group .el-radio-button__inner .outOfDate {
+  width: 38px;
+  position: absolute;
+  right: 6px;
+  top: 3px;
+  z-index: 10;
+}
+.step3 .el-radio-group .bgcolor1 {
+  background-image: linear-gradient(90deg, #FD7157 0%, #EB3C3F 100%);
+  width: 198px;
+  height: 80px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 6px;
+}
+.step3 .el-radio-group .el-radio-button:first-child .el-radio-button__inner {
+  position: absolute;
+}
+.step3 .el-radio-group .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  color: #1f2d3d;
+  background-color: #fbfdff;
+  border: 1px solid #20a0ff;
+  box-shadow: none;
+}
+.step3 .el-radio-group .el-radio-button__orig-radio:checked + .el-radio-button__inner .choiceShadow .shadow {
+  border-radius: 5px;
+  width: 198px;
+  height: 85px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.step3 .el-radio-group .el-radio-button__orig-radio:checked + .el-radio-button__inner .choiceShadow img {
+  display: block!important;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+  border-radius: 0 0 6px 0;
+}
 #myMainUnion .model_2 .el-dialog__body {
   padding: 2px;
 }
@@ -369,32 +437,57 @@ hr {
   color: #ffffff;
 }
 #myUnionCard1 .el-dialog--tiny {
-  width: 900px ;
+  width: 700px ;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__header {
+  padding: 20px 20px 15px;
+  border-bottom: 1px solid #eee;
 }
 #myUnionCard1 .el-dialog--tiny .el-dialog__body {
-  padding: 0;
-  margin-top: 15px;
-  height: 500px;
+  padding: 0 30px;
+  height: 400px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body nav {
+  margin: 20px 0 15px 0;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails {
+  display: flex;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight {
+  width: 350px;
+  height: 280px;
+  border: 1px solid #BFCBD9;
+  padding: 20px 10px 20px 30px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  line-height: 2;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div {
+  height: 240px;
   overflow-y: auto;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div {
-  width: 830px;
-  height: 125px;
-  background-color: #ffffff;
-  border: solid 1px #dfe6ec;
-  margin: 30px;
-}
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > div {
-  padding: 10px 0 10px 31px;
-  background-color: #EEF1F6;
-  color: #333333;
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .DetailsName {
+  color: #333;
   font-weight: bold;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > p {
-  margin: 18px 30px;
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .DetailsTime {
+  color: #999;
 }
-#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > p span {
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .DetailsItems {
+  color: #333;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .companyName > li {
   margin-left: 25px;
+  color: #999;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .companyName .circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
 }
 #apply_for .apply_select .el-table_1_column_8 .cell {
   width: 155px;
@@ -1717,260 +1810,134 @@ hr {
 #front #ExpenseRecord .searchBar .el-date-editor--daterange.el-input {
   width: 92%;
 }
-#front #transaction .uninCardContent {
-  float: left;
-  width: 63%;
-  margin-top: 30px;
-  max-width: 920px;
-  min-width: 550px;
+#front #transaction {
+  position: relative;
 }
-#front #transaction .uninCardContent > div {
-  height: 227px;
-  border: 1px solid #EEEEEE;
-}
-#front #transaction .uninCardContent > div > p {
+#front #transaction .cardInformation {
   height: 40px;
   background-color: #eef1f6;
-  line-height: 40px;
-  padding-left: 30px;
+  box-sizing: border-box;
+  padding: 10px 30px ;
   font-weight: bold;
 }
-#front #transaction .uninCardContent > div form {
-  margin-top: 20px;
-  margin-left: 28px;
+#front #transaction .handleCardInformation {
+  width: 80%;
+  height: 190px;
+  border: solid 1px #dfe6ec;
+  margin-bottom: 25px ;
 }
-#front #transaction .uninCardContent > div form > .el-form-item:nth-last-child(1) {
-  margin-bottom: 0!important;
+#front #transaction .handleCardInformation > form {
+  margin-top: 25px;
+}
+#front #transaction .unionCardList {
+  width: 80%;
+  border: solid 1px #dfe6ec;
+  margin-bottom: 25px ;
+}
+#front #transaction .transactionFooter {
+  width: 80%;
+  border: solid 1px #dfe6ec;
   position: relative;
-  top: -44px;
-  left: -5px;
 }
-#front #transaction .uninCardContent > div form > .el-form-item:nth-last-child(1) .el-form-item__label {
-  width: 124px!important;
+#front #transaction .transactionFooter .transactionFooterNav {
+  max-height: 200px;
+  overflow-y: auto;
 }
-#front #transaction .uninCardContent > form {
-  margin-top: 21px;
-}
-#front #transaction .uninCardContent > form .selectUnion {
-  border: 1px solid #EEEEEE;
-}
-#front #transaction .uninCardContent > form .selectUnion > p {
+#front #transaction .transactionFooter .footerCardList {
   height: 40px;
-  background-color: #eef1f6;
-  line-height: 40px;
-  padding-left: 30px;
-  font-weight: bold;
-}
-#front #transaction .uninCardContent > form .selectUnion .el-form-item__content {
-  margin-left: 30px!important;
-}
-#front #transaction .uninCardContent > form .selectUnionCard {
-  margin-top: 21px;
-  border: 1px solid #EEEEEE;
-}
-#front #transaction .uninCardContent > form .selectUnionCard p {
-  height: 40px;
-  background-color: #eef1f6;
-  line-height: 40px;
-  padding-left: 30px;
-  font-weight: bold;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .el-form-item__content {
-  margin-left: 0 !important;
-  width: inherit;
-  margin-bottom: 0;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround {
-  position: relative;
-  overflow: hidden;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > i {
-  position: absolute;
-  width: 20px;
-  height: 50px;
-  background-color: #000000;
-  opacity: 0.1;
-  color: #ffffff;
-  line-height: 50px;
-  z-index: 20;
-  border: none;
-  top: 28%;
-  cursor: pointer;
-  font-style: normal!important;
-  text-align: center;
-  font-size: 20px;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround .forward {
-  left: 0;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround .backward {
-  right: 0;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div {
-  width: 94%;
-  max-width: 864px;
-  height: 146px;
-  position: relative;
-  left: 26px;
-  overflow-x: auto;
-  overflow-y: inherit;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div {
+  padding: 0 30px;
   display: flex;
-  transition: all .5s;
-  position: absolute;
-  left: 0;
-  margin-top: 35px;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #DFE6EC ;
 }
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button {
-  position: relative;
-  display: inline-block;
-  margin-left: 13px;
-  margin-top: 5px;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button .el-checkbox-button__inner {
-  padding: 0;
-  border: none;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button .el-checkbox-button__inner > .clearfix {
-  border-radius: 4px 0 0 4px;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .SelectunionImg {
-  width: 200px;
-  height: 46px;
-  background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .SelectunionImg1 i {
-  display: block;
-  width: 99.1%;
-  height: 46px;
-  position: absolute;
-  background: rgba(35, 34, 34, 0.5) url('../../assets/images/dagou.png') no-repeat center;
-  top: 0;
-  left: 0;
-  border-radius: 4px 0 0 4px;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button.is-checked .el-checkbox-button__inner {
-  background-color: #96a3ad;
-  border-color: #96a3ad;
-  box-shadow: none;
-}
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button.is-checked .el-checkbox-button__inner i {
-  display: block;
-  width: 200px;
-  height: 46px;
-  position: absolute;
-  background: rgba(35, 34, 34, 0.5) url('../../assets/images/dagou.png') no-repeat center;
-  top: 0;
-  left: 0;
-  border-radius: 4px 0 0 4px;
-}
-#front #transaction .uninCardContent > form .ActivityCardDetails {
-  margin-top: 21px;
-}
-#front #transaction .uninCardContent > form .ActivityCardDetails .UnionDiscountCard {
-  border: 1px solid #EEEEEE;
-}
-#front #transaction .uninCardContent > form .ActivityCardDetails .UnionDiscountCard p {
+#front #transaction .transactionFooter .total {
+  width: 100%;
   height: 40px;
-  background-color: #eef1f6;
-  line-height: 40px;
-  padding-left: 30px;
-  font-weight: bold;
+  background-color: #f1f1f1;
+  box-sizing: border-box;
+  padding: 10px 30px ;
+  position: absolute;
+  bottom: 0;
 }
-#front #transaction .uninCardContent > form .ActivityCardDetails .UnionDiscountCard > div {
-  padding: 20px 0 25px 70px;
+#front #transaction .transactionFooter .total > span {
+  color: #ff4949;
 }
-#front #transaction .uninCardContent > form .ActivityCardDetails .cardService {
-  margin-top: 21px;
-  border: 1px solid #EEEEEE;
+#front #transaction .footerFix {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  width: 100%;
+  height: 56px;
+  line-height: 56px;
+  background-color: #f5f5f5;
 }
-#front #transaction .uninCardContent > form .ActivityCardDetails .cardService > p {
-  height: 40px;
-  background-color: #eef1f6;
-  line-height: 40px;
-  padding-left: 30px;
-  font-weight: bold;
-}
-#front #transaction .uninCardContent > form .ActivityCardDetails .cardService > div {
-  margin: 20px 0 20px 32px;
-}
-#front #transaction .uninCardContent > form > .el-form-item {
-  margin-top: 20px;
-}
-#front #transaction .uninCardContent > form > .el-form-item .el-form-item__content {
-  margin-left: 0!important;
-}
-#front #transaction .el-col-6 {
-  width: 220px;
-}
-#front #transaction .el-select .el-input {
-  width: 220px;
-}
-#front #transaction .el-form-item__content {
+#front #transaction .model_1 .el-dialog--tiny {
   width: 560px;
 }
-#front #transaction .step2 .el-radio-button {
-  height: inherit;
-  border: none;
-  margin: 20px 22px 25px 32px;
-}
-#front #transaction .step2 .el-radio-button__inner:hover {
-  background-color: #fff;
-  border: 1px solid #20A0FF;
-}
-#front #transaction .code_ .el-button {
-  border: 1px solid #1c8de0;
-  color: #1c8de0;
-}
-#front #transaction .code_ .el-button:hover {
-  background: #1c8de0;
-  color: #fff;
-}
-#front #transaction .model_1 .el-dialog {
-  width: 560px;
-  height: 360px;
-}
-#front #transaction .model_1 .el-dialog img {
-  width: 200px;
-}
-#front #transaction .model_1 .el-dialog__body {
-  padding: 0;
-}
-#finance .el-table .cell {
-  padding-left: 30px;
-}
-#finance .el-dialog--tiny {
-  width: 650px;
-  height: 360px;
-}
-#finance .footer_ .code_ .el-dialog--tiny {
-  height: 400px;
-}
-#finance .footer_ .el-dialog--tiny {
-  height: 445px;
-}
-#finance .el-dialog__body {
-  padding: 0;
-  margin-top: 15px;
-}
-#finance .Popup_ {
-  margin-top: 30px;
-  padding-left: 50px;
-}
-#finance .Popup_ .el-form-item__error {
-  top: 20%;
-  left: 40%;
-}
-#finance .model_1 .el-dialog--tiny {
-  width: 560px;
-}
-#finance .model_1 .el-dialog--tiny img {
+#front #transaction .model_1 .el-dialog--tiny img {
   width: 200px;
   height: 200px;
 }
-#finance .el-form-item__error:nth-child(3) {
+#finance .BroKerage .el-table .cell {
+  padding-left: 30px;
+}
+#finance .BroKerage .el-dialog--tiny {
+  width: 650px;
+  height: 360px;
+}
+#finance .BroKerage .footer_ .code_ .el-dialog--tiny {
+  height: 400px;
+}
+#finance .BroKerage .footer_ .el-dialog--tiny {
+  height: 445px;
+}
+#finance .BroKerage .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#finance .BroKerage .Popup_ {
+  margin-top: 30px;
+  padding-left: 50px;
+}
+#finance .BroKerage .Popup_ .el-form-item__error {
+  top: 20%;
+  left: 40%;
+}
+#finance .BroKerage .model_1 .el-dialog--tiny {
+  width: 560px;
+}
+#finance .BroKerage .model_1 .el-dialog--tiny img {
+  width: 200px;
+  height: 200px;
+}
+#finance .BroKerage .el-form-item__error:nth-child(3) {
   left: 62%;
+}
+#finance .DataStatistics .BrokerageStatistics > nav {
+  display: flex;
+}
+#finance .DataStatistics .BrokerageStatistics > h3 {
+  margin: 20px 0 15px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+#finance .DataStatistics .DiscountCardStatistics > h3 {
+  margin: 30px 0 20px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+#finance .DataStatistics .DiscountCardStatistics .btnGroup {
+  margin: 0 0 20px 395px ;
+}
+#finance .DataStatistics .ActivityCardStatstics > h3 {
+  margin: 20px 0 15px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+#finance .DataStatistics .ActivityCardStatstics > nav {
+  display: flex;
 }
 #noRegister .model_1 .el-dialog--tiny {
   width: 450px;
@@ -2040,4 +2007,144 @@ hr {
   #sellCard #ActivityCardSellDivide .contentList .el-button--small {
     padding: 6px 4px!important;
   }
+  #brokeragePayStatistics {
+    margin-left: 0px;
+  }
+  #sellBrokerageStatistics {
+    margin-left: 0px;
+  }
+  #discountCardStatistics {
+    width: 1080px!important;
+  }
+  #discountCardStatistics > div:nth-child(1) {
+    width: 1080px!important;
+  }
+  #discountCardStatistics > div:nth-child(1) canvas {
+    width: 1080px!important;
+  }
+}
+@media screen and (min-width: 1680px) {
+  #brokeragePayStatistics {
+    margin-left: 300px;
+  }
+  #sellBrokerageStatistics {
+    margin-left: 300px;
+  }
+  #discountCardStatistics {
+    width: 1650px!important;
+  }
+  #discountCardStatistics > div:nth-child(1) {
+    width: 1650px!important;
+  }
+  #discountCardStatistics > div:nth-child(1) canvas {
+    width: 1500px!important;
+  }
+}
+.SwitchAround {
+  height: 410px;
+  overflow-y: auto;
+  display: flex;
+}
+.SwitchAround > div {
+  height: 120px;
+  margin: 20px 0 20px 30px;
+}
+.SwitchAround > div .el-checkbox-button {
+  position: relative;
+  display: inline-block;
+  margin-left: 13px;
+  margin-top: 5px;
+}
+.SwitchAround > div .el-checkbox-button .el-checkbox-button__inner {
+  padding: 0;
+  border: none;
+}
+.SwitchAround > div .el-checkbox-button .el-checkbox-button__inner > .clearfix {
+  border-radius: 4px 0 0 4px;
+}
+.SwitchAround > div .el-checkbox-button__inner:hover .discountsCardDetails,
+.SwitchAround > div .el-checkbox-button__inner:hover .cardDetails {
+  display: block!important;
+}
+.SwitchAround > div .discountsCardDetails,
+.SwitchAround > div .cardDetails {
+  width: 410px;
+  height: 214px;
+  overflow: hidden;
+  padding: 13px;
+  background: #fff;
+  box-sizing: border-box;
+  box-shadow: 0px 2px 10px 0px rgba(53, 53, 53, 0.1);
+  z-index: 10;
+  text-align: start;
+  line-height: 2;
+  position: absolute;
+  color: #333;
+  top: -20px;
+  left: 312px;
+  border: solid 1px #d1dbe5;
+}
+.SwitchAround > div .discountsCardDetails ul {
+  height: 120px;
+  overflow-y: auto;
+}
+.SwitchAround > div .discountsCardDetails ul li {
+  display: flex;
+  justify-content: space-between;
+}
+.SwitchAround > div .discountsCardDetails ul li span:nth-last-child(1) {
+  margin-right: 80px;
+}
+.SwitchAround > div .cardDetails {
+  height: 315px;
+}
+.SwitchAround > div .cardDetails ol {
+  height: 150px;
+  overflow-y: auto;
+}
+.SwitchAround > div .cardDetails .companyName > li {
+  margin-left: 25px;
+  color: #999;
+  display: flex;
+  justify-content: space-between;
+}
+.SwitchAround > div .cardDetails .companyName .circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
+}
+.SwitchAround > div .SelectunionImg {
+  display: block;
+  color: #fff;
+  font-size: 20px;
+  border-radius: 6px;
+  width: 300px;
+  height: 120px;
+  line-height: 120px;
+  background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
+}
+.SwitchAround > div .bottomFont {
+  margin-left: 5px;
+  position: absolute;
+  top: 135px;
+  left: 0;
+  color: #333;
+  font-size: 20px;
+}
+.SwitchAround > div .el-checkbox-button.is-checked .el-checkbox-button__inner {
+  background-color: #96a3ad;
+  border-color: #96a3ad;
+  box-shadow: none;
+}
+.SwitchAround > div .el-checkbox-button.is-checked .el-checkbox-button__inner i {
+  display: block;
+  width: 300px;
+  height: 120px;
+  position: absolute;
+  background: rgba(35, 34, 34, 0.3) url('../../assets/images/images3.png') no-repeat bottom right;
+  top: 0;
+  left: 0;
+  border-radius: 6px;
 }

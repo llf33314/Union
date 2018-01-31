@@ -1,5 +1,6 @@
 package com.gt.union.wxapp.card.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
@@ -7,6 +8,7 @@ import com.gt.api.util.HttpClienUtils;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
+import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
@@ -19,6 +21,7 @@ import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.entity.UnionCardRecord;
 import com.gt.union.card.main.service.*;
+import com.gt.union.card.main.vo.CardPhoneResponseVO;
 import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
@@ -40,6 +43,8 @@ import com.gt.union.user.introduction.service.IUnionUserIntroductionService;
 import com.gt.union.wxapp.card.constant.WxAppCardConstant;
 import com.gt.union.wxapp.card.service.IWxAppCardService;
 import com.gt.union.wxapp.card.vo.*;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +109,9 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
 
     @Autowired
     private IUnionUserIntroductionService unionUserIntroductionService;
+
+    @Autowired
+    private ShopService shopService;
 
     @Override
     public Page listWxAppCardPage(String phone, Integer busId, Page page) throws Exception {
@@ -361,19 +369,27 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             data.put("phone", 0);
             return GtJsonResult.instanceSuccessMsg(data).toString();
         }
-        List list = new ArrayList<>();
+        List activityList = new ArrayList<>();
         if (CommonUtil.isNotEmpty(activityId)) {
-            list.add(activityId);
+            activityList.add(activityId);
         }
         UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
-        // TODO
-//        UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
-//        if (result != null) {
-//            data.put("pay", true);
-//            data.put("orderNo", result.getOrderNo());
-//            data.put("appid", PropertiesUtil.getUnionAppId());
-//            data.put("busId", PropertiesUtil.getDuofenBusId());
-//        }
+
+        CardPhoneResponseVO vo = new CardPhoneResponseVO();
+        vo.setFan(fan);
+        vo.setActivityIdList(activityList);
+
+        List unionList = new ArrayList<>();
+        unionList.add(unionId);
+        vo.setUnionIdList(unionList);
+
+        UnionPayVO result = unionCardService.saveApplyByBusId(busId, vo, unionCardApplyService);
+        if (result != null) {
+            data.put("pay", true);
+            data.put("orderNo", result.getOrderNo());
+            data.put("appid", PropertiesUtil.getUnionAppId());
+            data.put("busId", PropertiesUtil.getDuofenBusId());
+        }
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }
 
@@ -512,7 +528,8 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         payParam.setMemberId(duoFenMemberId);
         String obj = wxPayService.wxAppPay(payParam);
         String payUrl = PropertiesUtil.getWxmpUrl() + "/wxPay/79B4DE7C/commonpayVerApplet2_0.do?obj="+obj;
-        Map data = HttpClienUtils.reqGetUTF8(null, payUrl, Map.class);
+        String result = SignRestHttpUtil.reqGetUTF8(payUrl, null);
+        Map data = JSONObject.parseObject(result, Map.class);
         data.put("signType", "MD5");
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }
@@ -520,5 +537,10 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
 	@Override
 	public UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception {
 		return unionUserIntroductionService.getValidByBusId(busId);
+	}
+
+	@Override
+	public List<WsWxShopInfoExtend> listShopByBusId(Integer busId) {
+		return shopService.listByBusId(busId);
 	}
 }

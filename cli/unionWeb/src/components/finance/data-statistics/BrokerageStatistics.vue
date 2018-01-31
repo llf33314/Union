@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="BrokerageStatistics">
     <h3>联盟卡佣金统计</h3>
-    <div>
+    <nav>
       <div id="brokerageIncomeStatistics" style="width:500px;height:300px;"></div>
       <div id="brokeragePayStatistics" style="width:500px;height:300px;"></div>
-    </div>
+    </nav>
   </div>
 </template>
 
@@ -214,3 +214,8 @@ export default {
   }
 };
 </script>
+
+
+<style lang='less' rel="stylesheet/less" scoped>
+
+</style>

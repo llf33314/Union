@@ -18,7 +18,7 @@ public interface ShopService {
 	 * @param busId        商家id
 	 * @return
 	 */
-	List<ShopVO> listByBusId(Integer busId);
+	List<WsWxShopInfoExtend> listByBusId(Integer busId);
 
 	/**
 	 * 根据门店id列表获取门店列表信息
