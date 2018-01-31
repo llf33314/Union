@@ -43,13 +43,13 @@
         <!-- 左侧联盟卡 -->
         <div class="step3">
           <el-radio-group v-model="unionCardId">
-            <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id"
-             :label="detailData.disCountCard.card.id">
-              <div style="z-index: 10;color:#fff">{{detailData.disCountCard.card.name}}</div>
+            <el-radio-button v-if="detailData.discountCard" :key="detailData.discountCard.card.id"
+             :label="detailData.discountCard.card.id">
+              <div style="z-index: 10;color:#fff">{{detailData.discountCard.card.name}}</div>
               <div class="choiceShadow">
                 <div class="bgcolor1" style=""></div>
                 <div class="shadow"></div>
-                <img src="~assets/images/images3.png"></img>
+                <img src="~assets/images/images3.png" />
               </div>
             </el-radio-button>
             <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id"
@@ -61,7 +61,7 @@
                 <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}"
                 style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
                 <div class="shadow"></div>
-                <img src="~assets/images/images3.png" style="display: none"></img>
+                <img src="~assets/images/images3.png" style="display: none" />
               </div>
             </el-radio-button>
           </el-radio-group>
@@ -69,12 +69,12 @@
         <!-- 右侧联盟卡详情 -->
         <div class="unionCardDetailsRight">
           <!--折扣卡详情-->
-          <div v-if="detailData.disCountCard" v-show="unionCardId===detailData.disCountCard.card.id">
-            <p class="DetailsName">{{detailData.disCountCard.card.name}}</p>
-            <p class="DetailsTime">办卡时间 {{detailData.disCountCard.createTime}}</p>
+          <div v-if="detailData.discountCard" v-show="unionCardId===detailData.discountCard.card.id">
+            <p class="DetailsName">{{detailData.discountCard.card.name}}</p>
+            <p class="DetailsTime">办卡时间 {{detailData.discountCard.card.createTime}}</p>
             <p>消费特权：可在下列商家消费时享受折扣</p>
             <ol>
-              <li v-for="item in detailData.disCountCard.memberList" :key="item.id" :label="item.id">
+              <li v-for="item in detailData.discountCard.memberList" :key="item.id" :label="item.id">
                 <span>{{item.enterpriseName}}</span>
                 <span v-if="item.discount">{{(item.discount*10).toFixed(1)}}折</span>
                 <span v-else> 无折扣</span>
@@ -132,10 +132,7 @@ export default {
       totalAll: 0,
       visible: false,
       unionCardId: '',
-      detailData: {
-        discountCard: {},
-        discount: ''
-      }
+      detailData: {}
     };
   },
   computed: {
@@ -180,12 +177,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 带条件查询联盟卡
@@ -213,10 +205,13 @@ export default {
             this.detailData = res.data.data;
             this.visible = true;
             if (this.detailData.discountCard) {
-              this.detailData.discountCard.card.createTime = timeFilter(this.detailData.discountCard.createTime);
+              this.detailData.discountCard.card.createTime = timeFilter(this.detailData.discountCard.card.createTime);
+              this.unionCardId = this.detailData.discountCard.card.id;
             }
             if (this.detailData.activityCardList) {
-              console.log(this.detailData.activityCardList);
+              if (!this.detailData.discountCard) {
+                this.unionCardId = this.detailData.activityCardList[0].card.id;
+              }
               this.detailData.activityCardList.forEach((v, i) => {
                 v.card.createTime = timeFilter(v.card.createTime);
                 v.card.validity = timeFilter(v.card.validity);
@@ -231,29 +226,29 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     }
   }
 };
 </script>
 <style scoped lang='less' rel="stylesheet/less">
-  /*滚动条样式*/
-  .unionCardDetailsRight>div::-webkit-scrollbar {/*滚动条整体样式*/
-    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
-    height: 4px;
-  }
-  .unionCardDetailsRight>div::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
-    border-radius: 5px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
-    background: rgba(0,0,0,.2);
-  }
-  .unionCardDetailsRight>div::-webkit-scrollbar-track {/*滚动条里面轨道*/
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
-  }
+/*滚动条样式*/
+.unionCardDetailsRight > div::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 4px;
+}
+.unionCardDetailsRight > div::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+.unionCardDetailsRight > div::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
 </style>

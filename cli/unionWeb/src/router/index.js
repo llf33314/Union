@@ -6,6 +6,7 @@ const MyUnionEntrance = () => import('@/components/entrance/MyUnionEntrance');
 const BusinessEntrance = () => import('@/components/entrance/BusinessEntrance');
 const FinanceEntrance = () => import('@/components/entrance/FinanceEntrance');
 const FrontEntrance = () => import('@/components/entrance/FrontEntrance');
+const BusinessIntroductionEntrance = () => import('@/components/entrance/BusinessIntroductionEntrance');
 
 // 我的联盟
 // 我的联盟index
@@ -33,11 +34,12 @@ const MyActivityCard = () =>
   import(/* webpackChunkName: "union-card-setting" */ '@/components/my-union/union-card-setting/MyActivityCard');
 
 // 我的联盟外其他模块
+const Front = () => import('@/components/front/Front');
 const Business = () => import('@/components/business/Business');
 const Finance = () => import('@/components/finance/Finance');
-const Front = () => import('@/components/front/Front');
+const UserIntroduction = () => import('@/components/businessIntroduction/UserIntroduction');
+
 const NoUnion = () => import('@/components/public-components/NoUnion');
-const userIntroduction = () => import('@/components/businessIntroduction/userIntroduction');
 
 Vue.use(Router);
 
@@ -161,11 +163,17 @@ export default new Router({
       path: '/front/index',
       name: 'FrontIndex',
       component: Front
-    },//商家简介
-    {
-      path: '/businessIntroduction/userIntroduction',
-      name: 'userIntroduction',
-      component: userIntroduction
     },
+    // 商家简介
+    {
+      path: '/business-introduction',
+      name: 'BusinessIntroductionEntrance',
+      component: BusinessIntroductionEntrance
+    },
+    {
+      path: '/business-introduction/index',
+      name: 'UserIntroduction',
+      component: UserIntroduction
+    }
   ]
 });
