@@ -3,7 +3,7 @@
     <Breadcrumb :header-name="['创建联盟']"></Breadcrumb>
     <div class="container container_one">
       <div class="step-top">
-        <el-steps :active="active" :center="true" :align-center="true">
+        <el-steps :active="active" :align-center="true">
           <el-step title="商家基础信息设置" status="finish"></el-step>
           <el-step title="联盟设置"></el-step>
           <el-step title="创建联盟成功"></el-step>
