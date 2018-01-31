@@ -3,7 +3,8 @@
     <el-row class="user_search">
       <el-col style="width: 220px">
         <div class="grid-content bg-purple">
-          <el-input placeholder="请输入盟员名称" icon="search" v-model="input" :on-icon-click="search" class="input-search" @keyup.enter.native="search">
+          <el-input placeholder="请输入盟员名称" v-model="input" clearable class="input-search" @keyup.enter.native="search">
+            <i slot="suffix" @click="search" class="el-input__icon el-icon-search"></i>
           </el-input>
         </div>
       </el-col>

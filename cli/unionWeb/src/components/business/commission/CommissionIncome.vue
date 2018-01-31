@@ -32,7 +32,8 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字" @keyup.enter.native="search" v-model="input"  class="input-search2 fl" clearable>
+            <i slot="suffix" @click="search" class="el-input__icon el-icon-search"></i>
           </el-input>
         </div>
       </el-col>
@@ -180,8 +181,9 @@ export default {
     getTableData() {
       $http
         .get(
-          `/unionBrokerageIncome/opportunity/page?current=${this.currentPage}&unionId=${this.unionId}&toMemberId=${this
-            .toMemberId}&` +
+          `/unionBrokerageIncome/opportunity/page?current=${this.currentPage}&unionId=${this.unionId}&toMemberId=${
+            this.toMemberId
+          }&` +
             this.value +
             '=' +
             this.input

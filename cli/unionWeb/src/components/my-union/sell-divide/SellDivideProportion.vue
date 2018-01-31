@@ -4,7 +4,8 @@
     <el-row>
       <el-col :span="4" style="width:210px">
         <div class="grid-content bg-purple1">
-          <el-input placeholder="请输入联盟卡号" icon="search" v-model="cardNumber" :on-icon-click="search" class="input-search2 fl" @keyup.enter.native="search">
+          <el-input placeholder="请输入联盟卡号" v-model="cardNumber" clearable class="input-search2 fl" @keyup.enter.native="search">
+            <i slot="suffix" @click="search" class="el-input__icon el-icon-search"></i>
           </el-input>
         </div>
       </el-col>

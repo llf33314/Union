@@ -22,7 +22,8 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" @keyup.enter.native="search" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字" v-model="input" @keyup.enter.native="search" clearable class="input-search2 fl">
+            <i slot="suffix" @click="search" class="el-input__icon el-icon-search"></i>
           </el-input>
         </div>
       </el-col>

@@ -11,7 +11,8 @@
       </el-col>
       <el-col style="width:190px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" @keyup.enter.native="search" v-model="input" :on-icon-click="search" class="input-search fl">
+          <el-input placeholder="请输入关键字" @keyup.enter.native="search" v-model="input" clearable class="input-search fl">
+            <i slot="suffix" @click="search" class="el-input__icon el-icon-search"></i>
           </el-input>
         </div>
       </el-col>
@@ -49,19 +50,19 @@
               <div class="choiceShadow">
                 <div class="bgcolor1" style=""></div>
                 <div class="shadow"></div>
-                <img src="~assets/images/images3.png"></img>
+                <img src="~assets/images/images3.png" />
               </div>
             </el-radio-button>
-            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id" 
+            <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id"
             :label="item.card.id">
               <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
               <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
               <div class="choiceShadow">
                 <!--//backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'-->
-                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}" 
+                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}"
                 style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
                 <div class="shadow"></div>
-                <img src="~assets/images/images3.png" style="display: none"></img>
+                <img src="~assets/images/images3.png" style="display: none" />
               </div>
             </el-radio-button>
           </el-radio-group>
@@ -243,17 +244,22 @@ export default {
 };
 </script>
 <style scoped lang='less' rel="stylesheet/less">
-  /*滚动条样式*/
-  .unionCardDetailsRight>div::-webkit-scrollbar {/*滚动条整体样式*/
-    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
-    height: 4px;
-  }
-  .unionCardDetailsRight>div::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
-    border-radius: 5px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    background: rgba(0,0,0,0.2);
-  }
-  .unionCardDetailsRight>div::-webkit-scrollbar-track {/*滚动条里面轨道*/
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
-  }
+/*滚动条样式*/
+.unionCardDetailsRight > div::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 4px;
+}
+.unionCardDetailsRight > div::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+.unionCardDetailsRight > div::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
 </style>

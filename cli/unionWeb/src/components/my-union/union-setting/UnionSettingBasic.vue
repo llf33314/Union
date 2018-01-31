@@ -27,7 +27,8 @@
       <el-form-item label="我的地址：" prop="enterpriseAddress">
         <el-col :span="6">
           <div class="dingwei">
-            <el-input v-model="form.enterpriseAddress" icon="search" :on-icon-click="handleIconClick" placeholder="请输入详细地址" disabled>
+            <el-input v-model="form.enterpriseAddress" placeholder="请输入详细地址" disabled>
+              <i slot="suffix" @click="handleIconClick" class="el-input__icon el-icon-search"></i>
             </el-input>
             <union-map @mapClick="mapClick" v-show="mapShow" ref="unionMap" :address="form.enterpriseAddress"></union-map>
           </div>
@@ -172,4 +173,3 @@ export default {
   margin-top: 10px;
 }
 </style>
-

@@ -2,7 +2,8 @@
   <div id="Verification">
     <div class="first_">
       <el-col style="width: 35%;">
-        <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keyup.enter.native="handleIconClick">
+        <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" v-model="input" @keyup.enter.native="search">
+          <i slot="suffix" @click="search" class="el-input__icon el-icon-search"></i>
         </el-input>
       </el-col>
     </div>
@@ -321,7 +322,7 @@ export default {
       this.price2 = numberCheck(this.price2);
     },
     // 搜索
-    handleIconClick(ev) {
+    search(ev) {
       this.shopId = '';
       this.unionId = '';
       if (this.input) {

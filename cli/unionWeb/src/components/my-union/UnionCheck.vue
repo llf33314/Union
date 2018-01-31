@@ -13,7 +13,8 @@
       </el-col>
       <el-col style="width:245px">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" @keyup.enter.native="search">
+          <el-input placeholder="请输入关键字" v-model="input" clearable @keyup.enter.native="search">
+            <i slot="suffix" @click="search" class="el-input__icon el-icon-search"></i>
           </el-input>
         </div>
       </el-col>

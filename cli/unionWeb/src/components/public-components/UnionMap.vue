@@ -5,7 +5,7 @@
     </div>
     <div id="myPageTop">
       <input id="tipinput" type="text" v-model="searchValue" placeholder="请输入关键字" @keyup.enter="search"/>
-      <el-button id="search" type="primary" icon="search" @click="search">搜索</el-button>
+      <el-button id="search" type="primary" suffix-icon="el-icon-search"  @click="search">搜索</el-button>
     </div>
   </div>
 </template>
