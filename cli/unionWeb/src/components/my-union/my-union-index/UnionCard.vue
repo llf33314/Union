@@ -93,7 +93,7 @@
                 <span>{{index+1+'. '}}{{item1.member.enterpriseName}}</span>
                 <ul class="companyName">
                   <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
-                    <i class="circle"></i>
+                    <span class="circle"></span>
                     <span>{{item2.name}}</span>
                     <!-- todo * 样式更换 -->
                     <span>{{item2.number}}</span>

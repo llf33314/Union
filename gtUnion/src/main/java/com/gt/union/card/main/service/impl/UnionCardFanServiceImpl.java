@@ -299,7 +299,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         String key = null;
         try {
             key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
-//            RedissonLockUtil.lock(key, 5);
+            RedissonLockUtil.lock(key, 5);
             UnionCardFan fan = getValidByPhone(phone);
             if (fan == null) {
                 fan = new UnionCardFan();
@@ -312,7 +312,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             return fan;
         } finally {
             if (key != null) {
-//                RedissonLockUtil.unlock(key);
+                RedissonLockUtil.unlock(key);
             }
         }
     }
