@@ -56,7 +56,7 @@
             </el-col>
           </el-form-item>
           <el-form-item label="优惠项目" v-if="form.isProjectAvailable">
-            <el-switch v-model="isProjectAvailable_" on-text="" off-text="" :disabled="!unionId">
+            <el-switch v-model="isProjectAvailable_" :disabled="!unionId">
             </el-switch>
           </el-form-item>
         </el-form>
@@ -122,7 +122,7 @@
             </el-form-item>
             <el-form-item label="联盟积分：" v-if="isIntegral && form.currentMember.integralExchangeRatio && form.integral >= 1">
               <span> 共{{ form.integral }}积分，最多可抵扣{{ form.currentMember.integralExchangeRatio * 100 }}% </span>
-              <el-switch v-model="isIntegral_" on-text="" off-text="">
+              <el-switch v-model="isIntegral_">
               </el-switch>
             </el-form-item>
             <el-form-item label="积分抵扣" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral >= 1">

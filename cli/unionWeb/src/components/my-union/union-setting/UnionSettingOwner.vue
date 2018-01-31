@@ -13,7 +13,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="联盟积分：">
-          <el-switch on-text="" off-text="" v-model="form.isIntegral" :disabled="isIntegral_"></el-switch>
+          <el-switch v-model="form.isIntegral" :disabled="isIntegral_"></el-switch>
           <el-tooltip content="开启联盟积分后，可让粉丝消费获得积分回扣，粉丝可使用积分抵扣金额，该功能开启后不可关闭" placement="right">
             <span class="tubiao">!</span>
           </el-tooltip>

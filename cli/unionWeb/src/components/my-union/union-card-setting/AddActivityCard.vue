@@ -39,7 +39,7 @@
             <el-input type="textarea" v-model="form.illustration"></el-input>
           </el-form-item>
           <el-form-item label="项目审核：">
-            <el-switch v-model="form.isProjectCheck" on-text="" off-text="">
+            <el-switch v-model="form.isProjectCheck">
             </el-switch>
             <span>审核开启后，盟员提交的项目需要审核</span>
           </el-form-item>
