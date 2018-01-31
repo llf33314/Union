@@ -7,10 +7,7 @@ import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.shop.vo.ShopVO;
-import com.gt.union.common.util.ApiResultHandlerUtil;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.SignRestHttpUtil;
+import com.gt.union.common.util.*;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +78,7 @@ public class ShopServiceImpl implements ShopService {
 			String result = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(req), PropertiesUtil.getWxmpSignKey());
 			logger.info("根据门店id获取门店信息，结果：{}", result);
 			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
-			return CommonUtil.isNotEmpty(shops) ? shops.get(0) : null;
+			return ListUtil.isNotEmpty(shops) ? shops.get(0) : null;
 		}catch (Exception e){
 			logger.error("根据门店id列表获取门店列表信息错误", e);
 			return null;

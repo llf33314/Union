@@ -64,7 +64,7 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
-		logger.info("手机端联盟卡核销，参数：{}", JSON.toJSONString(unionConsumeParam));
+		logger.info("API联盟卡核销，参数：{}", JSON.toJSONString(unionConsumeParam));
 		if(unionConsumeParam.getUnionCardId() == null){
 			throw new ParamException("unionCardId为空");
 		}
@@ -90,6 +90,11 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 		if(card == null){
 			throw new BusinessException("联盟卡不存在");
 		}
+
+		UnionConsume consume = unionConsumeService.getValidByOrderNoAndModel(unionConsumeParam.getOrderNo(), unionConsumeParam.getModel());
+		if (consume != null) {
+			throw new BusinessException("订单已存在");
+		}
 		UnionConsume unionConsume = new UnionConsume();
 		unionConsume.setCreateTime(new Date());
 		unionConsume.setDelStatus(CommonConstant.DEL_STATUS_NO);
@@ -109,10 +114,10 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 		unionConsume.setMemberId(card.getMemberId());
 		UnionMember unionMember = unionMemberService.getById(card.getMemberId());
 		unionConsume.setDiscount(CommonUtil.isNotEmpty(unionMember.getDiscount()) ? unionMember.getDiscount() : 0);
-		unionConsume.setShopId(unionConsumeParam.getShopId());
 		if(CommonUtil.isNotEmpty(unionConsumeParam.getShopId())){
 			WsWxShopInfoExtend shop = shopService.getById(unionConsumeParam.getShopId());
 			if(shop != null){
+				unionConsume.setShopId(unionConsumeParam.getShopId());
 				unionConsume.setShopName(shop.getBusinessName());
 			}
 		}
