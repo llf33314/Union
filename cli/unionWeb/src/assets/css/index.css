@@ -2084,26 +2084,6 @@ hr {
   left: 312px;
   border: solid 1px #d1dbe5;
 }
-.SwitchAround > div .discountsCardDetails ol,
-.SwitchAround > div .cardDetails ol {
-  height: 120px;
-  overflow-y: auto;
-}
-.SwitchAround > div .discountsCardDetails .companyName > li,
-.SwitchAround > div .cardDetails .companyName > li {
-  margin-left: 25px;
-  color: #999;
-  display: flex;
-  justify-content: space-between;
-}
-.SwitchAround > div .discountsCardDetails .companyName .circle,
-.SwitchAround > div .cardDetails .companyName .circle {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #ccc;
-}
 .SwitchAround > div .discountsCardDetails ul {
   height: 120px;
   overflow-y: auto;
@@ -2114,6 +2094,26 @@ hr {
 }
 .SwitchAround > div .discountsCardDetails ul li span:nth-last-child(1) {
   margin-right: 80px;
+}
+.SwitchAround > div .cardDetails {
+  height: 315px;
+}
+.SwitchAround > div .cardDetails ol {
+  height: 150px;
+  overflow-y: auto;
+}
+.SwitchAround > div .cardDetails .companyName > li {
+  margin-left: 25px;
+  color: #999;
+  display: flex;
+  justify-content: space-between;
+}
+.SwitchAround > div .cardDetails .companyName .circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
 }
 .SwitchAround > div .SelectunionImg {
   display: block;

@@ -23,6 +23,7 @@
     <main class="unionCardList">
       <p class="cardInformation">联盟卡列表</p>
       <div class="SwitchAround">
+          <!-- 折扣卡 -->
           <el-checkbox-group v-model="checkList1" @change="checkListChange1">
             <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag">
               <div class="clearfix">
@@ -50,6 +51,7 @@
               </div>
             </el-checkbox-button>
           </el-checkbox-group>
+          <!-- 活动卡 -->
           <el-checkbox-group v-model="checkList2" @change="checkListChange2">
           <el-checkbox-button v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag">
             <div class="clearfix">
@@ -64,7 +66,7 @@
               <i></i>
             </div>
             <!-- 活动卡详情 -->
-            <div class="cardDetails" v-show="false">
+            <div class="cardDetails">
               <h3>{{item.activity.name}}</h3>
               <p>有效期：购买后{{item.activity.validityDay}}天内</p>
               <p>售价：<span style="color: #ff4949">￥{{item.activity.price}}</span></p>
@@ -90,6 +92,7 @@
       </div>
     </main>
 
+    <!--页面底部-->
     <footer class="transactionFooter"  v-if="checkList1.length||checkList2.length">
         <p class="cardInformation">办卡列表</p>
         <div class="transactionFooterNav">
@@ -107,7 +110,6 @@
         <p style="margin-top:40px "></p>
         <p class="total">合计：<span>￥{{payPrice}}</span></p>
     </footer>
-
     <div style="margin-top: 48px;"></div>
     <div class="footerFix" v-if="checkList1.length||checkList2.length">
       <el-button type="primary" @click="submitForm">确定</el-button>

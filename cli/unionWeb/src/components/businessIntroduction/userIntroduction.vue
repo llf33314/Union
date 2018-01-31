@@ -95,6 +95,6 @@
     }
   }
   .save{
-    margin: 100px 0 50px 130px;
+    margin: 100px 0 50px 147px;
   }
 </style>

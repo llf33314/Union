@@ -2365,7 +2365,8 @@ hr{
 
 
 .SwitchAround {
-  height:410px;
+  height:410px;//210px
+  //max-height: 410px;
   overflow-y: auto;
   display: flex;
     >div {
@@ -2405,8 +2406,27 @@ hr{
         top: -20px;
         left: 312px;
         border: solid 1px #d1dbe5;
-        ol{
+
+      }
+      //折扣卡
+      .discountsCardDetails{
+        ul{
           height: 120px;
+          overflow-y: auto;
+          li{
+            display: flex;
+            justify-content: space-between;
+            span:nth-last-child(1){
+              margin-right: 80px;
+            }
+          }
+        }
+      }
+      //活动卡
+      .cardDetails{
+        height: 315px;
+        ol{
+          height: 150px;
           overflow-y: auto;
         }
         .companyName {
@@ -2421,19 +2441,6 @@ hr{
             height: 8px;
             border-radius: 50%;
             background: #ccc;
-          }
-        }
-      }
-      .discountsCardDetails{
-        ul{
-          height: 120px;
-          overflow-y: auto;
-          li{
-            display: flex;
-            justify-content: space-between;
-            span:nth-last-child(1){
-              margin-right: 80px;
-            }
           }
         }
       }
