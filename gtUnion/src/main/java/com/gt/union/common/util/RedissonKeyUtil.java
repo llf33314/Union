@@ -12,7 +12,7 @@ public class RedissonKeyUtil {
 	 * @return
 	 */
 	public static final String getUnionCardFanByPhoneKey(String phone) {
-		return PropertiesUtil.redisNamePrefix() + "fan" + phone;
+		return PropertiesUtil.redisNamePrefix() + "fan:" + phone;
 	}
 
 	/**
@@ -21,7 +21,18 @@ public class RedissonKeyUtil {
 	 * @return
 	 */
 	public static final String getWithdrawalByBusIdKey(Integer busId) {
-		return PropertiesUtil.redisNamePrefix() + "withdrawal" + busId;
+		return PropertiesUtil.redisNamePrefix() + "withdrawal:" + busId;
+	}
+
+	/**
+	 * 获取粉丝折扣卡锁键
+	 * @param type	类型
+	 * @param unionId	联盟id
+	 * @param fanId	粉丝联盟卡id
+	 * @return
+	 */
+	public static final String getUnionCardByTypeAndUnionIdAndFanId(Integer type, Integer unionId, Integer fanId){
+		return PropertiesUtil.redisNamePrefix() + "type:" + type + ":unionId:" + unionId + ":fanId:" + fanId;
 	}
 
 }

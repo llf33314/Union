@@ -397,10 +397,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             if (integralExchangeRatio == null) {
                 throw new BusinessException("未设置积分兑换率");
             }
-            if (integral == null) {
-                throw new BusinessException("不存在积分信息，无法使用积分");
-            }
-            if(integral.getIntegral() < 1){
+            if (integral == null || integral.getIntegral() < 1) {
                 throw new BusinessException("积分不足，无法使用积分");
             }
             //抵扣的价格

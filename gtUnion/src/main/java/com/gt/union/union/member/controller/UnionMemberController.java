@@ -19,6 +19,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,29 +125,29 @@ public class UnionMemberController {
             voList = unionMemberService.listIndexByBusIdAndUnionId(busId, unionId, optMemberName);
         }
         String[] titles = new String[]{"盟员名称", "负责人", "联系电话", "加入时间"};
-        HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = workbook.getSheetAt(0);
+        SXSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
+        Sheet sheet = workbook.getSheetAt(0);
         if (ListUtil.isNotEmpty(voList)) {
             int rowIndex = 1;
-            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
+            CellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
             for (MemberOutVO vo : voList) {
                 UnionMember member = vo.getMember();
-                HSSFRow row = sheet.createRow(rowIndex++);
+                Row row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 盟员名称
-                HSSFCell memberNameCell = row.createCell(cellIndex++);
+                Cell memberNameCell = row.createCell(cellIndex++);
                 memberNameCell.setCellValue(member.getEnterpriseName());
                 memberNameCell.setCellStyle(centerCellStyle);
                 // 负责人
-                HSSFCell directorCell = row.createCell(cellIndex++);
+                Cell directorCell = row.createCell(cellIndex++);
                 directorCell.setCellValue(member.getDirectorName());
                 directorCell.setCellStyle(centerCellStyle);
                 // 联系电话
-                HSSFCell phoneCell = row.createCell(cellIndex++);
+                Cell phoneCell = row.createCell(cellIndex++);
                 phoneCell.setCellValue(member.getDirectorPhone());
                 phoneCell.setCellStyle(centerCellStyle);
                 // 加入时间
-                HSSFCell createTimeCell = row.createCell(cellIndex);
+                Cell createTimeCell = row.createCell(cellIndex);
                 createTimeCell.setCellValue(DateUtil.getDateString(member.getCreateTime(), DateUtil.DATETIME_PATTERN));
                 createTimeCell.setCellStyle(centerCellStyle);
             }
