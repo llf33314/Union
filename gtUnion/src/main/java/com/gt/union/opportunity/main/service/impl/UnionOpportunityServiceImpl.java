@@ -179,8 +179,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
             }
             result.setUnPaidIncome(unPaidIncome.doubleValue());
             result.setPaidIncome(paidIncome.doubleValue());
+            result.setIncomeSum(BigDecimalUtil.add(unPaidIncome, paidIncome).doubleValue());
             result.setUnPaidExpense(unPaidExpense.doubleValue());
             result.setPaidExpense(paidExpense.doubleValue());
+            result.setExpenseSum(BigDecimalUtil.add(unPaidExpense, paidExpense).doubleValue());
             result.setUnPaidIncomeDetailList(unPaidIncomeDetailList);
             result.setPaidIncomeDetailList(paidIncomeDetailList);
             result.setUnPaidExpenseDetailList(unPaidExpenseDetailList);
