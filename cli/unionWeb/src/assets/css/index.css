@@ -478,6 +478,13 @@ hr {
 #myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .DetailsItems {
   color: #333;
 }
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .discountsDetails > li {
+  display: flex;
+  justify-content: space-between;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .discountsDetails > li span:nth-last-child(1) {
+  margin-right: 40px;
+}
 #myUnionCard1 .el-dialog--tiny .el-dialog__body .unionCardDetails .unionCardDetailsRight > div .companyName > li {
   margin-left: 25px;
   color: #999;

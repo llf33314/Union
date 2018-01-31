@@ -54,7 +54,7 @@
               </el-input>
             </el-col>
           </el-form-item>
-          <el-form-item label="优惠项目" v-if="form.isProjectAvailable">
+          <el-form-item label="优惠项目:" v-if="form.isProjectAvailable">
             <el-switch v-model="isProjectAvailable_" on-text="" off-text="" :disabled="!unionId">
             </el-switch>
           </el-form-item>

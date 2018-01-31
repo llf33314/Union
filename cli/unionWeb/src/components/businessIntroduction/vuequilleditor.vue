@@ -116,7 +116,7 @@
       </select>
       <!--<button class="ql-clean"></button>-->
       <!--<button class="ql-link"></button>-->
-      <button @click="materiallayer('2')">
+      <button @click="materiallayer">
         <svg viewBox="0 0 18 18">
           <rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect>
           <circle class="ql-fill" cx="6" cy="7" r="1"></circle>
@@ -133,15 +133,15 @@
 </template>
 
 <script>
+  import $http from '@/utils/http.js';
   import Vue from 'vue'
   import  VueQuillEditor from 'vue-quill-editor'
-  Vue.use(VueQuillEditor)
+  Vue.use(VueQuillEditor);
   export default {
     name: 'vuequilleditor',
     data () {
       return {
         form: {
-          chooseStatus: '',
           dialogVisible: false,
           materialUrl: '',
           content: '',
@@ -154,7 +154,7 @@
       }
     },
     methods: {
-      materiallayer(status) {
+      materiallayer() {
         this.form.dialogVisible = true;
         this.form.materialUrl =  this.$store.state.materialUrl + window.location.href;
       },
@@ -163,7 +163,19 @@
       }
     },
     created() {
-      this.$emit('getValue', this.form)
+      var that=this;
+      $http.get(`/unionUserIntroduction`)
+        .then(res => {
+          if (res.data.success) {
+            that.form.content=res.data.data.content;
+          }
+        })
+        .catch(err => {
+          that.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+        });
+      setTimeout(function () {
+        that.$emit('getValue', that.form)
+      },10)
     }
   }
 </script>

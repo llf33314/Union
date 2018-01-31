@@ -66,7 +66,7 @@
               <i></i>
             </div>
             <!-- 活动卡详情 -->
-            <div class="cardDetails">
+            <div class="cardDetails" v-show="false" style="z-index: 100">
               <h3>{{item.activity.name}}</h3>
               <p>有效期：购买后{{item.activity.validityDay}}天内</p>
               <p>售价：<span style="color: #ff4949">￥{{item.activity.price}}</span></p>
