@@ -40,7 +40,7 @@
       </el-table>
       <!-- 弹出框 商机佣金比例设置 -->
       <div class="model_03">
-        <el-dialog title="商机佣金比例设置" :visible.sync="dialogVisible" size="tiny" @close="resetData">
+        <el-dialog title="商机佣金比例设置" :visible.sync="dialogVisible" width="30%" @close="resetData">
           <div class="model_03_detail">
             <p>"{{ toEnterpriseName }}" 给我的佣金为：{{ ratioToMe }} % </p>
             <p>我给TA佣金 ：&nbsp;&nbsp;<input type="text" v-model="ratioFromMe" @keyup.enter.native="submit" id="pushMoney">

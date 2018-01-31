@@ -20,7 +20,7 @@
       </el-table-column>
     </el-table>
     <!-- 弹出框 确认转移 -->
-    <el-dialog title="提示" :visible.sync="dialogVisible1" size="tiny">
+    <el-dialog title="提示" :visible.sync="dialogVisible1" width="30%">
       <hr>
       <span>将盟主权限转移给 {{ enterpriseName }}， 是否确认？</span>
       <span slot="footer" class="dialog-footer">
@@ -29,7 +29,7 @@
       </span>
     </el-dialog>
     <!-- 弹出框 确认撤销 -->
-    <el-dialog title="提示" :visible.sync="dialogVisible2" size="tiny">
+    <el-dialog title="提示" :visible.sync="dialogVisible2" width="30%">
       <hr>
       <span>撤销将盟主权限转移给 {{ enterpriseName }}， 是否确认？</span>
       <span slot="footer" class="dialog-footer">

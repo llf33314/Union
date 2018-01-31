@@ -40,7 +40,7 @@
       </footer>
       <!-- 弹出框 确认提交审核 -->
       <div class="model_2">
-        <el-dialog title="通过" :visible.sync="visible" size="tiny">
+        <el-dialog title="通过" :visible.sync="visible" width="30%">
           <hr>
           <div>
             <img src="~assets/images/delect01.png" class="fl">

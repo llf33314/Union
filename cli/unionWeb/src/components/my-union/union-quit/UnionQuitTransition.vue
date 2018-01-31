@@ -36,7 +36,7 @@
       </div>
       <!-- 弹出框 退盟申请 -->
       <div class="RefundAu">
-        <el-dialog title="退盟申请" :visible.sync="visible1" size="tiny" @close="resetData">
+        <el-dialog title="退盟申请" :visible.sync="visible1" width="30%" @close="resetData">
           <hr>
           <div class="main">
             <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -57,7 +57,7 @@
       </div>
       <!--弹出框 退盟说明 -->
       <div class="tuimeng">
-        <el-dialog title="退盟规则说明" :visible.sync="visible2" size="tiny">
+        <el-dialog title="退盟规则说明" :visible.sync="visible2" width="30%">
           <hr>
           <div class="model_12">
             <p>1. 盟主不能退出自己的联盟</p>
@@ -79,7 +79,7 @@
       </div>
       <!-- 弹出框 确认取消移出 -->
       <div class="model_12">
-        <el-dialog title="" :visible.sync="visible3" size="tiny">
+        <el-dialog title="" :visible.sync="visible3" width="30%">
           <p>是否确认取消移出“ {{ enterpriseName }} ”</p>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm3">确定</el-button>

@@ -93,7 +93,7 @@
 
     <!-- 弹出框 付款 -->
     <div class="model_1">
-      <el-dialog title="付款" :visible.sync="visible2" size="tiny">
+      <el-dialog title="付款" :visible.sync="visible2" width="30%">
         <hr>
         <div class="model_">
           <p>

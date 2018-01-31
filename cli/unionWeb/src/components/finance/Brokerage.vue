@@ -38,7 +38,7 @@
         </el-pagination>
         <!-- 弹出框 提现二维码 -->
         <div class="code_">
-          <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
+          <el-dialog title="提现" :visible.sync="dialogVisible1" width="30%">
             <hr>
             <div class="model_">
               <p><img v-bind:src="$store.state.baseUrl + '/unionVerifier/h5Code'"></p>
@@ -47,7 +47,7 @@
           </el-dialog>
         </div>
         <!-- 弹出框 新增 -->
-        <el-dialog title="新增管理者" :visible.sync="dialogVisible2" size="tiny" @close="resetForm('ruleForm')">
+        <el-dialog title="新增管理者" :visible.sync="dialogVisible2" width="30%" @close="resetForm('ruleForm')">
           <hr>
           <div class="Popup_">
             <el-form :label-position="labelPosition" label-width="100px" :model="ruleForm" :rules="rules" ref="ruleForm">
@@ -82,7 +82,7 @@
         </el-dialog>
         <!-- 弹出框 删除确认 -->
         <div class="model_2">
-          <el-dialog title="删除" :visible.sync="visible1" size="tiny">
+          <el-dialog title="删除" :visible.sync="visible1" width="30%">
             <hr>
             <div>
               <img src="../../assets/images/delect01.png" class="fl">

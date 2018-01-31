@@ -49,7 +49,7 @@
       </el-pagination>
       <!-- 弹出框 比例设置 -->
       <div class="setScale">
-        <el-dialog title="比例设置" :visible.sync="visible3" size="small" @close="resetData">
+        <el-dialog title="比例设置" :visible.sync="visible3" @close="resetData">
           <hr>
           <div class="model_setting">
             <div>

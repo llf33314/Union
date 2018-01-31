@@ -74,7 +74,7 @@
     </div>
     <!-- 弹出框 商机推荐详情 -->
     <div class="model_01">
-      <el-dialog title="商机推荐详情" :visible.sync="dialogVisible" size="tiny" @click="dialogVisible = false">
+      <el-dialog title="商机推荐详情" :visible.sync="dialogVisible" width="30%" @click="dialogVisible = false">
         <hr>
         <div class="model_detail">
           <p>顾客详情：{{ detailData.opportunity.clientName }}</p>
@@ -91,7 +91,7 @@
     </div>
     <!-- 弹出框 商机受理价格 -->
     <div class="model_01">
-      <el-dialog title="商机受理价格" :visible.sync="dialogVisible1" size="tiny" @close="resetData">
+      <el-dialog title="商机受理价格" :visible.sync="dialogVisible1" width="30%" @close="resetData">
         <hr>
         <div class="model_detail">
           <span>商机受理价格</span>
@@ -107,7 +107,7 @@
     </div>
     <!-- 弹出框 确认拒绝 -->
     <div class="model_02">
-      <el-dialog title="是否确认拒绝商机" :visible.sync="dialogVisible2" size="tiny">
+      <el-dialog title="是否确认拒绝商机" :visible.sync="dialogVisible2" width="30%">
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm1">确定</el-button>
           <el-button @click="dialogVisible2 = false">取消</el-button>

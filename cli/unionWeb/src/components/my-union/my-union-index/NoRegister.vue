@@ -46,7 +46,7 @@
       </div>
       <!-- 弹出框 扫码支付 -->
       <div class="model_1">
-        <el-dialog title="付款" :visible.sync="visible1" size="tiny">
+        <el-dialog title="付款" :visible.sync="visible1" width="30%">
           <hr>
           <div class="model_">
             <p><img v-bind:src="codeSrc" class="codeImg" style="width:240px;height:240px;"></p>

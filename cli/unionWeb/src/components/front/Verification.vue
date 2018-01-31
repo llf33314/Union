@@ -101,7 +101,7 @@
     </div>
     <!-- 弹出框 核销 -->
     <div class="second_0">
-      <el-dialog title="消费核销" :visible.sync="visible3" size="tiny" @close="resetData1">
+      <el-dialog title="消费核销" :visible.sync="visible3" width="30%" @close="resetData1">
         <hr>
         <div>
           <p>消费详情</p>
@@ -193,7 +193,7 @@
     </div>
     <!-- 弹出框 扫码支付 -->
     <div class="codePayment">
-      <el-dialog title="付款" :visible.sync="visible4" size="tiny" @close="resetData">
+      <el-dialog title="付款" :visible.sync="visible4" width="30%" @close="resetData">
         <hr>
         <img v-bind:src="payUrl">
         <p>￥<span>{{ payPrice }}</span>

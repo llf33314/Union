@@ -39,7 +39,7 @@
     </el-pagination>
     <!-- 弹出框 详情 -->
     <div class="model__10">
-      <el-dialog title="详情" :visible.sync="visible" size="tiny">
+      <el-dialog title="详情" :visible.sync="visible" width="30%">
         <hr>
         <div>
           <el-form ref="form" :model="form" label-width="80px">
@@ -67,7 +67,7 @@
     </div>
     <!-- 弹出框 确认移出 -->
     <div class="model_13">
-      <el-dialog title="" :visible.sync="visible1" size="tiny">
+      <el-dialog title="" :visible.sync="visible1" width="30%">
         <p>是否确认移出“ {{ enterpriseName }} ”</p>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm1">确定</el-button>
@@ -76,7 +76,7 @@
       </el-dialog>
     </div>
     <!-- 弹出框 确认撤回移出 -->
-    <el-dialog title="" :visible.sync="visible2" size="tiny">
+    <el-dialog title="" :visible.sync="visible2" width="30%">
       <div class="model_12">
         <p>是否确认撤回移出“ {{ enterpriseName }} ”</p>
       </div>

@@ -37,7 +37,7 @@
       :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 详情 -->
-    <el-dialog title="联盟卡详情" :visible.sync="visible" size="tiny">
+    <el-dialog title="联盟卡详情" :visible.sync="visible" width="30%">
       <nav>顾客已拥有的联盟卡：</nav>
       <main class="unionCardDetails">
         <!-- 左侧联盟卡 -->

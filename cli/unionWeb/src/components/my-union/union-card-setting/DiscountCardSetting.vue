@@ -24,7 +24,7 @@
     <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 设置折扣 -->
-    <el-dialog title="设置折扣" :visible.sync="visible" size="tiny" @close="resetData">
+    <el-dialog title="设置折扣" :visible.sync="visible" width="30%" @close="resetData">
       <hr>
       <div>当前折扣： {{ discount }}折 </div>
       <p>设置折扣：

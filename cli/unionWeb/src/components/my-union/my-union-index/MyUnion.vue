@@ -116,7 +116,7 @@
         </el-col>
         <!-- 弹出框 提示 -->
         <div class="model_2">
-          <el-dialog title="提示" :visible.sync="visible" size="tiny">
+          <el-dialog title="提示" :visible.sync="visible" width="30%">
             <hr style="margin-top: 15px;">
             <div>
               <img src="~assets/images/delect01.png" class="fl">

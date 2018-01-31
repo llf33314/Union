@@ -3,7 +3,7 @@
     <el-button @click="visible=true" size="small">删除</el-button>
     <!-- 弹出框 删除确认 -->
     <div class="model_2">
-      <el-dialog title="删除" :visible.sync="visible" size="tiny">
+      <el-dialog title="删除" :visible.sync="visible" width="30%">
         <hr>
         <div>
           <img src="~assets/images/delect01.png" class="fl">

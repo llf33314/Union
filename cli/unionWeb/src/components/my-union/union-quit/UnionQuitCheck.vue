@@ -27,7 +27,7 @@
     </div>
     <!--弹出框 退盟说明 -->
     <div class="tuimeng">
-      <el-dialog title="退盟规则说明" :visible.sync="visible1" size="tiny">
+      <el-dialog title="退盟规则说明" :visible.sync="visible1" width="30%">
         <hr>
         <div class="model_12">
           <p>1. 盟主不能退出自己的联盟</p>
@@ -49,7 +49,7 @@
     </div>
     <!--弹出框 同意 拒绝 -->
     <div class="tuimeng">
-      <el-dialog title="" :visible.sync="visible2" size="tiny">
+      <el-dialog title="" :visible.sync="visible2" width="30%">
         <div class="model_12">
           <p>是否同意“{{ outEnterpriseName }}”退出联盟?</p>
         </div>
@@ -58,7 +58,7 @@
           <el-button @click="visible2=false">取消</el-button>
         </span>
       </el-dialog>
-      <el-dialog title="" :visible.sync="visible3" size="tiny">
+      <el-dialog title="" :visible.sync="visible3" width="30%">
         <div class="model_12">
           <p>是否拒绝“{{ outEnterpriseName }}”退出联盟</p>
         </div>

@@ -103,7 +103,7 @@
     </div>
     <!-- 弹出框 支付页面 -->
     <div class="model_0">
-      <el-dialog title="支付" :visible.sync="visible" size="tiny">
+      <el-dialog title="支付" :visible.sync="visible" width="30%">
         <hr>
         <div class="middle_">
           <img v-bind:src="imgSrc" class="imgSrc">
