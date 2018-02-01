@@ -59,7 +59,7 @@
               </span>
               <!--底部信息-->
               <div class="fl bottomFont">
-                ￥{{item.activity.price}}
+                ￥{{item.activity.price.toFixed(2)}}
               </div>
               <i></i>
             </div>
@@ -67,7 +67,7 @@
             <div class="cardDetails" v-show="false">
               <h3>{{item.activity.name}}</h3>
               <p>有效期：购买后{{item.activity.validityDay}}天内</p>
-              <p>售价：<span style="color: #ff4949">￥{{item.activity.price}}</span></p>
+              <p>售价：<span style="color: #ff4949">￥{{item.activity.price.toFixed(2)}}</span></p>
               <p>优惠项目：共{{item.projectItemCount}}项</p>
               <ol>
                 <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id">
@@ -100,7 +100,7 @@
           </div>
           <div class="footerCardList" v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" v-show="vShow2(item)">
             <span>{{item.activity.name}}</span>
-            <span>{{item.activity.price}}</span>
+            <span>￥{{item.activity.price.toFixed(2)}}</span>
             <el-button @click="del2(item)" type="text">删除</el-button>
           </div>
         </div>
