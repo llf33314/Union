@@ -304,4 +304,11 @@ public interface IUnionCardRecordService {
      */
     void updateBatch(List<UnionCardRecord> updateUnionCardRecordList) throws Exception;
 
+    /**
+     * 修改办理联盟卡订单支付状态
+     * @param recordIds     办理联盟卡订单记录
+     * @param payStatus     支付状态
+     * @return
+     */
+	boolean updateRecordStatusByIds(List<Integer> recordIds, int payStatus);
 }

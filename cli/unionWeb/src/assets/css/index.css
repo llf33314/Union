@@ -1297,6 +1297,8 @@ hr {
 #UnionQuit .container .tuimeng .model_12 p {
   margin-bottom: 7px;
   color: #333333;
+  display: flex;
+  line-height: 2;
 }
 #UnionQuit #Refund .el-table_1_column_4 .el-button,
 #UnionQuit #Refund .el-table_1_column_8 .el-button {
@@ -1306,9 +1308,10 @@ hr {
 #UnionQuit #Refund .el-dialog__body {
   padding: 0px;
   margin-top: 15px;
+  padding-right: 10px!important;
 }
 #UnionQuit #Refund .tuimeng .el-dialog--tiny {
-  width: 600px;
+  width: 700px;
 }
 #UnionQuit #Refund .model_12 .el-dialog--tiny {
   width: 450px;
