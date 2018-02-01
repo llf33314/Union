@@ -35,6 +35,10 @@ export default {
   mounted() {
     this.myChart = echarts.init(document.getElementById('discountCardStatistics'));
     this.getData();
+    console.log(document.body.clientWidth);
+    $('#discountCardStatistics').css({
+      width:document.body.clientWidth-100+'px!improtant'
+    })
   },
   methods: {
     // 图表设置
@@ -134,6 +138,6 @@ export default {
           this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     }
-  }
+  },
 };
 </script>

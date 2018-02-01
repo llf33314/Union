@@ -120,7 +120,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
                 ActivityCard activityCard = new ActivityCard();
                 activityCard.setCard(typeActivityCard);
 
-                activityCard.setIsExpired(currentDate.compareTo(typeActivityCard.getValidity()));
+                activityCard.setIsExpired(currentDate.compareTo(typeActivityCard.getValidity()) > 0 ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
 
                 Integer activityId = typeActivityCard.getActivityId();
                 UnionCardActivity activity = unionCardActivityService.getById(activityId);

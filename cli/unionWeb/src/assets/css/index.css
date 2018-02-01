@@ -1946,6 +1946,15 @@ hr {
 #finance .DataStatistics .ActivityCardStatstics > nav {
   display: flex;
 }
+#finance .DataStatistics .ActivityCardStatstics > nav .publishCountStatisticsParent h3,
+#finance .DataStatistics .ActivityCardStatstics > nav .sellBrokerageStatisticsParent h3,
+#finance .DataStatistics .ActivityCardStatstics > nav .publishCountStatisticsParent p,
+#finance .DataStatistics .ActivityCardStatstics > nav .sellBrokerageStatisticsParent p {
+  margin-left: 5px;
+}
+#finance .DataStatistics .ActivityCardStatstics > nav p {
+  margin: 9px 0 25px 0 ;
+}
 #noRegister .model_1 .el-dialog--tiny {
   width: 450px;
 }
@@ -2034,17 +2043,8 @@ hr {
   #brokeragePayStatistics {
     margin-left: 300px;
   }
-  #sellBrokerageStatistics {
+  .sellBrokerageStatisticsParent {
     margin-left: 300px;
-  }
-  #discountCardStatistics {
-    width: 1650px!important;
-  }
-  #discountCardStatistics > div:nth-child(1) {
-    width: 1650px!important;
-  }
-  #discountCardStatistics > div:nth-child(1) canvas {
-    width: 1500px!important;
   }
 }
 .SwitchAround {
