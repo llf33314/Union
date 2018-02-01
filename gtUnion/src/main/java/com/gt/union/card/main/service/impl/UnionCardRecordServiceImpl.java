@@ -1,7 +1,10 @@
 package com.gt.union.card.main.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.card.consume.constant.ConsumeConstant;
+import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.main.dao.IUnionCardRecordDao;
 import com.gt.union.card.main.entity.UnionCardRecord;
 import com.gt.union.card.main.service.IUnionCardRecordService;
@@ -424,5 +427,16 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         unionCardRecordDao.updateBatchById(updateUnionCardRecordList);
     }
+
+	@Override
+	public boolean updateRecordStatusByIds(List<Integer> recordIds, int payStatus) {
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.in("id",recordIds);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.eq("pay_status", ConsumeConstant.PAY_STATUS_PAYING);
+        UnionCardRecord record = new UnionCardRecord();
+        record.setPayStatus(payStatus);
+        return unionCardRecordDao.update(record, wrapper);
+	}
 
 }
