@@ -24,11 +24,11 @@
       <p class="cardInformation">联盟卡列表</p>
       <div class="SwitchAround">
           <!-- 折扣卡 -->
-          <el-checkbox-group v-model="checkList1" @change="checkListChange1">
-            <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item.union.id" :disabled="item.disabledFlag">
+          <el-checkbox-group v-model="checkList">
+            <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item" :disabled="visible1||item.disabledFlag">
               <div class="clearfix">
                 <span  class="fl SelectunionImg" style="background: #00ad7b">
-                  <p v-show="item.disabled">已办理</p>
+                  <p v-show="item.disabledFlag">已办理</p>
                   <p>{{item.union.name}}</p>
                 </span>
                 <!-- 折扣卡详情 -->
@@ -50,23 +50,21 @@
                 <i></i>
               </div>
             </el-checkbox-button>
-          </el-checkbox-group>
           <!-- 活动卡 -->
-          <el-checkbox-group v-model="checkList2" @change="checkListChange2">
-          <el-checkbox-button v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item.activity.id" :disabled="item.disabledFlag">
+          <el-checkbox-button v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item" :disabled="visible1||item.disabledFlag">
             <div class="clearfix">
               <span  class="fl SelectunionImg" style="background: #00ad7b">
-                <p v-show="item.disabled">已办理</p>
+                <p v-show="item.disabledFlag">已办理</p>
                 <p>{{item.activity.name}}</p>
               </span>
               <!--底部信息-->
               <div class="fl bottomFont">
-                {{item.activity.price}}
+                ￥{{item.activity.price}}
               </div>
               <i></i>
             </div>
             <!-- 活动卡详情 -->
-            <div class="cardDetails">
+            <div class="cardDetails" v-show="false">
               <h3>{{item.activity.name}}</h3>
               <p>有效期：购买后{{item.activity.validityDay}}天内</p>
               <p>售价：<span style="color: #ff4949">￥{{item.activity.price}}</span></p>
@@ -91,17 +89,16 @@
         </el-checkbox-group>
       </div>
     </main>
-
     <!--页面底部-->
-    <footer class="transactionFooter"  v-if="checkList1.length||checkList2.length">
+    <footer class="transactionFooter"  v-if="checkList.length">
         <p class="cardInformation">办卡列表</p>
         <div class="transactionFooterNav">
-          <div class="footerCardList" v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" v-show="checkList1.indexOf(item.union.id)> -1">
+          <div class="footerCardList" v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" v-show="vShow1(item)">
             <span>{{item.union.name}}</span>
             <span>免费</span>
             <el-button @click="del1(item)" type="text">删除</el-button>
           </div>
-          <div class="footerCardList" v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" v-show="checkList2.indexOf(item.activity.id)> -1">
+          <div class="footerCardList" v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" v-show="vShow2(item)">
             <span>{{item.activity.name}}</span>
             <span>{{item.activity.price}}</span>
             <el-button @click="del2(item)" type="text">删除</el-button>
@@ -111,10 +108,9 @@
         <p class="total">合计：<span>￥{{payPrice}}</span></p>
     </footer>
     <div style="margin-top: 48px;"></div>
-    <div class="footerFix" v-if="checkList1.length||checkList2.length">
+    <div class="footerFix" v-if="checkList.length">
       <el-button type="primary" @click="submitForm">确定</el-button>
     </div>
-
     <!-- 弹出框 付款 -->
     <div class="model_1">
       <el-dialog title="付款" :visible.sync="visible2" size="tiny">
@@ -170,8 +166,7 @@ export default {
       fandId: '',
       unionIdList: '',
       activityIdList: '',
-      checkList1: [],
-      checkList2: [],
+      checkList: [],
       visible2: false,
       codeSrc: '',
       socket: '',
@@ -215,8 +210,7 @@ export default {
     // 手机号更改
     phoneChange() {
       this.visible1 = true;
-      this.checkList1 = [];
-      this.checkList2 = [];
+      this.checkList = [];
     },
     // 获取验证码
     getVerificationCode() {
@@ -245,8 +239,7 @@ export default {
     confirmCode(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.checkList1 = [];
-          this.checkList2 = [];
+          this.checkList = [];
           let url = `/unionCard/apply/phone`;
           let data = {
             phone: this.form1.phone,
@@ -293,15 +286,32 @@ export default {
         }
       });
     },
-    // 折扣卡更改
-    checkListChange1() {},
+    // 是否显示折扣卡详情
+    vShow1(item) {
+      checkList.filter(item_ => {
+        if (item_.union) {
+          return (item_.union.id = item.union.id);
+        }
+      });
+    },
+    // 是否显示活动卡详情
+    vShow2(item) {
+      checkList.filter(item_ => {
+        if (item_.activity) {
+          return (item_.activity.id = item.activity.id);
+        }
+      });
+    },
     // 活动卡更改
-    checkListChange2() {
+    checkListChange() {
       this.payPrice = 0;
       let activityCheckList_ = [];
-      this.checkList2.forEach(v => {
+      let checkList_ = this.checkList.filter(item => {
+        return item.activity;
+      });
+      this.checkList_.forEach(v => {
         this.unionCardList.activityCardList.forEach(val => {
-          if (val.activity.id === v) {
+          if (val.activity.id === v.activity.id) {
             activityCheckList_.push(val.activity.price);
           }
         });
@@ -316,22 +326,22 @@ export default {
     // 删除折扣卡
     del1(item) {
       let delIndex;
-      this.checkList1.forEach((v, i) => {
-        if (v === item.union.id) {
+      this.checkList.forEach((v, i) => {
+        if (v.union && v.union.id === item.union.id) {
           delIndex = i;
         }
       });
-      this.checkList1.splice(delIndex, 1);
+      this.checkList.splice(delIndex, 1);
     },
     // 删除活动卡
     del2(item) {
       let delIndex;
-      this.checkList2.forEach((v, i) => {
-        if (v === item.activity.id) {
+      this.checkList.forEach((v, i) => {
+        if (v.activity && v.activity.id === item.activity.id) {
           delIndex = i;
         }
       });
-      this.checkList2.splice(delIndex, 1);
+      this.checkList.splice(delIndex, 1);
     },
     // 提交
     submitForm() {
@@ -339,15 +349,17 @@ export default {
       let data = {};
       data.unionIdList = [];
       data.activityIdList = [];
-      if (!this.isDiscountCard && this.checkList1.length < 1 && this.checkList2.length < 1) {
+      if (this.checkList.length < 1) {
         this.$message({ showClose: true, message: '请选择需办理的联盟卡', type: 'error', duration: 3000 });
         return false;
       } else {
-        this.checkList1.forEach(v => {
-          data.unionIdList.push(v);
-        });
-        this.checkList2.forEach(v => {
-          data.activityIdList.push(v);
+        this.checkList.forEach(v => {
+          if (v.union) {
+            data.unionIdList.push(v.union.id);
+          }
+          if (v.activity) {
+            data.activityIdList.push(v.activity.id);
+          }
         });
       }
       $http
@@ -439,21 +451,29 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less">
-  .codeImg {
-    width: 200px;
-    height: 200px;
-  }
-  /*滚动条样式*/
-  .discountsCardDetails>ul::-webkit-scrollbar,.cardDetails>ol::-webkit-scrollbar {/*滚动条整体样式*/
-    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
-    height: 4px;
-  }
-  .discountsCardDetails>ul::-webkit-scrollbar-thumb,.cardDetails>ol::-webkit-scrollbar {/*滚动条里面小方块*/
-    border-radius: 5px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
-    background: rgba(0,0,0,.2);
-  }
-  .discountsCardDetails>ul::-webkit-scrollbar-track,.cardDetails>ol::-webkit-scrollbar {/*滚动条里面轨道*/
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,.2);
-  }
+.codeImg {
+  width: 200px;
+  height: 200px;
+}
+/*滚动条样式*/
+.discountsCardDetails > ul::-webkit-scrollbar,
+.cardDetails > ol::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 4px;
+}
+.discountsCardDetails > ul::-webkit-scrollbar-thumb,
+.cardDetails > ol::-webkit-scrollbar {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+.discountsCardDetails > ul::-webkit-scrollbar-track,
+.cardDetails > ol::-webkit-scrollbar {
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
 </style>

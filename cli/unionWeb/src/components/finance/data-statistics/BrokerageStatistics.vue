@@ -1,6 +1,6 @@
 <template>
   <div class="BrokerageStatistics">
-    <h3>联盟卡佣金统计</h3>
+    <h3>商机佣金统计</h3>
     <nav>
       <div id="brokerageIncomeStatistics" style="width:500px;height:300px;"></div>
       <div id="brokeragePayStatistics" style="width:500px;height:300px;"></div>
@@ -47,7 +47,12 @@ export default {
           trigger: 'item',
           formatter: params => {
             let statisticsType = params.name;
-            let percent = (this.brokerageData.paidIncome / this.brokerageData.incomeSum * 100).toFixed(2);
+            let percent;
+            if (statisticsType === '已结算佣金') {
+              percent = (this.brokerageData.paidIncome / this.brokerageData.incomeSum * 100 || 0).toFixed(2);
+            } else {
+              percent = (this.brokerageData.unPaidIncome / this.brokerageData.incomeSum * 100 || 0).toFixed(2);
+            }
             let unionName = params.value[1];
             let unionValue = params.value[0].toFixed(2);
             return `${statisticsType} 占比：${percent}% <br />${unionName}: ￥ ${unionValue}`;
@@ -117,7 +122,12 @@ export default {
           trigger: 'item',
           formatter: params => {
             let statisticsType = params.name;
-            let percent = (this.brokerageData.paidIncome / this.brokerageData.incomeSum * 100).toFixed(2);
+            let percent;
+            if (statisticsType === '已支付佣金') {
+              percent = (this.brokerageData.paidExpense / this.brokerageData.expenseSum * 100 || 0).toFixed(2);
+            } else {
+              percent = (this.brokerageData.unPaidExpense / this.brokerageData.expenseSum * 100 || 0).toFixed(2);
+            }
             let unionName = params.value[1];
             let unionValue = params.value[0].toFixed(2);
             return `${statisticsType} 占比：${percent}% <br />${unionName}: ￥ ${unionValue}`;
