@@ -334,6 +334,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
                     dateSpotList.add(tempDate);
                     tempDate = DateUtil.addMonths(tempDate, 1);
                 }
+                if (tempDate.compareTo(DateUtil.addMonths(endTime, 1)) < 0) {
+                    dateSpotList.add(tempDate);
+                }
                 break;
             default:
                 break;
