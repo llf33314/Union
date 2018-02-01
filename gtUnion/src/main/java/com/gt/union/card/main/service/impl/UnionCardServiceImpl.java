@@ -373,9 +373,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
                                 String strTime = DateUtil.getDateString(dateSpot, DateUtil.YEAR_MONTH_PATTERN);
                                 spot.setTime(strTime);
 
-                                String strDate = DateUtil.getDateString(dateSpot, DateUtil.DATE_PATTERN);
+                                String strDate = strTime + "-01";
                                 Date spotBeginTime = DateUtil.parseDate(strDate + " 00:00:00", DateUtil.DATETIME_PATTERN);
-                                Date spotEndTime = DateUtil.parseDate(strDate + " 23:59:59", DateUtil.DATETIME_PATTERN);
+                                Date spotEndTime = DateUtil.addMonths(spotBeginTime, 1);
                                 List<UnionCard> spotDiscountCardList = filterBetweenTime(discountCardList, spotBeginTime, spotEndTime);
                                 spot.setNumber(ListUtil.isNotEmpty(spotDiscountCardList) ? spotDiscountCardList.size() : 0);
 
