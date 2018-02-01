@@ -283,7 +283,12 @@ export default {
                   });
                 }
                 this.visible1 = false;
-                this.$message({ showClose: true, message: '登陆成功', type: 'success', duration: 3000 });
+                this.$message({
+                  showClose: true,
+                  message: '办卡信息校验成功，请继续选择需办理的联盟卡',
+                  type: 'success',
+                  duration: 3000
+                });
               }
             })
             .catch(err => {
