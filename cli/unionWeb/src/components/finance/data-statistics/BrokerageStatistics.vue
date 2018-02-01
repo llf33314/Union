@@ -53,9 +53,11 @@ export default {
             } else {
               percent = (this.brokerageData.unPaidIncome / this.brokerageData.incomeSum * 100 || 0).toFixed(2);
             }
-            let unionName = params.value[1];
-            let unionValue = params.value[0].toFixed(2);
-            return `${statisticsType} 占比：${percent}% <br />${unionName}: ￥ ${unionValue}`;
+            let tempHtml = '';
+            for (let i = 0; i < params.value.length; i = i + 2) {
+              tempHtml += params.value[i + 1] + ': ￥' + params.value[i].toFixed(2) + '<br />';
+            }
+            return `${statisticsType} 占比：${percent}% <br />` + tempHtml;
           }
         },
         legend: {
@@ -128,9 +130,11 @@ export default {
             } else {
               percent = (this.brokerageData.unPaidExpense / this.brokerageData.expenseSum * 100 || 0).toFixed(2);
             }
-            let unionName = params.value[1];
-            let unionValue = params.value[0].toFixed(2);
-            return `${statisticsType} 占比：${percent}% <br />${unionName}: ￥ ${unionValue}`;
+            let tempHtml = '';
+            for (let i = 0; i < params.value.length; i = i + 2) {
+              tempHtml += params.value[i + 1] + ': ￥' + params.value[i].toFixed(2) + '<br />';
+            }
+            return `${statisticsType} 占比：${percent}% <br />` + tempHtml;
           }
         },
         legend: {
@@ -191,26 +195,29 @@ export default {
             this.brokerageIncomeData = [];
             this.brokeragePayData = [];
             // 佣金结算
+            let value1_ = [];
             this.brokerageData.paidIncomeDetailList.forEach(v => {
-              let value_ = [];
-              value_.push(v.moneySum, v.union.name);
-              this.brokerageIncomeData.push({ name: '已结算佣金', value: value_ });
+              value1_.push(v.moneySum, v.union.name);
             });
+            this.brokerageIncomeData.push({ name: '已结算佣金', value: value1_ });
+            let value2_ = [];
+
             this.brokerageData.unPaidIncomeDetailList.forEach(v => {
-              let value_ = [];
-              value_.push(v.moneySum, v.union.name);
-              this.brokerageIncomeData.push({ name: '未结算佣金', value: value_ });
+              value2_.push(v.moneySum, v.union.name);
             });
+            this.brokerageIncomeData.push({ name: '未结算佣金', value: value2_ });
+            let value3_ = [];
+
             this.brokerageData.paidExpenseDetailList.forEach(v => {
-              let value_ = [];
-              value_.push(v.moneySum, v.union.name);
-              this.brokeragePayData.push({ name: '已支付佣金', value: value_ });
+              value3_.push(v.moneySum, v.union.name);
             });
+            this.brokeragePayData.push({ name: '已支付佣金', value: value3_ });
+            let value4_ = [];
+
             this.brokerageData.unPaidExpenseDetailList.forEach(v => {
-              let value_ = [];
-              value_.push(v.moneySum, v.union.name);
-              this.brokeragePayData.push({ name: '未支付佣金', value: value_ });
+              value4_.push(v.moneySum, v.union.name);
             });
+            this.brokeragePayData.push({ name: '未支付佣金', value: value4_ });
           }
         })
         .then(res => {

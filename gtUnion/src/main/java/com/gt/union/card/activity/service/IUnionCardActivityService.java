@@ -127,7 +127,7 @@ public interface IUnionCardActivityService {
      * @return Integer
      * @throws Exception 统一处理异常
      */
-    Integer countValidGESellBeginTimeByUnionId(Integer unionId) throws Exception;
+    Integer countValidLESellBeginTimeByUnionId(Integer unionId) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
