@@ -37,8 +37,8 @@ export default {
     this.getData();
     console.log(document.body.clientWidth);
     $('#discountCardStatistics').css({
-      width:document.body.clientWidth-100+'px!improtant'
-    })
+      width: document.body.clientWidth - 100 + 'px!improtant'
+    });
   },
   methods: {
     // 图表设置
@@ -120,11 +120,13 @@ export default {
             this.unionList = [];
             this.xAxisData = [];
             this.seriesData = [];
+            res.data.data[0].spotList.forEach(value => {
+              this.xAxisData.push(value.time);
+            });
             res.data.data.forEach(v => {
               this.unionList.push(v.union.name);
               let numberData = [];
               v.spotList.forEach(val => {
-                this.xAxisData.push(val.time);
                 numberData.push(val.number);
               });
               this.seriesData.push({ name: v.union.name, type: 'line', data: numberData });
@@ -138,6 +140,6 @@ export default {
           this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     }
-  },
+  }
 };
 </script>

@@ -24,7 +24,7 @@
       <p class="cardInformation">联盟卡列表</p>
       <div class="SwitchAround">
           <!-- 折扣卡 -->
-          <el-checkbox-group v-model="checkList">
+          <el-checkbox-group v-model="checkList" @change="checkListChange">
             <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item" :disabled="visible1||item.disabledFlag">
               <div class="clearfix">
                 <span  class="fl SelectunionImg" style="background: #00ad7b">
@@ -163,7 +163,7 @@ export default {
         activityCardList: []
       },
       visible1: true,
-      fandId: '',
+      fanId: '',
       unionIdList: '',
       activityIdList: '',
       checkList: [],
@@ -209,8 +209,15 @@ export default {
     },
     // 手机号更改
     phoneChange() {
-      this.visible1 = true;
       this.checkList = [];
+      this.unionCardList.discountCardList.forEach(v => {
+        v.disabledFlag = false;
+      });
+      this.unionCardList.activityCardList.forEach(v => {
+        v.disabledFlag = false;
+      });
+      this.visible1 = true;
+      this.visible2 = false;
     },
     // 获取验证码
     getVerificationCode() {
@@ -260,7 +267,7 @@ export default {
                 if (this.unionIdList && this.unionCardList.discountCardList.length) {
                   this.unionIdList.forEach(v => {
                     this.unionCardList.discountCardList.forEach(val => {
-                      if (val.union.id === v.id) {
+                      if (val.union.id === v) {
                         val.disabledFlag = true;
                       }
                     });
@@ -269,13 +276,14 @@ export default {
                 if (this.activityIdList && this.unionCardList.activityCardList.length) {
                   this.activityIdList.forEach(v => {
                     this.unionCardList.activityCardList.forEach(val => {
-                      if (val.activity.id === v.id) {
+                      if (val.activity.id === v) {
                         val.disabledFlag = true;
                       }
                     });
                   });
                 }
                 this.visible1 = false;
+                this.$message({ showClose: true, message: '登陆成功', type: 'success', duration: 3000 });
               }
             })
             .catch(err => {
@@ -288,17 +296,17 @@ export default {
     },
     // 是否显示折扣卡详情
     vShow1(item) {
-      checkList.filter(item_ => {
+      return this.checkList.find(item_ => {
         if (item_.union) {
-          return (item_.union.id = item.union.id);
+          return item_.union.id === item.union.id;
         }
       });
     },
     // 是否显示活动卡详情
     vShow2(item) {
-      checkList.filter(item_ => {
+      return this.checkList.find(item_ => {
         if (item_.activity) {
-          return (item_.activity.id = item.activity.id);
+          return item_.activity.id === item.activity.id;
         }
       });
     },
@@ -309,7 +317,7 @@ export default {
       let checkList_ = this.checkList.filter(item => {
         return item.activity;
       });
-      this.checkList_.forEach(v => {
+      checkList_.forEach(v => {
         this.unionCardList.activityCardList.forEach(val => {
           if (val.activity.id === v.activity.id) {
             activityCheckList_.push(val.activity.price);
@@ -345,8 +353,10 @@ export default {
     },
     // 提交
     submitForm() {
-      let url = `/unionCard/fanId/${this.fanId}/unionId/${this.unionId}/apply`;
+      let url = `unionCard/apply`;
       let data = {};
+      data.fan = {};
+      data.fan.id = this.fanId;
       data.unionIdList = [];
       data.activityIdList = [];
       if (this.checkList.length < 1) {
@@ -443,6 +453,13 @@ export default {
       this.form1.code = '';
       this.form1.getVerificationCode = false;
       this.form1.countDownTime = 0;
+      this.checkList = [];
+      this.unionCardList.discountCardList.forEach(v => {
+        v.disabledFlag = false;
+      });
+      this.unionCardList.activityCardList.forEach(v => {
+        v.disabledFlag = false;
+      });
       this.visible1 = true;
       this.visible2 = false;
     }
