@@ -23,37 +23,39 @@
     <main class="unionCardList">
       <p class="cardInformation">联盟卡列表</p>
       <div class="SwitchAround">
-          <!-- 折扣卡 -->
-          <el-checkbox-group v-model="checkList" @change="checkListChange">
-            <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item" :disabled="visible1||item.disabledFlag">
-              <div class="clearfix">
-                <span  class="fl SelectunionImg" style="background: #00ad7b">
-                  <p v-show="item.disabledFlag">已办理</p>
-                  <p>{{item.union.name}}</p>
-                </span>
-                <!-- 折扣卡详情 -->
-                <div class="discountsCardDetails" v-show="false">
-                  <h3>{{item.union.name}}</h3>
-                  <p>消费特权：可在下列商家消费时享受折扣</p>
-                  <ul>
-                    <li v-for="(item1,index) in item.memberList" :key="item1.id">
-                      <span>{{index+1 +'、 '}}{{item1.enterpriseName}}</span>
-                      <span v-if="item1.discount">{{(item1.discount*10).toFixed(1)}}折</span>
-                      <span v-else> 无折扣</span>
-                    </li>
-                  </ul>
-                </div>
-                <!--底部信息-->
-                <div class="fl bottomFont">
-                  免费
-                </div>
-                <i></i>
-              </div>
-            </el-checkbox-button>
-          <!-- 活动卡 -->
-          <el-checkbox-button v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item" :disabled="visible1||item.disabledFlag">
+        <!-- 折扣卡 -->
+        <el-checkbox-group v-model="checkList" @change="checkListChange">
+          <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id"
+            :label="item" :disabled="visible1||item.disabledFlag">
             <div class="clearfix">
-              <span  class="fl SelectunionImg" style="background: #00ad7b">
+              <span class="fl SelectunionImg" style="background: #00ad7b">
+                <p v-show="item.disabledFlag">已办理</p>
+                <p>{{item.union.name}}</p>
+              </span>
+              <!-- 折扣卡详情 -->
+              <div class="discountsCardDetails" v-show="false">
+                <h3>{{item.union.name}}</h3>
+                <p>消费特权：可在下列商家消费时享受折扣</p>
+                <ul>
+                  <li v-for="(item1,index) in item.memberList" :key="item1.id">
+                    <span>{{index+1 +'、 '}}{{item1.enterpriseName}}</span>
+                    <span v-if="item1.discount">{{(item1.discount*10).toFixed(1)}}折</span>
+                    <span v-else> 无折扣</span>
+                  </li>
+                </ul>
+              </div>
+              <!--底部信息-->
+              <div class="fl bottomFont">
+                免费
+              </div>
+              <i></i>
+            </div>
+          </el-checkbox-button>
+          <!-- 活动卡 -->
+          <el-checkbox-button v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id"
+            :label="item" :disabled="visible1||item.disabledFlag">
+            <div class="clearfix">
+              <span class="fl SelectunionImg" style="background: #00ad7b">
                 <p v-show="item.disabledFlag">已办理</p>
                 <p>{{item.activity.name}}</p>
               </span>
@@ -67,7 +69,9 @@
             <div class="cardDetails" v-show="false">
               <h3>{{item.activity.name}}</h3>
               <p>有效期：购买后{{item.activity.validityDay}}天内</p>
-              <p>售价：<span style="color: #ff4949">￥{{item.activity.price.toFixed(2)}}</span></p>
+              <p>售价：
+                <span style="color: #ff4949">￥{{item.activity.price.toFixed(2)}}</span>
+              </p>
               <p>优惠项目：共{{item.projectItemCount}}项</p>
               <ol>
                 <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id">
@@ -90,22 +94,26 @@
       </div>
     </main>
     <!--页面底部-->
-    <footer class="transactionFooter"  v-if="checkList.length">
-        <p class="cardInformation">办卡列表</p>
-        <div class="transactionFooterNav">
-          <div class="footerCardList" v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" v-show="vShow1(item)">
-            <span>{{item.union.name}}</span>
-            <span>免费</span>
-            <el-button @click="del1(item)" type="text">删除</el-button>
-          </div>
-          <div class="footerCardList" v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" v-show="vShow2(item)">
-            <span>{{item.activity.name}}</span>
-            <span>￥{{item.activity.price.toFixed(2)}}</span>
-            <el-button @click="del2(item)" type="text">删除</el-button>
-          </div>
+    <footer class="transactionFooter" v-if="checkList.length">
+      <p class="cardInformation">办卡列表</p>
+      <div class="transactionFooterNav">
+        <div class="footerCardList" v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id"
+          v-show="vShow1(item)">
+          <span>{{item.union.name}}</span>
+          <span>免费</span>
+          <el-button @click="del1(item)" type="text">删除</el-button>
         </div>
-        <p style="margin-top:40px "></p>
-        <p class="total">合计：<span>￥{{payPrice}}</span></p>
+        <div class="footerCardList" v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id"
+          v-show="vShow2(item)">
+          <span>{{item.activity.name}}</span>
+          <span>￥{{item.activity.price.toFixed(2)}}</span>
+          <el-button @click="del2(item)" type="text">删除</el-button>
+        </div>
+      </div>
+      <p style="margin-top:40px "></p>
+      <p class="total">合计：
+        <span>￥{{payPrice}}</span>
+      </p>
     </footer>
     <div style="margin-top: 48px;"></div>
     <div class="footerFix" v-if="checkList.length">
@@ -204,7 +212,12 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
         });
     },
     // 手机号更改
@@ -239,7 +252,12 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
         });
     },
     // 确认验证码
@@ -292,7 +310,12 @@ export default {
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+              this.$message({
+                showClose: true,
+                message: '网络错误',
+                type: 'error',
+                duration: 3000
+              });
             });
         } else {
           return false;
@@ -365,7 +388,12 @@ export default {
       data.unionIdList = [];
       data.activityIdList = [];
       if (this.checkList.length < 1) {
-        this.$message({ showClose: true, message: '请选择需办理的联盟卡', type: 'error', duration: 3000 });
+        this.$message({
+          showClose: true,
+          message: '请选择需办理的联盟卡',
+          type: 'error',
+          duration: 3000
+        });
         return false;
       } else {
         this.checkList.forEach(v => {
@@ -423,20 +451,35 @@ export default {
                 ) {
                   if (_this.socketKey == msg.socketKey && _this.orderNo == msg.orderNo) {
                     if (msg.status == '1') {
-                      _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
+                      _this.$message({
+                        showClose: true,
+                        message: '支付成功',
+                        type: 'success',
+                        duration: 3000
+                      });
                       _this.socketFlag.socketKey = msg.socketKey;
                       _this.socketFlag.status = msg.status;
                       _this.socketFlag.orderNo = msg.orderNo;
                       _this.init();
                     } else if (msg.status == '0') {
-                      _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 3000 });
+                      _this.$message({
+                        showClose: true,
+                        message: '支付失败',
+                        type: 'warning',
+                        duration: 3000
+                      });
                     }
                   }
                 }
               });
             }
           } else if (res.data.success) {
-            this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 3000 });
+            this.$message({
+              showClose: true,
+              message: '办理成功',
+              type: 'success',
+              duration: 3000
+            });
             clearInterval(this.timeEnd);
             //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
             this.init();
@@ -449,7 +492,12 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
+          this.$message({
+            showClose: true,
+            message: '网络错误',
+            type: 'error',
+            duration: 3000
+          });
         });
     },
     // 初始化
@@ -477,13 +525,17 @@ export default {
   width: 200px;
   height: 200px;
 }
+
 /*滚动条样式*/
+
 .discountsCardDetails > ul::-webkit-scrollbar,
 .cardDetails > ol::-webkit-scrollbar {
   /*滚动条整体样式*/
-  width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+  width: 4px;
+  /*高宽分别对应横竖滚动条的尺寸*/
   height: 4px;
 }
+
 .discountsCardDetails > ul::-webkit-scrollbar-thumb,
 .cardDetails > ol::-webkit-scrollbar {
   /*滚动条里面小方块*/
@@ -492,6 +544,7 @@ export default {
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   background: rgba(0, 0, 0, 0.2);
 }
+
 .discountsCardDetails > ul::-webkit-scrollbar-track,
 .cardDetails > ol::-webkit-scrollbar {
   /*滚动条里面轨道*/
