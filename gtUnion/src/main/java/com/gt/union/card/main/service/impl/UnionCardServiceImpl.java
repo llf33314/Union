@@ -161,10 +161,13 @@ public class UnionCardServiceImpl implements IUnionCardService {
                         List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
                         if (ListUtil.isNotEmpty(projectList)) {
                             for (UnionCardProject project1 : projectList) {
+                                UnionMember member1 = unionMemberService.getById(project1.getMemberId());
+                                // 过滤掉已退盟的盟员
+                                if (CommonConstant.DEL_STATUS_YES == member1.getDelStatus()) {
+                                    continue;
+                                }
                                 ActivityCardProject activityCardProject = new ActivityCardProject();
                                 activityCardProject.setProject(project1);
-
-                                UnionMember member1 = unionMemberService.getById(project1.getMemberId());
                                 activityCardProject.setMember(member1);
 
                                 List<UnionCardProjectItem> projectItemList = unionCardProjectItemService.listValidByProjectId(project1.getId());
@@ -440,7 +443,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (busId == null || applyPostVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        logger.info("办理联盟卡参数信息：busId == " + busId + ", applyPostVO : " +JSONObject.toJSONString(applyPostVO));
+        logger.info("办理联盟卡参数信息：busId == " + busId + ", applyPostVO : " + JSONObject.toJSONString(applyPostVO));
         logger.info("办理联盟卡模块：=====>" + unionCardApplyService.getClass().getName());
         // 判断fanId有效性
         UnionCardFan formFan = applyPostVO.getFan();
@@ -623,10 +626,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 }
             }
             //数据库锁
-            if(unionCardRecordService.updateRecordStatusByIds(recordIds, CommonConstant.COMMON_YES == isSuccess ? CardConstant.PAY_STATUS_SUCCESS : CardConstant.PAY_STATUS_FAIL)){
+            if (unionCardRecordService.updateRecordStatusByIds(recordIds, CommonConstant.COMMON_YES == isSuccess ? CardConstant.PAY_STATUS_SUCCESS : CardConstant.PAY_STATUS_FAIL)) {
                 List<UnionCardRecord> updateRecordList = new ArrayList<>();
                 Date currentDate = DateUtil.getCurrentDate();
-                Map<Integer,Integer> unionIds = new HashMap<Integer,Integer>();
+                Map<Integer, Integer> unionIds = new HashMap<Integer, Integer>();
                 List<UnionCard> saveDiscountCardList = new ArrayList<>();
                 for (UnionCardRecord record : recordList) {
 
@@ -663,7 +666,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                     record.setCardId(updateRecord.getCardId());
 
                     // 自动办理折扣卡
-                    if(!unionIds.containsKey(record.getUnionId())){
+                    if (!unionIds.containsKey(record.getUnionId())) {
                         unionIds.put(record.getUnionId(), record.getUnionId());
                         if (!existValidUnexpiredByUnionIdAndFanIdAndType(record.getUnionId(), record.getFanId(), CardConstant.TYPE_DISCOUNT)) {
                             UnionCard saveDiscountCard = new UnionCard();
@@ -682,7 +685,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 }
 
 
-                if(ListUtil.isNotEmpty(saveDiscountCardList)){
+                if (ListUtil.isNotEmpty(saveDiscountCardList)) {
                     saveBatch(saveDiscountCardList);
                 }
                 //售卡分成
@@ -716,7 +719,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 result.put("code", 0);
                 result.put("msg", "成功");
                 return JSONObject.toJSONString(result);
-            }else {
+            } else {
                 result.put("code", -1);
                 result.put("msg", "订单已重复处理");
                 return JSONObject.toJSONString(result);
