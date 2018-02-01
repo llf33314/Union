@@ -43,6 +43,7 @@
         <!-- 左侧联盟卡 -->
         <div class="step3">
           <el-radio-group v-model="unionCardId">
+            <!--//折扣卡-->
             <el-radio-button v-if="detailData.discountCard" :key="detailData.discountCard.card.id"
              :label="detailData.discountCard.card.id">
               <div style="z-index: 10;color:#fff">{{detailData.discountCard.card.name}}</div>
@@ -52,6 +53,7 @@
                 <img src="~assets/images/images3.png" />
               </div>
             </el-radio-button>
+            <!--//活动卡-->
             <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id"
             :label="item.card.id">
               <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
@@ -73,9 +75,9 @@
             <p class="DetailsName">{{detailData.discountCard.card.name}}</p>
             <p class="DetailsTime">办卡时间 {{detailData.discountCard.card.createTime}}</p>
             <p>消费特权：可在下列商家消费时享受折扣</p>
-            <ol>
-              <li v-for="item in detailData.discountCard.memberList" :key="item.id" :label="item.id">
-                <span>{{item.enterpriseName}}</span>
+            <ol class="discountsDetails">
+              <li v-for="(item,index) in detailData.discountCard.memberList" :key="item.id" :label="item.id">
+                <span>{{index+1+'、 '}}{{item.enterpriseName}}</span>
                 <span v-if="item.discount">{{(item.discount*10).toFixed(1)}}折</span>
                 <span v-else> 无折扣</span>
               </li>
@@ -90,7 +92,7 @@
             <p class="DetailsItems">优惠项目： 共{{item.projectItemCount}}项</p>
             <ol>
               <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id" :label="item1.member.id">
-                <span>{{index+1+'. '}}{{item1.member.enterpriseName}}</span>
+                <span>{{index+1+'、 '}}{{item1.member.enterpriseName}}</span>
                 <ul class="companyName">
                   <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
                     <span class="circle"></span>
