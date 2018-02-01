@@ -87,7 +87,6 @@ public class UnionSchedule {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
                     "时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT)+",执行<我的联盟>定时任务器：退盟过渡期结束后，逻辑删除盟员信息和退盟申请->出现异常(" + e.getMessage() + ")"));
@@ -111,7 +110,6 @@ public class UnionSchedule {
                 autoRenewUnionValidity(currentDate, unionList);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
                     "时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT)+",执行<我的联盟>定时任务器：联盟过期前一天，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
@@ -121,7 +119,7 @@ public class UnionSchedule {
     /**
      * 商家过期后续费，自动更新无需付费的联盟有效期
      */
-    @Scheduled(cron = "0 30 0/1 * * *")
+    @Scheduled(cron = "0 30 * * * *")
     @Transactional(rollbackFor = Exception.class)
     public void autoRenewUnionValidityAfterBusUserExpired() {
         try {
@@ -135,7 +133,6 @@ public class UnionSchedule {
                 autoRenewUnionValidity(currentDate, unionList);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
                     "时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT)+",执行<我的联盟>定时任务器：商家过期后续费，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
