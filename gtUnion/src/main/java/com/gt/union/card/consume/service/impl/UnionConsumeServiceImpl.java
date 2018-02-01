@@ -388,7 +388,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         saveConsume.setDiscount(discount);
         saveConsume.setDiscountMoney(BigDecimalUtil.toDouble(discountMoney));
         //折后价
-        BigDecimal payMoney = BigDecimalUtil.subtract(consumeMoney, discountMoney);
+        BigDecimal payMoney = discountMoney;
 
         UnionCardIntegral integral = unionCardIntegralService.getValidByUnionIdAndFanId(unionId, fanId);
         //使用积分
@@ -419,6 +419,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             //折后价减积分价  实付金额
             payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
         }
+        logger.info("消费计算支付金额：" + payMoney);
         // 支持0.01元精度失算
         if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) >= 0.01) {
             throw new BusinessException("实际支付金额错误，请刷新后重试");

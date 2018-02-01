@@ -43,7 +43,7 @@ public class UnionCallBackController {
 
     //支付后回调
     @RequestMapping(value = "/79B4DE7C/{model}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String updateCallbackByPermitId(
+    public String updateCallbackByModel(
             @PathVariable("model") String model,
             @RequestParam(value = "socketKey", required = false) String socketKey,
             @RequestBody Map<String, Object> param) throws Exception {
