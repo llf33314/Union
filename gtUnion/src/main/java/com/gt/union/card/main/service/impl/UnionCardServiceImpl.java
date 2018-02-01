@@ -158,16 +158,13 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
                         Integer projectItemCount = 0;
                         List<ActivityCardProject> cardProjectList = new ArrayList<>();
-                        List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+                        List<UnionCardProject> projectList = unionCardProjectService.listValidWithoutExpiredMemberByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
                         if (ListUtil.isNotEmpty(projectList)) {
                             for (UnionCardProject project1 : projectList) {
-                                UnionMember member1 = unionMemberService.getById(project1.getMemberId());
-                                // 过滤掉已退盟的盟员
-                                if (CommonConstant.DEL_STATUS_YES == member1.getDelStatus()) {
-                                    continue;
-                                }
                                 ActivityCardProject activityCardProject = new ActivityCardProject();
                                 activityCardProject.setProject(project1);
+
+                                UnionMember member1 = unionMemberService.getById(project1.getMemberId());
                                 activityCardProject.setMember(member1);
 
                                 List<UnionCardProjectItem> projectItemList = unionCardProjectItemService.listValidByProjectId(project1.getId());

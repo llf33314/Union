@@ -208,6 +208,24 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
     }
 
     @Override
+    public List<UnionCardProject> listValidWithoutExpiredMemberByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception {
+        if (unionId == null || activityId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId)
+                .eq("status", status)
+                .exists(" SELECT m.id FROM t_union_member m" +
+                        " WHERE m.id=t_union_card_project.member_id" +
+                        " AND m.del_status=" + CommonConstant.DEL_STATUS_NO);
+
+        return unionCardProjectDao.selectList(entityWrapper);
+    }
+
+    @Override
     public List<UnionCardProject> listValidByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status, String orderBy, boolean isAsc) throws Exception {
         if (unionId == null || activityId == null || status == null || orderBy == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
