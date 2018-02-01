@@ -23,70 +23,79 @@
     <main class="unionCardList">
       <p class="cardInformation">联盟卡列表</p>
       <div class="SwitchAround">
-          <!-- 折扣卡 -->
           <el-checkbox-group v-model="checkList" @change="checkListChange">
-            <el-checkbox-button v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item" :disabled="visible1||item.disabledFlag">
-              <div class="clearfix">
-                <span  class="fl SelectunionImg" style="background: #00ad7b">
-                  <p v-show="item.disabledFlag">已办理</p>
-                  <p>{{item.union.name}}</p>
-                </span>
-                <!-- 折扣卡详情 -->
-                <div class="discountsCardDetails" v-show="false">
-                  <h3>{{item.union.name}}</h3>
-                  <p>消费特权：可在下列商家消费时享受折扣</p>
-                  <ul>
-                    <li v-for="(item1,index) in item.memberList" :key="item1.id">
-                      <span>{{index+1 +'、 '}}{{item1.enterpriseName}}</span>
-                      <span v-if="item1.discount">{{(item1.discount*10).toFixed(1)}}折</span>
-                      <span v-else> 无折扣</span>
-                    </li>
-                  </ul>
+            <!-- 折扣卡 -->
+            <el-checkbox-button  v-if="unionCardList.discountCardList.length" v-for="item in unionCardList.discountCardList" :key="item.union.id" :label="item" :disabled="visible1||item.disabledFlag">
+              <el-tooltip placement="right" effect="light">
+                <div slot="content" class="slotContent">
+                  <!-- 折扣卡详情 -->
+                  <div class="discountsCardDetails">
+                    <h3>{{item.union.name}}</h3>
+                    <p>消费特权：可在下列商家消费时享受折扣</p>
+                    <ul>
+                      <li v-for="(item1,index) in item.memberList" :key="item1.id">
+                        <span>{{index+1 +'、 '}}{{item1.enterpriseName}}</span>
+                        <span v-if="item1.discount">{{(item1.discount*10).toFixed(1)}}折</span>
+                        <span v-else> 无折扣</span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-                <!--底部信息-->
-                <div class="fl bottomFont">
-                  免费
+                <div class="clearfix">
+                  <span  class="fl SelectunionImg" style="background: #00ad7b">
+                    <p>{{item.union.name}}</p>
+                  </span>
+                  <p class="overflowhiddenOh"> <span>已办理</span> </p><!--v-show="item.disabledFlag"-->
+                  <!--底部信息-->
+                  <div class="fl bottomFont">
+                    免费
+                  </div>
+                  <i></i>
                 </div>
-                <i></i>
-              </div>
+              </el-tooltip>
             </el-checkbox-button>
-          <!-- 活动卡 -->
-          <el-checkbox-button v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item" :disabled="visible1||item.disabledFlag">
-            <div class="clearfix">
-              <span  class="fl SelectunionImg" style="background: #00ad7b">
-                <p v-show="item.disabledFlag">已办理</p>
-                <p>{{item.activity.name}}</p>
-              </span>
-              <!--底部信息-->
-              <div class="fl bottomFont">
-                ￥{{item.activity.price.toFixed(2)}}
-              </div>
-              <i></i>
-            </div>
-            <!-- 活动卡详情 -->
-            <div class="cardDetails" v-show="false">
-              <h3>{{item.activity.name}}</h3>
-              <p>有效期：购买后{{item.activity.validityDay}}天内</p>
-              <p>售价：<span style="color: #ff4949">￥{{item.activity.price.toFixed(2)}}</span></p>
-              <p>优惠项目：共{{item.projectItemCount}}项</p>
-              <ol>
-                <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id">
-                  <span>{{index+1+'、 '}}{{item1.member.enterpriseName}}</span>
-                  <ul class="companyName">
-                    <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
-                      <div>
-                        <span class="circle"></span>
-                        {{item2.name}}
-                      </div>
-                      <!-- todo * 样式更换 -->
-                      <span>×{{item2.number}}</span>
-                    </li>
-                  </ul>
-                </li>
-              </ol>
-            </div>
+            <!-- 活动卡 -->
+            <el-checkbox-button v-popover:popover1 v-if="unionCardList.activityCardList.length" v-for="item in unionCardList.activityCardList" :key="item.activity.id" :label="item" :disabled="visible1||item.disabledFlag">
+              <el-tooltip placement="right" effect="light">
+                <div slot="content" class="slotContent">
+                  <!-- 活动卡详情 -->
+                  <div class="cardDetails">
+                    <h3>{{item.activity.name}}</h3>
+                    <p>有效期：购买后{{item.activity.validityDay}}天内</p>
+                    <p>售价：<span style="color: #ff4949">￥{{item.activity.price.toFixed(2)}}</span></p>
+                    <p>优惠项目：共{{item.projectItemCount}}项</p>
+                    <ol>
+                      <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id">
+                        <span>{{index+1+'、 '}}{{item1.member.enterpriseName}}</span>
+                        <ul class="companyName">
+                          <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
+                            <div>
+                              <span class="circle"></span>
+                              {{item2.name}}
+                            </div>
+                            <!-- todo * 样式更换 -->
+                            <span>×{{item2.number}}</span>
+                          </li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+                <div class="clearfix">
+                  <span  class="fl SelectunionImg" style="background: #00ad7b">
+                    <p>{{item.activity.name}}</p>
+                  </span>
+                  <p class="overflowhiddenOh" v-show="item.disabledFlag">已办理</p>
+                  <!--底部信息-->
+                  <div class="fl bottomFont">
+                    ￥{{item.activity.price.toFixed(2)}}
+                  </div>
+                  <i></i>
+                </div>
+              </el-tooltip>
           </el-checkbox-button>
         </el-checkbox-group>
+
       </div>
     </main>
     <!--页面底部-->
@@ -107,6 +116,7 @@
         <p style="margin-top:40px "></p>
         <p class="total">合计：<span>￥{{payPrice}}</span></p>
     </footer>
+    <!--上边距撑开底部距离看到页面-->
     <div style="margin-top: 48px;"></div>
     <div class="footerFix" v-if="checkList.length">
       <el-button type="primary" @click="submitForm">确定</el-button>
@@ -412,7 +422,6 @@ export default {
               });
               this.socket.on('chatevent', function(data) {
                 let msg = eval('(' + data.message + ')');
-                console.log(msg, 'transaction');
                 // 避免 socket 重复调用
                 if (
                   !(
@@ -473,6 +482,7 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less">
+
 .codeImg {
   width: 200px;
   height: 200px;
@@ -498,4 +508,66 @@ export default {
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
+
+  .slotContent{
+    min-height: 200px;
+    max-height: 350px;
+  }
+  //折扣卡//活动卡公用样式
+  .discountsCardDetails,.cardDetails{
+    width: 350px;
+    height: 290px;
+    overflow: hidden;
+    padding: 13px;
+    background: #fff;
+    box-sizing: border-box;
+    z-index: 10;
+    text-align: start;
+    line-height: 2;
+    color: #333;
+    font-size: 14px;
+  }
+  //折扣卡
+  .discountsCardDetails{
+    ul{
+      height: 170px;
+      overflow-y: auto;
+      li{
+        display: flex;
+        justify-content: space-between;
+        span:nth-last-child(1){
+          margin-right: 80px;
+        }
+      }
+    }
+  }
+  //活动卡
+  .cardDetails{
+    height: 315px;
+    ol{
+      height: 170px;
+      overflow-y: auto;
+    }
+    .companyName {
+      >li{
+        margin-left: 25px;
+        color: #999;display: flex;
+        justify-content: space-between;
+      }
+      .circle {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ccc;
+      }
+    }
+  }
+  //去掉默认的禁止图标样式
+  .SwitchAround{
+    .el-checkbox-button.is-disabled .el-checkbox-button__inner {
+      cursor: inherit!important;
+    }
+  }
+
 </style>
