@@ -413,7 +413,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 UnionMain union = unionMainService.getById(unionId);
                 activityCardStatisticsVO.setUnion(union);
 
-                Integer publishCount = unionCardActivityService.countValidGESellBeginTimeByUnionId(unionId);
+                Integer publishCount = unionCardActivityService.countValidLESellBeginTimeByUnionId(unionId);
                 activityCardStatisticsVO.setPublishCount(publishCount);
 
                 Integer sellCount = countValidByUnionIdAndType(unionId, CardConstant.TYPE_ACTIVITY);
