@@ -50,7 +50,7 @@ export default {
           formatter: params => {
             let unionName = params.name;
             let publishCount = params.value[0];
-            let sellCount = params.value[0];
+            let sellCount = params.value[1];
             return `${unionName} <br />历史发布张数：${publishCount} 张 <br />累计售出：${sellCount} 张 `;
           }
         },
