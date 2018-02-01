@@ -2211,6 +2211,14 @@ hr{
       }
       >nav{
         display: flex;
+        .publishCountStatisticsParent,.sellBrokerageStatisticsParent{
+          h3,p {
+            margin-left: 5px;
+          }
+        }
+        p{
+          margin:9px 0 25px 0 ;
+        }
       }
     }
   }
@@ -2359,18 +2367,18 @@ hr{
   #brokeragePayStatistics{
     margin-left: 300px;
   }
-  #sellBrokerageStatistics{
+  .sellBrokerageStatisticsParent{
     margin-left: 300px;
   }
-  #discountCardStatistics{
-    width: 1650px!important;
-    >div:nth-child(1){
-      width: 1650px!important;
-      canvas{
-        width: 1500px!important;
-      }
-    }
-  }
+  //#discountCardStatistics{
+  //  width: 1650px!important;
+  //  >div:nth-child(1){
+  //    width: 1650px!important;
+  //    canvas{
+  //      width: 1500px!important;
+  //    }
+  //  }
+  //}
 }
 
 
