@@ -59,7 +59,7 @@
               </span>
               <!--底部信息-->
               <div class="fl bottomFont">
-                {{item.activity.price}}
+                ￥{{item.activity.price}}
               </div>
               <i></i>
             </div>
