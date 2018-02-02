@@ -502,6 +502,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
                 .le("sell_begin_time", DateUtil.getCurrentDate());
 
         return unionCardActivityDao.selectCount(entityWrapper);
