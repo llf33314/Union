@@ -635,6 +635,9 @@ hr {
 #grid-content-notice .el-textarea textarea.el-textarea__inner {
   font-size: 16px;
 }
+#grid-content-notice .unionNoticeBreak {
+  word-break: break-all;
+}
 #UnionSetting .el-tabs__content {
   overflow: inherit;
 }

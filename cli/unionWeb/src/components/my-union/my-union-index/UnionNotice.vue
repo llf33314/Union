@@ -3,7 +3,7 @@
     <div class="grid-content bg-purple notice-list">联盟公告</div>
     <el-input type="textarea" id="unionNotice" v-model="unionNotice" :rows="3" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)" placeholder="这是一条联盟公告" v-if="isUnionOwner" style="border: none;width: 99%;height: 83px;resize:none">
     </el-input>
-    <span v-if="!isUnionOwner">{{ unionNotice }}</span>
+    <div class="unionNoticeBreak" v-if="!isUnionOwner">{{ unionNotice }}</div>
   </div>
 </template>
 
