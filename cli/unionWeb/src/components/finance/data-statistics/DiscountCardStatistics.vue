@@ -9,7 +9,7 @@
         <el-radio-button label="近一年" ></el-radio-button>
       </el-radio-group>
     </div>
-    <div id="discountCardStatistics" style="width:1080px;height:400px;">
+    <div id="discountCardStatistics" style="height:430px;" :style="{width:windowWidth}">
     </div>
   </div>
 </template>
@@ -21,6 +21,8 @@ export default {
   name: 'discount-card-statistics',
   data() {
     return {
+      windowWidth:'',
+      windowHeight:'',
       myChart: '',
       option: '',
       timeRange: '近七天',
@@ -33,12 +35,13 @@ export default {
     };
   },
   mounted() {
-    this.myChart = echarts.init(document.getElementById('discountCardStatistics'));
-    this.getData();
-    console.log(document.body.clientWidth);
-    $('#discountCardStatistics').css({
-      width: document.body.clientWidth - 100 + 'px!improtant'
-    });
+    var that=this;
+    //用于使chart自适应宽度,通过窗体计算容器宽度
+    that.windowWidth= window.innerWidth-35 + 'px';
+    setTimeout(function () {
+      that.myChart = echarts.init(document.getElementById('discountCardStatistics'));
+      that.getData();
+    },10)
   },
   methods: {
     // 图表设置
@@ -47,10 +50,14 @@ export default {
         title: {
           text: '',
           subtext: '数量（张）',
-          padding: [0, 0, 0, 70],
           subtextStyle: {
             color: '#666'
-          }
+          },
+          left:'0'
+        },
+        grid:{
+          x:25,
+          borderWidth:1
         },
         tooltip: {
           trigger: 'axis'
@@ -129,7 +136,7 @@ export default {
               v.spotList.forEach(val => {
                 numberData.push(val.number);
               });
-              this.seriesData.push({ name: v.union.name, type: 'line', data: numberData });
+              this.seriesData.push({ name: v.union.name,type: 'line', data: numberData });
             });
           }
         })
@@ -140,6 +147,7 @@ export default {
           this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     }
-  }
+  },
+
 };
 </script>

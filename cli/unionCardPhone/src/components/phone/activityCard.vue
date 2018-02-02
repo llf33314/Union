@@ -252,16 +252,6 @@
           $('.iName2').hide()
         }
       },
-      //点击对应的列表数据
-//      lookListConent(){
-//        let isShow = $('.listConent')[0].style.display;
-//        if(isShow=="" || isShow=="none") {
-//          $('.listConent').slideDown(100)
-//        }
-//        else{
-//          $('.listConent').slideUp(100)
-//        }
-//      },,
       //立即购买
       Purchase(){
         let url1='toActivityCard';

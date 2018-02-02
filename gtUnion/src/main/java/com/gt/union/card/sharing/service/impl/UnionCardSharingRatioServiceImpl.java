@@ -18,17 +18,21 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedissonLockUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import org.omg.CORBA.TIMEOUT;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.redisson.client.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 联盟卡售卡分成比例 服务实现类
@@ -52,6 +56,9 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
     @Autowired
     private IUnionCardProjectService unionCardProjectService;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -246,8 +253,9 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         Integer unionId = project.getUnionId();
         UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
         String autoEqualDivisionRatioLockKey = UnionCardSharingRatioCacheUtil.getAutoEqualDivisionRatioLockKey();
+        RLock rLock = redissonClient.getLock(autoEqualDivisionRatioLockKey);
         try {
-            RedissonLockUtil.lock(autoEqualDivisionRatioLockKey, 5);
+            rLock.lock(5, TimeUnit.SECONDS);
             if (!existValidByUnionIdAndActivityId(unionId, activityId) && activity.getSellBeginTime().compareTo(DateUtil.getCurrentDate()) < 0) {
                 Date currentDate = DateUtil.getCurrentDate();
                 boolean isIncludeUnionOwnerId = unionCardProjectService.existUnionOwnerId(projectList);
@@ -302,7 +310,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
                 saveBatch(saveSharingRatioList);
             }
         } finally {
-            RedissonLockUtil.unlock(autoEqualDivisionRatioLockKey);
+            rLock.unlock();
         }
 
     }
