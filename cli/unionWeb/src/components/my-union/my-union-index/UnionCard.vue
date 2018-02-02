@@ -50,7 +50,7 @@
               <div class="choiceShadow">
                 <div class="bgcolor1" style=""></div>
                 <div class="shadow"></div>
-                <img src="~assets/images/images3.png" />
+                <img src="~assets/images/images3.png" style="display: none"/>
               </div>
             </el-radio-button>
             <!--//活动卡-->
@@ -59,9 +59,7 @@
               <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
               <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
               <div class="choiceShadow">
-                <!--//backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'-->
-                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}"
-                style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
+                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'}"></div>
                 <div class="shadow"></div>
                 <img src="~assets/images/images3.png" style="display: none" />
               </div>
@@ -217,12 +215,8 @@ export default {
               this.detailData.activityCardList.forEach((v, i) => {
                 v.card.createTime = timeFilter(v.card.createTime);
                 v.card.validity = timeFilter(v.card.validity);
-                // let color1 = (v.color1 = v.activity.color.split(',')[0]);
-                // let color2 = (v.color2 = v.activity.color.split(',')[1]);
-                // let mDiv = 'm' + color2 + i;
-                // setTimeout(function() {
-                //   $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                // }, 0);
+                v.color1 = v.activity.color.split(',')[0];
+                v.color2 = v.activity.color.split(',')[1];
               });
             }
           }
@@ -234,6 +228,7 @@ export default {
   }
 };
 </script>
+
 <style scoped lang='less' rel="stylesheet/less">
   /*滚动条样式*/
   .unionCardDetailsRight > div::-webkit-scrollbar{
