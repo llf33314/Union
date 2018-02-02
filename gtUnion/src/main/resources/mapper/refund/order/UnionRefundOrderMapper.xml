@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.refund.order.mapper.UnionRefundOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gt.union.refund.order.entity.UnionRefundOrder">
+        <id column="id" property="id"/>
+        <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="sys_order_no" property="sysOrderNo"/>
+        <result column="refund_order_no" property="refundOrderNo"/>
+        <result column="refund_money" property="refundMoney"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="desc" property="desc"/>
+    </resultMap>
+
+</mapper>
