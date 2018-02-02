@@ -183,6 +183,11 @@
           });
       },
       init(){
+        this.inputNumber = '';
+        $(".button-btn").css({
+          "background-color":"#CCCCCC"
+        });
+        $('.button-btn').attr("disabled", true);
           //初始化方法
         $http.get(`/h5Brokerage/withdrawal`)
           .then(res => {
@@ -227,7 +232,6 @@
     watch: {
       inputNumber(){
         let payMoney=parseFloat($("#importMoney").val());
-        let that_=this;
         if(payMoney>=1 && payMoney<=parseFloat(this.moneyList.availableBrokerage)){
           $(".button-btn").css({
             "color":"white",
