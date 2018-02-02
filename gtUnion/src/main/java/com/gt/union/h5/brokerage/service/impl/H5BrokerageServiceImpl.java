@@ -41,6 +41,8 @@ import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 佣金平台 服务实现类
@@ -94,6 +97,9 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
     @Autowired
     private PhoneMessageSender phoneMessageSender;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Resource(name = "unionPhoneBrokeragePayService")
     private IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService;
@@ -367,9 +373,10 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         Integer busId = verifier.getBusId();
         // （1）	判断money有效性
         String key = RedissonKeyUtil.getWithdrawalByBusIdKey(busId);
+        RLock rLock = redissonClient.getLock(key);
         try {
             //加锁
-            RedissonLockUtil.lock(key, 10);
+            rLock.lock(5, TimeUnit.SECONDS);
             //总收入
             Double incomeSum = unionBrokerageIncomeService.sumValidMoneyByBusId(busId);
 
@@ -406,7 +413,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             }
         } finally {
             //释放锁
-            RedissonLockUtil.unlock(key);
+            rLock.unlock();
         }
     }
 
