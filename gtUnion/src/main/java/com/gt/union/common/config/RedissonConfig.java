@@ -32,7 +32,7 @@ public class RedissonConfig {
 	 * @return
 	 */
 	@Bean
-	RedissonClient redissonSentinel() {
+	RedissonClient redissonClient() {
 		Config config = new Config();
 		config.useSentinelServers()
 				.addSentinelAddress(redssionProperties.getSentinelAddresses())
@@ -49,10 +49,9 @@ public class RedissonConfig {
 	 * @return
 	 */
 	@Bean
-	DistributedLocker distributedLocker(RedissonClient redissonClient) {
-		DistributedLocker locker = new RedissonDistributedLocker();
+	RedissonDistributedLocker distributedLocker(RedissonClient redissonClient) {
+		RedissonDistributedLocker locker = new RedissonDistributedLocker();
 		locker.setRedissonClient(redissonClient);
-		RedissonLockUtil.setLocker(locker);
 		return locker;
 	}
 }
