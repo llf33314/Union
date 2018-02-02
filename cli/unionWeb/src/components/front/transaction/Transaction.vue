@@ -85,7 +85,7 @@
                   <span  class="fl SelectunionImg" :style="{backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'}">
                     <p>{{item.activity.name}}</p>
                   </span>
-                  <p class="overflowhiddenOh" v-show="item.disabledFlag">已办理</p>
+                  <p class="overflowhiddenOh" v-show="item.disabledFlag"> <span>已办理</span> </p>
                   <!--底部信息-->
                   <div class="fl bottomFont">
                     ￥{{item.activity.price.toFixed(2)}}

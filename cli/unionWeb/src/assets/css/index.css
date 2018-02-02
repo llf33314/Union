@@ -1839,7 +1839,7 @@ hr {
   margin-bottom: 25px ;
 }
 #front #transaction .handleCardInformation > form {
-  margin-top: 25px;
+  margin: 25px 0 0 25px;
 }
 #front #transaction .unionCardList {
   width: 80%;
