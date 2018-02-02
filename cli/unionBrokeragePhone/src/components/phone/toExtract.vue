@@ -239,10 +239,6 @@
             "background-color":"#CCCCCC"
           });
           $('.button-btn').attr("disabled", true);
-          let that_=this;
-          setTimeout(()=>{
-            that_.inputNumber="";
-          },250);
         }
       }
     },

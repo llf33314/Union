@@ -118,7 +118,7 @@ export default {
     ).then(
       res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
-          top.window.location = res.data.redirectUrl;
+          window.location = res.data.redirectUrl;
         }
         return res;
       }
