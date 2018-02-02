@@ -2113,7 +2113,79 @@ hr{
         }
       }
     }
-
+    //页面主内容
+    .SwitchAround {
+      max-height: 410px;
+      overflow-y: auto;
+      >div {
+        margin:20px 0 20px 30px;
+        .el-checkbox-button {
+          position: relative;
+          display: inline-block;
+          margin:5px 0 40px 13px;
+          .el-checkbox-button__inner {
+            padding: 0;
+            border: none;
+            >.clearfix{
+              border-radius: 4px 0 0 4px;
+            }
+          }
+        }
+        //益出隐藏
+        .overflowhiddenOh{
+          height: 120px;
+          border-radius: 6px;
+          width: 100%;
+          overflow: hidden;
+          position: absolute;
+          span{
+            position: absolute;
+            right: -40px;
+            top: 12px;
+            display: inline-block;
+            width: 117px;
+            background-color: rgba(0, 0, 0, .4);
+            text-align: center;
+            color: #EEEEEE;
+            padding: 5px;
+            transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            -moz-transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+          }
+        }
+        .SelectunionImg {
+          display: block;
+          color: #fff;
+          font-size: 20px;
+          border-radius: 6px;
+          width: 300px;
+          height: 120px;
+          line-height: 120px;
+          background-image: linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%);
+        }
+        .bottomFont{
+          margin-left: 5px;position: absolute;
+          top: 135px;left: 0;color: #333;
+          font-size: 20px;
+        }
+        .el-checkbox-button.is-checked .el-checkbox-button__inner{
+          background-color: #96a3ad;
+          border-color: #96a3ad;
+          box-shadow: none;
+          i{
+            display: block;
+            width:300px;
+            height:120px;
+            position: absolute;
+            background: rgba(35,34,34,.3) url('../../assets/images/images3.png') no-repeat bottom right;
+            top: 0;
+            left:0;
+            border-radius: 6px;
+          }
+        }
+      }
+    }
     //固定页面底部
     .footerFix{
       position: fixed;
@@ -2185,6 +2257,7 @@ hr{
       left: 62%;
     }
   }
+  //统计图模块样式
   .DataStatistics{
     .BrokerageStatistics{
       >nav{
@@ -2203,7 +2276,7 @@ hr{
         border-bottom: 1px solid #ddd;
       }
       .btnGroup{
-        margin:0 0 20px 395px ;
+        margin-left: 31%;
       }
     }
     .ActivityCardStatstics{
@@ -2355,15 +2428,6 @@ hr{
   #sellBrokerageStatistics{
     margin-left: 0px;
   }
-  #discountCardStatistics{
-    width: 1080px!important;
-    >div:nth-child(1){
-      width: 1080px!important;
-      canvas{
-        width: 1080px!important;
-      }
-    }
-  }
 }
 //（当屏幕大于1680时）
 @media screen and (min-width: 1680px){
@@ -2373,88 +2437,17 @@ hr{
   .sellBrokerageStatisticsParent{
     margin-left: 300px;
   }
-  //#discountCardStatistics{
-  //  width: 1650px!important;
-  //  >div:nth-child(1){
-  //    width: 1650px!important;
-  //    canvas{
-  //      width: 1500px!important;
-  //    }
-  //  }
-  //}
+}
+
+@media screen and (min-width: 1880px){
+  #brokeragePayStatistics{
+    margin-left: 520px;
+  }
+  .sellBrokerageStatisticsParent{
+    margin-left: 545px;
+  }
 }
 
 
 
-.SwitchAround {
-  max-height: 410px;
-  overflow-y: auto;
-    >div {
-      margin:20px 0 20px 30px;
-      .el-checkbox-button {
-        position: relative;
-        display: inline-block;
-        margin:5px 0 40px 13px;
-        .el-checkbox-button__inner {
-          padding: 0;
-          border: none;
-          >.clearfix{
-            border-radius: 4px 0 0 4px;
-          }
-        }
-      }
-      //益出隐藏
-      .overflowhiddenOh{
-        height: 120px;
-        border-radius: 6px;
-        width: 100%;
-        overflow: hidden;
-        position: absolute;
-        span{
-          position: absolute;
-          right: -40px;
-          top: 12px;
-          display: inline-block;
-          width: 117px;
-          background-color: rgba(0, 0, 0, .4);
-          text-align: center;
-          color: #EEEEEE;
-          padding: 5px;
-          transform: rotate(45deg);
-          -ms-transform: rotate(45deg);
-          -moz-transform: rotate(45deg);
-          -webkit-transform: rotate(45deg);
-        }
-      }
-      .SelectunionImg {
-        display: block;
-        color: #fff;
-        font-size: 20px;
-        border-radius: 6px;
-        width: 300px;
-        height: 120px;
-        line-height: 120px;
-        background-image: linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%);
-      }
-      .bottomFont{
-        margin-left: 5px;position: absolute;
-        top: 135px;left: 0;color: #333;
-        font-size: 20px;
-      }
-      .el-checkbox-button.is-checked .el-checkbox-button__inner{
-        background-color: #96a3ad;
-        border-color: #96a3ad;
-        box-shadow: none;
-        i{
-          display: block;
-          width:300px;
-          height:120px;
-          position: absolute;
-          background: rgba(35,34,34,.3) url('../../assets/images/images3.png') no-repeat bottom right;
-          top: 0;
-          left:0;
-          border-radius: 6px;
-        }
-      }
-    }
-  }
+
