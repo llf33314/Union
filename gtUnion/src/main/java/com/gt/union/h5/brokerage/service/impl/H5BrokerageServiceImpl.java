@@ -397,6 +397,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             saveWithdrawal.setSysOrderNo(orderNo);
             saveWithdrawal.setVerifierId(verifier.getId());
             saveWithdrawal.setVerifierName(verifier.getEmployeeName());
+            saveWithdrawal.setMoney(money);
+            saveWithdrawal.setOpenid(member.getOpenid());
 
             GtJsonResult payResult = wxPayService.enterprisePayment(orderNo, member.getOpenid(), "佣金提现", money, 0);
             if (payResult.isSuccess()) {
@@ -405,9 +407,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
             return payResult;
         } catch (Exception e) {
-            e.printStackTrace();
             if (e instanceof BaseException) {
-                throw new BaseException(e.getMessage());
+                throw new BaseException(((BaseException) e).getErrorMsg());
             } else {
                 throw new Exception(e.getMessage());
             }

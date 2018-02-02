@@ -217,6 +217,7 @@ CREATE TABLE `t_union_brokerage_withdrawal` (
   `sys_order_no` varchar(100) DEFAULT NULL COMMENT '系统订单号',
   `verifier_id` int(11) DEFAULT NULL COMMENT '平台管理者id',
   `verifier_name` varchar(100) DEFAULT NULL COMMENT '平台管理者名称',
+  `openid` varchar(100) DEFAULT NULL COMMENT '用户openid',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='佣金提现';
 
