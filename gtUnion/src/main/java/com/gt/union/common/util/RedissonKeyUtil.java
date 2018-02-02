@@ -26,13 +26,11 @@ public class RedissonKeyUtil {
 
 	/**
 	 * 获取粉丝折扣卡锁键
-	 * @param type	类型
-	 * @param unionId	联盟id
 	 * @param fanId	粉丝联盟卡id
 	 * @return
 	 */
-	public static final String getUnionCardByTypeAndUnionIdAndFanId(Integer type, Integer unionId, Integer fanId){
-		return PropertiesUtil.redisNamePrefix() + "type:" + type + ":unionId:" + unionId + ":fanId:" + fanId;
+	public static final String getUnionCardByFanId(Integer fanId){
+		return PropertiesUtil.redisNamePrefix() + "fanId:" + fanId;
 	}
 
 }
