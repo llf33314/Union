@@ -26,7 +26,7 @@
       <!--表内容主体-->
       <ul class="clearfix contentList">
         <li>
-          <div :class="'m'+item.color2+index1"></div>
+          <div :style="{backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'}"></div>
           <div>
             <span>{{ item.activityStatus }}</span>
           </div>
@@ -197,12 +197,8 @@ export default {
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
               v.activity.sellBeginTime = timeFilter(v.activity.sellBeginTime);
               v.activity.sellEndTime = timeFilter(v.activity.sellEndTime);
-              let color1 = (v.color1 = v.activity.color.split(',')[0]);
-              let color2 = (v.color2 = v.activity.color.split(',')[1]);
-              let mDiv = 'm' + color2 + i;
-              setTimeout(function() {
-                $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-              }, 10);
+              v.color1 = v.activity.color.split(',')[0];
+              v.color2 = v.activity.color.split(',')[1];
             });
             this.totalAll = res.data.data.total;
           } else {

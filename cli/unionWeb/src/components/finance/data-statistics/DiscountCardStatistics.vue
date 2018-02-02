@@ -9,7 +9,7 @@
         <el-radio-button label="近一年" ></el-radio-button>
       </el-radio-group>
     </div>
-    <div id="discountCardStatistics" style="height:400px;" :style="{width:windowWidth}">
+    <div id="discountCardStatistics" style="height:430px;" :style="{width:windowWidth}">
     </div>
   </div>
 </template>
@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       windowWidth:'',
+      windowHeight:'',
       myChart: '',
       option: '',
       timeRange: '近七天',
@@ -35,7 +36,7 @@ export default {
   },
   mounted() {
     var that=this;
-    //用于使chart自适应宽度,通过窗体计算容器高宽
+    //用于使chart自适应宽度,通过窗体计算容器宽度
     that.windowWidth= window.innerWidth-35 + 'px';
     setTimeout(function () {
       that.myChart = echarts.init(document.getElementById('discountCardStatistics'));
@@ -135,9 +136,6 @@ export default {
               v.spotList.forEach(val => {
                 numberData.push(val.number);
               });
-              setTimeout(function () {
-                console.log(numberData)
-              },10)
               this.seriesData.push({ name: v.union.name,type: 'line', data: numberData });
             });
           }

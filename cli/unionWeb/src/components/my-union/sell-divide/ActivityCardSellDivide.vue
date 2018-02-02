@@ -15,7 +15,7 @@
       </div>
       <div v-if="data1.length > 0" class="contentList" v-for="(item, index1) in data1" :key="item.activity.id">
         <div>
-          <div :class="'m'+item.color2+index1" style="height: 80px"></div>
+          <div style="height: 80px" :style="{backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'}"></div>
           <span>{{ item.activityStatus }}</span>
         </div>
         <p>
@@ -131,12 +131,8 @@ export default {
             this.data1 = res.data.data.records || [];
             this.data1.forEach((v, i) => {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
-              let color1 = (v.color1 = v.activity.color.split(',')[0]);
-              let color2 = (v.color2 = v.activity.color.split(',')[1]);
-              let mDiv = 'm' + color2 + i;
-              setTimeout(function() {
-                $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-              }, 0);
+              v.color1 = v.activity.color.split(',')[0];
+              v.color2 = v.activity.color.split(',')[1];
             });
             this.totalAll1 = res.data.data.total;
           } else {
