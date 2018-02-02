@@ -55,8 +55,9 @@ export default {
           },
           left:'0'
         },
-        grid:{
+        grid:{//整个图表的相对距离
           x:25,
+          y:45,
           borderWidth:1
         },
         tooltip: {
