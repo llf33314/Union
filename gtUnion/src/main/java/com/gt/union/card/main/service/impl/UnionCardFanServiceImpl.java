@@ -128,7 +128,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
                 Integer projectItemCount = 0;
                 List<ActivityCardProject> cardProjectList = new ArrayList<>();
-                List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+                List<UnionCardProject> projectList = unionCardProjectService.listValidWithoutExpiredMemberByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
                 if (ListUtil.isNotEmpty(projectList)) {
                     for (UnionCardProject project : projectList) {
                         ActivityCardProject activityCardProject = new ActivityCardProject();

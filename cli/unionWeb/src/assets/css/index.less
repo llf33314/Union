@@ -373,11 +373,11 @@ hr{
 //前台办理联盟卡/首页联盟卡详情弹出框公共样式
 //详情左边样式
 .step3 {
+  height: 280px;
+  overflow: auto;
   .el-radio-group {
     width: 200px;
     margin:0 35px 0 0;
-    min-height: 295px;
-    overflow-y: auto;
     border-radius: 6px;
     .el-radio-button__inner:hover {
       color: inherit;
@@ -1467,6 +1467,8 @@ hr{
         p {
           margin-bottom: 7px;
           color: #333333;
+          display: flex;
+          line-height: 2;
         }
       }
     }
@@ -1482,10 +1484,11 @@ hr{
     .el-dialog__body {
       padding: 0px;
       margin-top: 15px;
+      padding-right: 10px!important;
     }
     .tuimeng {
       .el-dialog--tiny {
-        width: 600px;
+        width: 700px;
       }
     }
     .model_12{
@@ -2384,18 +2387,14 @@ hr{
 
 
 .SwitchAround {
-  height:410px;//210px
-  //max-height: 410px;
+  max-height: 410px;
   overflow-y: auto;
-  display: flex;
     >div {
-      height: 120px;
       margin:20px 0 20px 30px;
       .el-checkbox-button {
         position: relative;
         display: inline-block;
-        margin-left: 13px;
-        margin-top: 5px;
+        margin:5px 0 40px 13px;
         .el-checkbox-button__inner {
           padding: 0;
           border: none;
@@ -2404,63 +2403,27 @@ hr{
           }
         }
       }
-      .el-checkbox-button__inner:hover{
-        .discountsCardDetails,.cardDetails{
-          display: block!important;
-        }
-      }
-      .discountsCardDetails,.cardDetails{
-        width: 410px;
-        height: 214px;
+      //益出隐藏
+      .overflowhiddenOh{
+        height: 120px;
+        border-radius: 6px;
+        width: 100%;
         overflow: hidden;
-        padding: 13px;
-        background: #fff;
-        box-sizing: border-box;
-        box-shadow: 0px 2px 10px 0px rgba(53, 53, 53, 0.1);
-        z-index: 10;
-        text-align: start;
-        line-height: 2;
         position: absolute;
-        color: #333;
-        top: -20px;
-        left: 312px;
-        border: solid 1px #d1dbe5;
-
-      }
-      //折扣卡
-      .discountsCardDetails{
-        ul{
-          height: 120px;
-          overflow-y: auto;
-          li{
-            display: flex;
-            justify-content: space-between;
-            span:nth-last-child(1){
-              margin-right: 80px;
-            }
-          }
-        }
-      }
-      //活动卡
-      .cardDetails{
-        height: 315px;
-        ol{
-          height: 150px;
-          overflow-y: auto;
-        }
-        .companyName {
-          >li{
-            margin-left: 25px;
-            color: #999;display: flex;
-            justify-content: space-between;
-          }
-          .circle {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ccc;
-          }
+        span{
+          position: absolute;
+          right: -40px;
+          top: 12px;
+          display: inline-block;
+          width: 117px;
+          background-color: rgba(0, 0, 0, .4);
+          text-align: center;
+          color: #EEEEEE;
+          padding: 5px;
+          transform: rotate(45deg);
+          -ms-transform: rotate(45deg);
+          -moz-transform: rotate(45deg);
+          -webkit-transform: rotate(45deg);
         }
       }
       .SelectunionImg {

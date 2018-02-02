@@ -320,11 +320,13 @@ hr {
 .verSuccess .el-dialog__body .ddd img {
   margin-right: 20px;
 }
+.step3 {
+  height: 280px;
+  overflow: auto;
+}
 .step3 .el-radio-group {
   width: 200px;
   margin: 0 35px 0 0;
-  min-height: 295px;
-  overflow-y: auto;
   border-radius: 6px;
 }
 .step3 .el-radio-group .el-radio-button__inner:hover {
@@ -1297,6 +1299,8 @@ hr {
 #UnionQuit .container .tuimeng .model_12 p {
   margin-bottom: 7px;
   color: #333333;
+  display: flex;
+  line-height: 2;
 }
 #UnionQuit #Refund .el-table_1_column_4 .el-button,
 #UnionQuit #Refund .el-table_1_column_8 .el-button {
@@ -1306,9 +1310,10 @@ hr {
 #UnionQuit #Refund .el-dialog__body {
   padding: 0px;
   margin-top: 15px;
+  padding-right: 10px!important;
 }
 #UnionQuit #Refund .tuimeng .el-dialog--tiny {
-  width: 600px;
+  width: 700px;
 }
 #UnionQuit #Refund .model_12 .el-dialog--tiny {
   width: 450px;
@@ -2048,19 +2053,16 @@ hr {
   }
 }
 .SwitchAround {
-  height: 410px;
+  max-height: 410px;
   overflow-y: auto;
-  display: flex;
 }
 .SwitchAround > div {
-  height: 120px;
   margin: 20px 0 20px 30px;
 }
 .SwitchAround > div .el-checkbox-button {
   position: relative;
   display: inline-block;
-  margin-left: 13px;
-  margin-top: 5px;
+  margin: 5px 0 40px 13px;
 }
 .SwitchAround > div .el-checkbox-button .el-checkbox-button__inner {
   padding: 0;
@@ -2069,58 +2071,27 @@ hr {
 .SwitchAround > div .el-checkbox-button .el-checkbox-button__inner > .clearfix {
   border-radius: 4px 0 0 4px;
 }
-.SwitchAround > div .el-checkbox-button__inner:hover .discountsCardDetails,
-.SwitchAround > div .el-checkbox-button__inner:hover .cardDetails {
-  display: block!important;
-}
-.SwitchAround > div .discountsCardDetails,
-.SwitchAround > div .cardDetails {
-  width: 410px;
-  height: 214px;
-  overflow: hidden;
-  padding: 13px;
-  background: #fff;
-  box-sizing: border-box;
-  box-shadow: 0px 2px 10px 0px rgba(53, 53, 53, 0.1);
-  z-index: 10;
-  text-align: start;
-  line-height: 2;
-  position: absolute;
-  color: #333;
-  top: -20px;
-  left: 312px;
-  border: solid 1px #d1dbe5;
-}
-.SwitchAround > div .discountsCardDetails ul {
+.SwitchAround > div .overflowhiddenOh {
   height: 120px;
-  overflow-y: auto;
+  border-radius: 6px;
+  width: 100%;
+  overflow: hidden;
+  position: absolute;
 }
-.SwitchAround > div .discountsCardDetails ul li {
-  display: flex;
-  justify-content: space-between;
-}
-.SwitchAround > div .discountsCardDetails ul li span:nth-last-child(1) {
-  margin-right: 80px;
-}
-.SwitchAround > div .cardDetails {
-  height: 315px;
-}
-.SwitchAround > div .cardDetails ol {
-  height: 150px;
-  overflow-y: auto;
-}
-.SwitchAround > div .cardDetails .companyName > li {
-  margin-left: 25px;
-  color: #999;
-  display: flex;
-  justify-content: space-between;
-}
-.SwitchAround > div .cardDetails .companyName .circle {
+.SwitchAround > div .overflowhiddenOh span {
+  position: absolute;
+  right: -40px;
+  top: 12px;
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #ccc;
+  width: 117px;
+  background-color: rgba(0, 0, 0, 0.4);
+  text-align: center;
+  color: #EEEEEE;
+  padding: 5px;
+  transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
 }
 .SwitchAround > div .SelectunionImg {
   display: block;
