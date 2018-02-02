@@ -42,10 +42,10 @@
                   </div>
                 </div>
                 <div class="clearfix">
-                  <span  class="fl SelectunionImg" style="background: #00ad7b">
+                  <span  class="fl SelectunionImg">
                     <p>{{item.union.name}}</p>
                   </span>
-                  <p class="overflowhiddenOh"> <span>已办理</span> </p><!--v-show="item.disabledFlag"-->
+                  <p class="overflowhiddenOh" v-show="item.disabledFlag"> <span>已办理</span> </p>
                   <!--底部信息-->
                   <div class="fl bottomFont">
                     免费
@@ -82,7 +82,7 @@
                   </div>
                 </div>
                 <div class="clearfix">
-                  <span  class="fl SelectunionImg" style="background: #00ad7b">
+                  <span  class="fl SelectunionImg" :style="{backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'}">
                     <p>{{item.activity.name}}</p>
                   </span>
                   <p class="overflowhiddenOh" v-show="item.disabledFlag">已办理</p>
@@ -207,6 +207,13 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.unionCardList = res.data.data;
+            console.log(this.unionCardList);
+            if(this.unionCardList.activityCardList) {
+              this.unionCardList.activityCardList.forEach((v, i) => {
+                v.color1 = v.activity.color.split(',')[0];
+                v.color2 = v.activity.color.split(',')[1];
+              });
+            }
           } else {
             this.unionCardList = '';
           }
