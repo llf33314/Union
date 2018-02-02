@@ -82,6 +82,9 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     @TableField("verifier_name")
     private String verifierName;
 
+    @ApiModelProperty(value = "提现人openid")
+    @TableField("openid")
+    private String openid;
 
     public Integer getId() {
         return id;
@@ -145,6 +148,14 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
 
     public void setVerifierName(String verifierName) {
         this.verifierName = verifierName;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
     }
 
     @Override
