@@ -409,9 +409,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         } catch (Exception e) {
             if (e instanceof BaseException) {
                 throw new BaseException(((BaseException) e).getErrorMsg());
-            } else {
-                throw new Exception(e.getMessage());
             }
+            throw new Exception();
         } finally {
             //释放锁
             rLock.unlock();
