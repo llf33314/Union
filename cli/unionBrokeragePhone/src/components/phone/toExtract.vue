@@ -7,10 +7,6 @@
             <el-breadcrumb-item :to="{ path: '/index' }">
               <img class="back__" src="../../assets/images/back.png" alt="" style="width: 1rem;">
             </el-breadcrumb-item>
-            <!--<p class="fr union_head" >-->
-            <!--<img src="../../assets/images/switchover.png" alt="">-->
-            <!--<span @click="boxWarp">多粉大联盟</span>-->
-            <!--</p>-->
           </div>
           <div class="union_second payed clear">
             <div class="fl">
@@ -131,7 +127,7 @@
       // 我要提现
       send1_(){
         let data=this.inputNumber;
-        if(parseFloat(data).toFixed(2) > parseFloat(this.moneyList.availableBrokerage).toFixed(2)){
+        if(parseFloat(data) > parseFloat(this.moneyList.availableBrokerage)){
           Message({
             showClose: true,
             message: '提现的金额不能大于可提佣金',
@@ -141,7 +137,7 @@
         }else {
           $http.post(`/h5Brokerage/withdrawal`, data)
             .then(res => {
-              if (res.data.success && !res.data.redirectUrl) {
+              if (res.data.success) {
                 Message({
                   showClose: true,
                   message: '提现成功',
@@ -232,13 +228,13 @@
       inputNumber(){
         let payMoney=parseFloat($("#importMoney").val());
         let that_=this;
-        if(payMoney>=1){
+        if(payMoney>=1 && payMoney<=parseFloat(this.moneyList.availableBrokerage)){
           $(".button-btn").css({
             "color":"white",
             "backgroundColor":"#39ABFF"
           });
           $('.button-btn').attr("disabled", false);
-        }else if(!payMoney || isNaN(this.inputNumber)){
+        }else if(!payMoney || isNaN(this.inputNumber) || payMoney>parseFloat(this.moneyList.availableBrokerage)){
           $(".button-btn").css({
             "background-color":"#CCCCCC"
           });
