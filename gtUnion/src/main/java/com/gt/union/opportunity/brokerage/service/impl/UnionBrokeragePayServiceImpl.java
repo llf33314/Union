@@ -478,7 +478,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                                 EntityWrapper wrapper = new EntityWrapper<>();
                                 wrapper.eq("sys_order_no", orderNo);
                                 wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-                                wrapper.eq("pay_status", ConsumeConstant.PAY_STATUS_PAYING);
+                                wrapper.eq("status", ConsumeConstant.PAY_STATUS_PAYING);
                                 wrapper.in("opportunity_id", opportunityIdList);
 
                                 UnionBrokeragePay pay = new UnionBrokeragePay();
