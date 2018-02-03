@@ -54,5 +54,5 @@ public interface WxPayService {
 	 * @param totalFee		总金额
 	 * @return
 	 */
-	GtJsonResult refundOrder(String sysOrderNo, Double refundFee, Double totalFee) throws Exception;
+	GtJsonResult refundOrder(String sysOrderNo, Double refundFee, Double totalFee);
 }

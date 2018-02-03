@@ -550,7 +550,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     }
 
     @Async
-    private void refundOpportunity(final String orderNo, final double refundFee, double totalFee, final List<UnionOpportunity> refundOpportunityList) {
+    private void refundOpportunity(final String orderNo, final double refundFee, final double totalFee, final List<UnionOpportunity> refundOpportunityList) {
         try{
             UnionRefundOrder successRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_SUCCESS, RefundOrderConstant.TYPE_OPPORTUNITY);
             //没有退款
@@ -573,6 +573,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                                 applyRefundOrder.setSysOrderNo(orderNo);
                                 applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
                                 applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                                applyRefundOrder.setTotalMoney(totalFee);
                                 unionRefundOrderService.save(applyRefundOrder);
 
                                 if(ListUtil.isNotEmpty(refundOpportunityList)){

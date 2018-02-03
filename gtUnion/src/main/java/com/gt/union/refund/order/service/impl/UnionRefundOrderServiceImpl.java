@@ -9,6 +9,8 @@ import com.gt.union.refund.order.service.IUnionRefundOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 服务实现类
  *
@@ -49,15 +51,27 @@ public class UnionRefundOrderServiceImpl implements IUnionRefundOrderService {
 	}
 
 	@Override
-	public UnionRefundOrder getValidByOrderNoAndStatusAndType(String orderNo, Integer refundStatusSuccess, Integer type) throws Exception {
-		if (orderNo == null || refundStatusSuccess == null) {
+	public UnionRefundOrder getValidByOrderNoAndStatusAndType(String orderNo, Integer status, Integer type) throws Exception {
+		if (orderNo == null || status == null) {
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		wrapper.eq("sys_order_no", orderNo);
-		wrapper.eq("status", refundStatusSuccess);
+		wrapper.eq("status", status);
 		wrapper.eq("type", type);
 		return unionRefundOrderDao.selectOne(wrapper);
+	}
+
+	@Override
+	public List<UnionRefundOrder> listValidByStatusAndType(Integer status, Integer type) throws Exception {
+		if (type == null || status == null) {
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		wrapper.eq("status", status);
+		wrapper.eq("type", type);
+		return unionRefundOrderDao.selectList(wrapper);
 	}
 }

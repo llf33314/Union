@@ -143,26 +143,32 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
 	@Override
-	public GtJsonResult refundOrder(String sysOrderNo, Double refundFee, Double totalFee) throws Exception{
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("sysOrderNo", sysOrderNo);
-        data.put("refundFee", refundFee);
-        data.put("totalFee", totalFee);
-        Map<String, Object> param = new HashMap<String, Object>();
-        param.put("reqdata", data);
-        logger.info("退款请求参数：{}",JSONObject.toJSONString(param));
-        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/wxmemberPayRefund.do";
-        String dataStr = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
-        logger.info("退款结果：{}", dataStr);
-        if(StringUtil.isEmpty(dataStr)){
+	public GtJsonResult refundOrder(String sysOrderNo, Double refundFee, Double totalFee){
+        try{
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("sysOrderNo", sysOrderNo);
+            data.put("refundFee", refundFee);
+            data.put("totalFee", totalFee);
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("reqdata", data);
+            logger.info("退款请求参数：{}",JSONObject.toJSONString(param));
+            String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/wxmemberPayRefund.do";
+            String dataStr = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
+            logger.info("退款结果：{}", dataStr);
+            if(StringUtil.isEmpty(dataStr)){
+                return GtJsonResult.instanceErrorMsg("退款失败");
+            }
+            Map result = JSONObject.parseObject(dataStr, Map.class);
+            if(CommonUtil.toInteger(result.get("code")) == 0){
+                return GtJsonResult.instanceSuccessMsg(result);
+            }else {
+                return GtJsonResult.instanceErrorMsg(CommonUtil.isNotEmpty(result.get("msg")) ? result.get("msg").toString() : "退款失败");
+            }
+        }catch (Exception e){
+            logger.error("退款失败", e);
             return GtJsonResult.instanceErrorMsg("退款失败");
         }
-        Map result = JSONObject.parseObject(dataStr, Map.class);
-        if(CommonUtil.toInteger(result.get("code")) == 0){
-            return GtJsonResult.instanceSuccessMsg(result);
-        }else {
-            return GtJsonResult.instanceErrorMsg(CommonUtil.isNotEmpty(result.get("msg")) ? result.get("msg").toString() : "退款失败");
-        }
+
 	}
 
 }

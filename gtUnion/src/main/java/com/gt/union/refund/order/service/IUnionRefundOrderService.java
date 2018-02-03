@@ -3,6 +3,8 @@ package com.gt.union.refund.order.service;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.refund.order.entity.UnionRefundOrder;
 
+import java.util.List;
+
 /**
  * 服务接口
  *
@@ -36,10 +38,19 @@ public interface IUnionRefundOrderService {
 	/**
 	 * 根据退款订单号和退款状态查退款信息
 	 * @param orderNo		订单号
-	 * @param refundStatusSuccess	退款状态
+	 * @param status	退款状态
 	 * @param type	退款类型
 	 * @throws Exception
 	 * @return
 	 */
-	UnionRefundOrder getValidByOrderNoAndStatusAndType(String orderNo, Integer refundStatusSuccess, Integer type) throws Exception;
+	UnionRefundOrder getValidByOrderNoAndStatusAndType(String orderNo, Integer status, Integer type) throws Exception;
+
+	/**
+	 * 根据退款订单号和退款状态查退款信息
+	 * @param status	退款状态
+	 * @param type	退款类型
+	 * @throws Exception
+	 * @return
+	 */
+	List<UnionRefundOrder> listValidByStatusAndType(Integer status, Integer type) throws Exception;
 }
