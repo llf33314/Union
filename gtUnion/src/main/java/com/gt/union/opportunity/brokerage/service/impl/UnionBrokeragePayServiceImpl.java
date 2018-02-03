@@ -574,16 +574,6 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                                 applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
                                 applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
                                 unionRefundOrderService.save(applyRefundOrder);
-                            }
-
-                            if(gtJsonResult.isSuccess()){
-                                UnionRefundOrder successRefundOrder = new UnionRefundOrder();
-                                successRefundOrder.setId(applyRefundOrder.getId());
-                                successRefundOrder.setModifyTime(new Date());
-                                successRefundOrder.setDesc("退款成功");
-                                successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
-                                successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
-                                unionRefundOrderService.update(successRefundOrder);
 
                                 if(ListUtil.isNotEmpty(refundOpportunityList)){
                                     List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
@@ -597,6 +587,16 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                                     }
                                     unionRefundOpportunityService.saveBatch(refundOpporList);
                                 }
+                            }
+
+                            if(gtJsonResult.isSuccess()){
+                                UnionRefundOrder successRefundOrder = new UnionRefundOrder();
+                                successRefundOrder.setId(applyRefundOrder.getId());
+                                successRefundOrder.setModifyTime(new Date());
+                                successRefundOrder.setDesc("退款成功");
+                                successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                                successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
+                                unionRefundOrderService.update(successRefundOrder);
                             }
 
                         }catch (Exception e){
