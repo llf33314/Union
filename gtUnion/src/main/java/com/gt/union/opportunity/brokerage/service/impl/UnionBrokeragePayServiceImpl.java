@@ -562,50 +562,50 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
                     @Override
                     public Boolean doInTransaction(TransactionStatus transactionStatus) {
-                        try{
-                            Date currentDate = new Date();
-                            UnionRefundOrder applyRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
-                            if(applyRefundOrder == null){
-                                applyRefundOrder = new UnionRefundOrder();
-                                applyRefundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                                applyRefundOrder.setCreateTime(currentDate);
-                                applyRefundOrder.setRefundMoney(refundFee);
-                                applyRefundOrder.setSysOrderNo(orderNo);
-                                applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
-                                applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
-                                applyRefundOrder.setTotalMoney(totalFee);
-                                unionRefundOrderService.save(applyRefundOrder);
+                    try{
+                        Date currentDate = new Date();
+                        UnionRefundOrder applyRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
+                        if(applyRefundOrder == null){
+                            applyRefundOrder = new UnionRefundOrder();
+                            applyRefundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                            applyRefundOrder.setCreateTime(currentDate);
+                            applyRefundOrder.setRefundMoney(refundFee);
+                            applyRefundOrder.setSysOrderNo(orderNo);
+                            applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
+                            applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                            applyRefundOrder.setTotalMoney(totalFee);
+                            unionRefundOrderService.save(applyRefundOrder);
 
-                                if(ListUtil.isNotEmpty(refundOpportunityList)){
-                                    List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
-                                    for(UnionOpportunity opportunity : refundOpportunityList){
-                                        UnionRefundOpportunity refundOpportunity = new UnionRefundOpportunity();
-                                        refundOpportunity.setCreateTime(new Date());
-                                        refundOpportunity.setOpportunityId(opportunity.getId());
-                                        refundOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                                        refundOpportunity.setRefundOrderId(applyRefundOrder.getId());
-                                        refundOpporList.add(refundOpportunity);
-                                    }
-                                    unionRefundOpportunityService.saveBatch(refundOpporList);
+                            if(ListUtil.isNotEmpty(refundOpportunityList)){
+                                List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
+                                for(UnionOpportunity opportunity : refundOpportunityList){
+                                    UnionRefundOpportunity refundOpportunity = new UnionRefundOpportunity();
+                                    refundOpportunity.setCreateTime(new Date());
+                                    refundOpportunity.setOpportunityId(opportunity.getId());
+                                    refundOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                    refundOpportunity.setRefundOrderId(applyRefundOrder.getId());
+                                    refundOpporList.add(refundOpportunity);
                                 }
+                                unionRefundOpportunityService.saveBatch(refundOpporList);
                             }
-
-                            if(gtJsonResult.isSuccess()){
-                                UnionRefundOrder successRefundOrder = new UnionRefundOrder();
-                                successRefundOrder.setId(applyRefundOrder.getId());
-                                successRefundOrder.setModifyTime(new Date());
-                                successRefundOrder.setDesc("退款成功");
-                                successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
-                                successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
-                                unionRefundOrderService.update(successRefundOrder);
-                            }
-
-                        }catch (Exception e){
-                            logger.error("商机退款失败", e);
-                            transactionStatus.setRollbackOnly();
-                            return false;
                         }
-                        return true;
+
+                        if(gtJsonResult.isSuccess()){
+                            UnionRefundOrder successRefundOrder = new UnionRefundOrder();
+                            successRefundOrder.setId(applyRefundOrder.getId());
+                            successRefundOrder.setModifyTime(new Date());
+                            successRefundOrder.setDesc("退款成功");
+                            successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                            successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
+                            unionRefundOrderService.update(successRefundOrder);
+                        }
+
+                    }catch (Exception e){
+                        logger.error("商机退款失败", e);
+                        transactionStatus.setRollbackOnly();
+                        return false;
+                    }
+                    return true;
                     }
                 });
             }
