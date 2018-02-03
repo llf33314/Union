@@ -396,10 +396,10 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             return JSONObject.toJSONString(result);
         }
         RLock rLock = null;
-        RLock rLock1 = null;
+        String orderKey = RedissonKeyUtil.getUnionOpportunityOrderKey(orderNo);
+        RLock rLock1 = redissonClient.getLock(orderKey);
+        rLock1.lock(10, TimeUnit.SECONDS);
         try{
-            rLock1 = redissonClient.getLock(orderNo);
-            rLock1.lock(10, TimeUnit.SECONDS);
             List<UnionBrokeragePay> payList = listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(payList)) {
                 result.put("code", -1);
@@ -408,8 +408,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             }
             Integer busId = payList.get(0).getFromBusId();
             //锁
-            String key = busId.toString();
-            rLock = redissonClient.getLock(key);
+            String busKey = RedissonKeyUtil.getUnionOpportunityBusIdKey(busId);
+            rLock = redissonClient.getLock(busKey);
             rLock.lock(10, TimeUnit.SECONDS);
             List<Integer> opportunityIds = new ArrayList<Integer>();
             for (UnionBrokeragePay pay : payList) {
