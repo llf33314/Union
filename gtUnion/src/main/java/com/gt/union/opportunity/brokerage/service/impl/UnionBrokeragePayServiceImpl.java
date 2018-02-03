@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.card.consume.constant.ConsumeConstant;
-import com.gt.union.card.main.entity.UnionCardRecord;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -396,19 +395,23 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
         }
-
-        // 判断payIds有效性
-        final List<Integer> opportunityIds = new ArrayList<Integer>();
-        List<UnionOpportunity> opportunities = null;
-        Integer busId = 0;
-        try {
-            final List<UnionBrokeragePay> payList = listValidByOrderNo(orderNo);
+        RLock rLock = null;
+        RLock rLock1 = null;
+        try{
+            rLock1 = redissonClient.getLock(orderNo);
+            rLock1.lock(10, TimeUnit.SECONDS);
+            List<UnionBrokeragePay> payList = listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(payList)) {
                 result.put("code", -1);
                 result.put("msg", "不存在商机支付信息");
                 return JSONObject.toJSONString(result);
             }
-
+            Integer busId = payList.get(0).getFromBusId();
+            //锁
+            String key = busId.toString();
+            rLock = redissonClient.getLock(key);
+            rLock.lock(10, TimeUnit.SECONDS);
+            List<Integer> opportunityIds = new ArrayList<Integer>();
             for (UnionBrokeragePay pay : payList) {
                 Integer payStatus = pay.getStatus();
                 if (BrokerageConstant.PAY_STATUS_SUCCESS == payStatus || BrokerageConstant.PAY_STATUS_FAIL == payStatus) {
@@ -417,20 +420,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                     return JSONObject.toJSONString(result);
                 }
                 opportunityIds.add(pay.getOpportunityId());
-                busId = pay.getFromBusId();
             }
-        }catch (Exception e){
-            logger.error("", e);
-            result.put("code", -1);
-            result.put("msg", e.getMessage());
-            return JSONObject.toJSONString(result);
-        }
-        //锁
-        String key = RedissonKeyUtil.getUnionOpportunityKey(busId);
-        RLock rLock = redissonClient.getLock(key);
-        rLock.lock(10, TimeUnit.SECONDS);
-        try{
-            opportunities = unionOpportunityService.listByIdList(opportunityIds);
+            List<UnionOpportunity> opportunities = unionOpportunityService.listByIdList(opportunityIds);
             final List<UnionOpportunity> refundOpportunityList = new ArrayList<>();
             if(ListUtil.isNotEmpty(opportunities)){
                 //订单总额
@@ -511,27 +502,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                             }
                             //退款列表
                             if(ListUtil.isNotEmpty(refundOpportunityList)){
-                                UnionRefundOrder refundOrder = new UnionRefundOrder();
-                                refundOrder.setCreateTime(new Date());
-                                refundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                                refundOrder.setRefundMoney(refundFee);
-                                refundOrder.setSysOrderNo(orderNo);
-                                refundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
-                                refundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_APPLYING);
-                                unionRefundOrderService.save(refundOrder);
-
-                                List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
-                                for(UnionOpportunity opportunity : refundOpportunityList){
-                                    UnionRefundOpportunity refundOpportunity = new UnionRefundOpportunity();
-                                    refundOpportunity.setCreateTime(new Date());
-                                    refundOpportunity.setOpportunityId(opportunity.getId());
-                                    refundOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                                    refundOpportunity.setRefundOrderId(refundOrder.getId());
-                                    refundOpporList.add(refundOpportunity);
-                                }
-                                unionRefundOpportunityService.saveBatch(refundOpporList);
-                                //异步退款
-                                refundOpportunity(orderNo, refundFee, totalFee, refundOrder.getId());
+                                //去退款
+                                refundOpportunity(orderNo, refundFee, totalFee, refundOpportunityList);
                             }
                         }catch (Exception e){
                             logger.error("操作失败",e);
@@ -569,53 +541,73 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             if(rLock != null){
                 rLock.unlock();
             }
+            if(rLock1 != null){
+                rLock1.unlock();
+            }
         }
 
         return JSONObject.toJSONString(result);
     }
 
     @Async
-    private void refundOpportunity(final String orderNo, final double refundFee, double totalFee, Integer refundOrderId) {
+    private void refundOpportunity(final String orderNo, final double refundFee, double totalFee, final List<UnionOpportunity> refundOpportunityList) {
         try{
-            final GtJsonResult gtJsonResult = wxPayService.refundOrder(orderNo,refundFee, totalFee);
-            final Map data = (Map)gtJsonResult.getData();
-            final UnionRefundOrder refundOrder = unionRefundOrderService.getValidById(refundOrderId);
+            UnionRefundOrder successRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_SUCCESS, RefundOrderConstant.TYPE_OPPORTUNITY);
+            //没有退款
+            if(successRefundOrder == null){
+                final GtJsonResult gtJsonResult = wxPayService.refundOrder(orderNo,refundFee, totalFee);
+                final Map data = (Map)gtJsonResult.getData();
 
-            Boolean result = transactionTemplate.execute(new TransactionCallback<Boolean>(){
+                Boolean result = transactionTemplate.execute(new TransactionCallback<Boolean>(){
 
-                @Override
-                public Boolean doInTransaction(TransactionStatus transactionStatus) {
-                    try{
-                        UnionRefundOrder updateRefundOrder = new UnionRefundOrder();
-                        updateRefundOrder.setId(refundOrder.getId());
-                        if(gtJsonResult.isSuccess()){
-                            updateRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
-                            updateRefundOrder.setDesc("退款成功");
-                            updateRefundOrder.setModifyTime(new Date());
-                            updateRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
-                        }else {
-                            updateRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_FAIL);
-                            updateRefundOrder.setDesc(gtJsonResult.getErrorMsg());
-                            updateRefundOrder.setModifyTime(new Date());
+                    @Override
+                    public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                        try{
+                            Date currentDate = new Date();
+                            UnionRefundOrder applyRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
+                            if(applyRefundOrder == null){
+                                applyRefundOrder = new UnionRefundOrder();
+                                applyRefundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                applyRefundOrder.setCreateTime(currentDate);
+                                applyRefundOrder.setRefundMoney(refundFee);
+                                applyRefundOrder.setSysOrderNo(orderNo);
+                                applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
+                                applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                                unionRefundOrderService.save(applyRefundOrder);
+                            }
 
-                            UnionRefundOrder unionRefundOrder = new UnionRefundOrder();
-                            unionRefundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                            unionRefundOrder.setCreateTime(new Date());
-                            unionRefundOrder.setRefundMoney(refundFee);
-                            unionRefundOrder.setSysOrderNo(orderNo);
-                            unionRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
-                            unionRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_APPLYING);
-                            unionRefundOrderService.save(unionRefundOrder);
+                            if(gtJsonResult.isSuccess()){
+                                UnionRefundOrder successRefundOrder = new UnionRefundOrder();
+                                successRefundOrder.setId(applyRefundOrder.getId());
+                                successRefundOrder.setModifyTime(new Date());
+                                successRefundOrder.setDesc("退款成功");
+                                successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                                successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
+                                unionRefundOrderService.update(successRefundOrder);
+
+                                if(ListUtil.isNotEmpty(refundOpportunityList)){
+                                    List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
+                                    for(UnionOpportunity opportunity : refundOpportunityList){
+                                        UnionRefundOpportunity refundOpportunity = new UnionRefundOpportunity();
+                                        refundOpportunity.setCreateTime(new Date());
+                                        refundOpportunity.setOpportunityId(opportunity.getId());
+                                        refundOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                        refundOpportunity.setRefundOrderId(applyRefundOrder.getId());
+                                        refundOpporList.add(refundOpportunity);
+                                    }
+                                    unionRefundOpportunityService.saveBatch(refundOpporList);
+                                }
+                            }
+
+                        }catch (Exception e){
+                            logger.error("商机退款失败", e);
+                            transactionStatus.setRollbackOnly();
+                            return false;
                         }
-                        unionRefundOrderService.update(updateRefundOrder);
-                    }catch (Exception e){
-                        logger.error("商机退款失败", e);
-                        transactionStatus.setRollbackOnly();
-                        return false;
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            }
         }catch (Exception e){
             logger.error("商机退款失败", e);
         }

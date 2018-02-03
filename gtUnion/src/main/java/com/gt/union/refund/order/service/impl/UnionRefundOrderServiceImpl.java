@@ -47,4 +47,17 @@ public class UnionRefundOrderServiceImpl implements IUnionRefundOrderService {
 		}
 		unionRefundOrderDao.updateById(refundOrder);
 	}
+
+	@Override
+	public UnionRefundOrder getValidByOrderNoAndStatusAndType(String orderNo, Integer refundStatusSuccess, Integer type) throws Exception {
+		if (orderNo == null || refundStatusSuccess == null) {
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		wrapper.eq("sys_order_no", orderNo);
+		wrapper.eq("status", refundStatusSuccess);
+		wrapper.eq("type", type);
+		return unionRefundOrderDao.selectOne(wrapper);
+	}
 }
