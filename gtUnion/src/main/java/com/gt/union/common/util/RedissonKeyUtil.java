@@ -36,10 +36,10 @@ public class RedissonKeyUtil {
 
 	/**
 	 * 获取支付商机回调锁键
-	 * @param orderNo  订单号
+	 * @param busId 商家id
 	 * @return
 	 */
-	public static final String getUnionOpportunityKey(String orderNo){
-		return PropertiesUtil.redisNamePrefix() + "redisson:opportunity:" + orderNo;
+	public static final String getUnionOpportunityKey(Integer busId){
+		return PropertiesUtil.redisNamePrefix() + "redisson:opportunity:busId:" + busId;
 	}
 }
