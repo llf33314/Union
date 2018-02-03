@@ -33,6 +33,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.union.main.constant.UnionConstant;
@@ -44,12 +45,18 @@ import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.apache.log4j.Logger;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 消费核销 服务实现类
@@ -99,6 +106,12 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
     @Autowired
     private IBusUserService busUserService;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -539,8 +552,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
     //********************************************* Base On Business - update ******************************************
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(final String orderNo, String socketKey, final String payType, final String payOrderNo, final Integer isSuccess) {
         logger.info("联盟卡消费支付回调参数：" + "orderNo == " + orderNo + ",socketKey == " + socketKey + ",payType == " + payType + ",payOrderNo == " + payOrderNo + ",isSuccess == " +isSuccess);
         Map<String, Object> result = new HashMap<>(2);
         if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
@@ -550,30 +562,24 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         }
 
         // 判断consumeId有效性
-        UnionConsume consume;
+        final UnionConsume consume;
         try {
             consume = getValidByOrderNo(orderNo);
+            if (consume == null) {
+                result.put("code", -1);
+                result.put("msg", "找不到消费记录");
+                return JSONObject.toJSONString(result);
+            }
         } catch (Exception e) {
             logger.error("消费核销支付成功回调错误", e);
             result.put("code", -1);
             result.put("msg", "订单不存在");
             return JSONObject.toJSONString(result);
         }
-        if (consume == null) {
-            result.put("code", -1);
-            result.put("msg", "找不到消费记录");
-            return JSONObject.toJSONString(result);
-        }
-        boolean isIntegral = false;
-        try{
-            UnionMain main = unionMainService.getValidById(consume.getUnionId());
-            isIntegral = CommonUtil.isEmpty(main) ? false : UnionConstant.IS_INTEGRAL_YES == main.getIsIntegral() ? true: false;
-        }catch (Exception e){
-            logger.error("消费核销支付成功回调错误", e);
-            result.put("code", -1);
-            result.put("msg", e.getMessage());
-            return JSONObject.toJSONString(result);
-        }
+
+        String key = RedissonKeyUtil.getUnionConsumeOrderKey(orderNo);
+        RLock rLock = redissonClient.getLock(key);
+        rLock.lock(5, TimeUnit.SECONDS);
         // 如果consume是未支付状态，更新consume为支付成功状态，且socket通知，并返回处理成功
         Integer payStatus = consume.getPayStatus();
         if (payStatus == ConsumeConstant.PAY_STATUS_SUCCESS || payStatus == ConsumeConstant.PAY_STATUS_FAIL) {
@@ -581,60 +587,62 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             result.put("msg", "订单已重复处理");
             return JSONObject.toJSONString(result);
         } else {
-            //数据库锁
-            if(updateConsumeStatusById(consume.getId(), isSuccess == CommonConstant.COMMON_YES ? ConsumeConstant.PAY_STATUS_SUCCESS : ConsumeConstant.PAY_STATUS_FAIL)){
-                UnionConsume updateConsume = new UnionConsume();
-                updateConsume.setId(consume.getId());
-                updateConsume.setPayStatus(isSuccess == CommonConstant.COMMON_YES ? ConsumeConstant.PAY_STATUS_SUCCESS : ConsumeConstant.PAY_STATUS_FAIL);
-                if (payType.equals("0")) {
-                    updateConsume.setPayType(ConsumeConstant.PAY_TYPE_WX);
-                    updateConsume.setWxOrderNo(payOrderNo);
-                } else {
-                    updateConsume.setPayType(ConsumeConstant.PAY_TYPE_ALIPAY);
-                    updateConsume.setAlipayOrderNo(payOrderNo);
-                }
-
-                UnionCardIntegral integral;
-                try {
-                    integral = unionCardIntegralService.getValidByUnionIdAndFanId(consume.getUnionId(), consume.getFanId());
-                } catch (Exception e) {
-                    logger.error("消费核销支付成功回调错误", e);
-                    result.put("code", -1);
-                    result.put("msg", e.getMessage());
-                    return JSONObject.toJSONString(result);
-                }
-                UnionCardIntegral saveIntegral = null;
-                UnionCardIntegral updateIntegral = null;
-                if (integral == null) {
-                    saveIntegral = new UnionCardIntegral();
-                    saveIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                    saveIntegral.setCreateTime(DateUtil.getCurrentDate());
-                    saveIntegral.setFanId(consume.getFanId());
-                    saveIntegral.setUnionId(consume.getUnionId());
-                    saveIntegral.setIntegral(isIntegral ? (CommonUtil.isNotEmpty(consume.getGiveIntegral()) ? consume.getGiveIntegral(): 0) : 0);
-                } else {
-                    updateIntegral = new UnionCardIntegral();
-                    updateIntegral.setId(integral.getId());
-                    Double temIntegral = BigDecimalUtil.subtract(integral.getIntegral(), CommonUtil.isNotEmpty(consume.getUseIntegral()) ?consume.getUseIntegral() : 0).doubleValue();
-                    BigDecimal finalIntegral = BigDecimalUtil.add(temIntegral, isIntegral ? (CommonUtil.isNotEmpty(consume.getGiveIntegral()) ? consume.getGiveIntegral(): 0) : 0);
-                    updateIntegral.setIntegral(BigDecimalUtil.toDouble(finalIntegral));
-                }
-
-                try {
-                    update(updateConsume);
-                    if (saveIntegral != null) {
-                        unionCardIntegralService.save(saveIntegral);
+            GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+                @Override
+                public GtJsonResult doInTransaction(TransactionStatus transactionStatus) {
+                    UnionConsume updateConsume = new UnionConsume();
+                    updateConsume.setId(consume.getId());
+                    updateConsume.setPayStatus(isSuccess == CommonConstant.COMMON_YES ? ConsumeConstant.PAY_STATUS_SUCCESS : ConsumeConstant.PAY_STATUS_FAIL);
+                    if ("0".equals(payType)) {
+                        updateConsume.setPayType(ConsumeConstant.PAY_TYPE_WX);
+                        updateConsume.setWxOrderNo(payOrderNo);
+                    } else {
+                        updateConsume.setPayType(ConsumeConstant.PAY_TYPE_ALIPAY);
+                        updateConsume.setAlipayOrderNo(payOrderNo);
                     }
-                    if (updateIntegral != null) {
-                        unionCardIntegralService.update(updateIntegral);
-                    }
-                } catch (Exception e) {
-                    logger.error("消费核销支付成功回调错误", e);
-                    result.put("code", -1);
-                    result.put("msg", e.getMessage());
-                    return JSONObject.toJSONString(result);
-                }
 
+                    UnionCardIntegral integral;
+                    try {
+                        integral = unionCardIntegralService.getValidByUnionIdAndFanId(consume.getUnionId(), consume.getFanId());
+                    } catch (Exception e) {
+                        logger.error("消费核销支付成功回调错误", e);
+                        return GtJsonResult.instanceErrorMsg(e.getMessage());
+                    }
+                    UnionCardIntegral saveIntegral = null;
+                    UnionCardIntegral updateIntegral = null;
+                    if (integral == null) {
+                        saveIntegral = new UnionCardIntegral();
+                        saveIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                        saveIntegral.setCreateTime(DateUtil.getCurrentDate());
+                        saveIntegral.setFanId(consume.getFanId());
+                        saveIntegral.setUnionId(consume.getUnionId());
+                        saveIntegral.setIntegral(CommonUtil.isNotEmpty(consume.getGiveIntegral()) ? consume.getGiveIntegral() : 0);
+                    } else {
+                        updateIntegral = new UnionCardIntegral();
+                        updateIntegral.setId(integral.getId());
+                        Double temIntegral = BigDecimalUtil.subtract(integral.getIntegral(), CommonUtil.isNotEmpty(consume.getUseIntegral()) ?consume.getUseIntegral() : 0).doubleValue();
+                        BigDecimal finalIntegral = BigDecimalUtil.add(temIntegral, CommonUtil.isNotEmpty(consume.getGiveIntegral()) ? consume.getGiveIntegral() : 0);
+                        updateIntegral.setIntegral(BigDecimalUtil.toDouble(finalIntegral));
+                    }
+
+                    try {
+                        update(updateConsume);
+                        if (saveIntegral != null) {
+                            unionCardIntegralService.save(saveIntegral);
+                        }
+                        if (updateIntegral != null) {
+                            unionCardIntegralService.update(updateIntegral);
+                        }
+                    } catch (Exception e) {
+                        transactionStatus.setRollbackOnly();
+                        logger.error("消费核销支付成功回调错误", e);
+                        return GtJsonResult.instanceErrorMsg(e.getMessage());
+                    }
+
+                    return GtJsonResult.instanceSuccessMsg();
+                }
+            });
+            if(gtJsonResult.isSuccess()){
                 // socket通知
                 socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
                 result.put("code", 0);
@@ -642,7 +650,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 return JSONObject.toJSONString(result);
             }else {
                 result.put("code", -1);
-                result.put("msg", "订单已重复处理");
+                result.put("msg", gtJsonResult.getErrorMsg());
                 return JSONObject.toJSONString(result);
             }
         }

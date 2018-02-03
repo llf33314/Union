@@ -51,4 +51,13 @@ public class RedissonKeyUtil {
 	public static final String getUnionOpportunityBusIdKey(Integer busId){
 		return PropertiesUtil.redisNamePrefix() + "redisson:opportunity:busId:" + busId;
 	}
+
+	/**
+	 * 获取支付核销订单锁键
+	 * @param orderNo 订单号
+	 * @return
+	 */
+	public static String getUnionConsumeOrderKey(String orderNo) {
+		return PropertiesUtil.redisNamePrefix() + "redisson:consume:order:" + orderNo;
+	}
 }
