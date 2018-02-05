@@ -13,7 +13,7 @@ public class BaseException extends Exception {
     protected String errorMsg;
 
     public BaseException(String errorMsg) {
-        super();
+        super(errorMsg);
         this.errorMsg = errorMsg;
     }
 

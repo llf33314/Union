@@ -477,7 +477,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
                 // 	办理折扣卡
                 if (ListUtil.isNotEmpty(unionIdList)) {
-                    String key = RedissonKeyUtil.getUnionCardByFanId(fanId);
+                    String key = RedissonKeyUtil.getUnionCardByFanIdKey(fanId);
                     RLock rLock = redissonClient.getLock(key);
                     try{
                         rLock.lock(5, TimeUnit.SECONDS);

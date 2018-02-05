@@ -3,15 +3,15 @@ package com.gt.union.opportunity.brokerage.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.socket.SocketService;
+import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.DateUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.*;
 import com.gt.union.opportunity.brokerage.constant.BrokerageConstant;
 import com.gt.union.opportunity.brokerage.dao.IUnionBrokeragePayDao;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageIncome;
@@ -23,18 +23,30 @@ import com.gt.union.opportunity.brokerage.vo.BrokeragePayVO;
 import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
+import com.gt.union.refund.opportunity.entity.UnionRefundOpportunity;
+import com.gt.union.refund.opportunity.service.IUnionRefundOpportunityService;
+import com.gt.union.refund.order.constant.RefundOrderConstant;
+import com.gt.union.refund.order.entity.UnionRefundOrder;
+import com.gt.union.refund.order.service.IUnionRefundOrderService;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.apache.log4j.Logger;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 佣金支出 服务实现类
@@ -62,7 +74,22 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     private IUnionMemberService unionMemberService;
 
     @Autowired
+    private IUnionRefundOrderService unionRefundOrderService;
+
+    @Autowired
+    private IUnionRefundOpportunityService unionRefundOpportunityService;
+
+    @Autowired
+    private WxPayService wxPayService;
+
+    @Autowired
     private SocketService socketService;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -361,23 +388,30 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(final String orderNo, String socketKey, final String payType, final String payOrderNo, final Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
         if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
         }
-
-        // 判断payIds有效性
-        try {
+        RLock rLock = null;
+        String orderKey = RedissonKeyUtil.getUnionOpportunityOrderKey(orderNo);
+        RLock rLock1 = redissonClient.getLock(orderKey);
+        rLock1.lock(10, TimeUnit.SECONDS);
+        try{
             List<UnionBrokeragePay> payList = listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(payList)) {
                 result.put("code", -1);
                 result.put("msg", "不存在商机支付信息");
                 return JSONObject.toJSONString(result);
             }
+            Integer busId = payList.get(0).getFromBusId();
+            //锁
+            String busKey = RedissonKeyUtil.getUnionOpportunityBusIdKey(busId);
+            rLock = redissonClient.getLock(busKey);
+            rLock.lock(10, TimeUnit.SECONDS);
+            List<Integer> opportunityIds = new ArrayList<Integer>();
             for (UnionBrokeragePay pay : payList) {
                 Integer payStatus = pay.getStatus();
                 if (BrokerageConstant.PAY_STATUS_SUCCESS == payStatus || BrokerageConstant.PAY_STATUS_FAIL == payStatus) {
@@ -385,76 +419,202 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                     result.put("msg", "重复处理");
                     return JSONObject.toJSONString(result);
                 }
+                opportunityIds.add(pay.getOpportunityId());
             }
+            List<UnionOpportunity> opportunities = unionOpportunityService.listByIdList(opportunityIds);
+            final List<UnionOpportunity> refundOpportunityList = new ArrayList<>();
+            if(ListUtil.isNotEmpty(opportunities)){
+                //订单总额
+                double totalMoney = 0d;
+                //退款金额
+                double refundMoney = 0d;
+                final Date currentDate = DateUtil.getCurrentDate();
+                final List<UnionOpportunity> updateOpportunityList = new ArrayList<>();
+                final List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
+                final List<Integer> opportunityIdList = new ArrayList<Integer>();
+                for(UnionOpportunity opportunity : opportunities){
+                    totalMoney = BigDecimalUtil.add(totalMoney, opportunity.getBrokerageMoney()).doubleValue();
+                    if(CommonConstant.COMMON_YES == opportunity.getIsClose()){
+                        //已结算  需退款
+                        refundMoney = BigDecimalUtil.add(refundMoney, opportunity.getBrokerageMoney()).doubleValue();
+                        refundOpportunityList.add(opportunity);
+                    }else {
+                        //未结算
+                        opportunityIdList.add(opportunity.getId());
 
-            List<UnionBrokeragePay> updatePayList = new ArrayList<>();
-            List<UnionOpportunity> updateOpportunityList = new ArrayList<>();
-            List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
-            Date currentDate = DateUtil.getCurrentDate();
-            for (UnionBrokeragePay pay : payList) {
-                //商机订单状态
-                UnionBrokeragePay updatePay = new UnionBrokeragePay();
-                updatePay.setId(pay.getId());
-                updatePay.setStatus(CommonConstant.COMMON_YES == isSuccess ? BrokerageConstant.PAY_STATUS_SUCCESS : BrokerageConstant.PAY_STATUS_FAIL);
-                if (payType.equals("0")) {
-                    updatePay.setType(BrokerageConstant.PAY_TYPE_WX);
-                    updatePay.setWxOrderNo(payOrderNo);
-                } else {
-                    updatePay.setType(BrokerageConstant.PAY_TYPE_ALIPAY);
-                    updatePay.setAlipayOrderNo(payOrderNo);
+                        //商机结算状态
+                        UnionOpportunity updateOpportunity = new UnionOpportunity();
+                        updateOpportunity.setId(opportunity.getId());
+                        updateOpportunity.setIsClose(CommonConstant.COMMON_YES);
+                        updateOpportunityList.add(updateOpportunity);
+
+                        //支付成功 添加商机收入
+                        if (CommonConstant.COMMON_YES == isSuccess) {
+                            UnionMember member = unionMemberService.getById(opportunity.getFromMemberId());
+                            UnionBrokerageIncome saveIncome = new UnionBrokerageIncome();
+                            saveIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                            saveIncome.setCreateTime(currentDate);
+                            saveIncome.setType(BrokerageConstant.INCOME_TYPE_OPPORTUNITY);
+                            saveIncome.setMoney(opportunity.getBrokerageMoney());
+                            saveIncome.setBusId(member.getBusId());
+                            saveIncome.setMemberId(opportunity.getFromMemberId());
+                            saveIncome.setUnionId(opportunity.getUnionId());
+                            saveIncome.setOpportunityId(opportunity.getId());
+                            saveIncomeList.add(saveIncome);
+                        }
+                    }
                 }
-                updatePayList.add(updatePay);
+                final double refundFee = refundMoney;
+                final double totalFee = totalMoney;
+                //事务
+                GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
 
-                //更新商机状态
-                UnionOpportunity updateOpportunity = new UnionOpportunity();
-                updateOpportunity.setId(pay.getOpportunityId());
-                updateOpportunity.setIsClose(CommonConstant.COMMON_YES);
-                updateOpportunityList.add(updateOpportunity);
+                    @Override
+                    public GtJsonResult doInTransaction(TransactionStatus status) {
 
-                //
-                if (CommonConstant.COMMON_YES == isSuccess) {
-                    UnionBrokerageIncome saveIncome = new UnionBrokerageIncome();
-                    saveIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                    saveIncome.setCreateTime(currentDate);
-                    saveIncome.setType(BrokerageConstant.INCOME_TYPE_OPPORTUNITY);
-                    saveIncome.setMoney(pay.getMoney());
-                    saveIncome.setBusId(pay.getToBusId());
-                    saveIncome.setMemberId(pay.getToMemberId());
-                    saveIncome.setUnionId(pay.getUnionId());
-                    saveIncome.setOpportunityId(pay.getOpportunityId());
-                    saveIncomeList.add(saveIncome);
+                        try{
+                            //更新订单状态
+                            if (ListUtil.isNotEmpty(opportunityIdList)) {
+                                EntityWrapper wrapper = new EntityWrapper<>();
+                                wrapper.eq("sys_order_no", orderNo);
+                                wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+                                wrapper.eq("status", ConsumeConstant.PAY_STATUS_PAYING);
+                                wrapper.in("opportunity_id", opportunityIdList);
+
+                                UnionBrokeragePay pay = new UnionBrokeragePay();
+                                pay.setStatus(CommonConstant.COMMON_YES == isSuccess ? BrokerageConstant.PAY_STATUS_SUCCESS : BrokerageConstant.PAY_STATUS_FAIL);
+                                if ("0".equals(payType)) {
+                                    pay.setType(BrokerageConstant.PAY_TYPE_WX);
+                                    pay.setWxOrderNo(payOrderNo);
+                                } else {
+                                    pay.setType(BrokerageConstant.PAY_TYPE_ALIPAY);
+                                    pay.setAlipayOrderNo(payOrderNo);
+                                }
+                                unionBrokeragePayDao.update(pay, wrapper);
+                            }
+                            //添加商机收入
+                            if (ListUtil.isNotEmpty(saveIncomeList)) {
+                                unionBrokerageIncomeService.saveBatch(saveIncomeList);
+                            }
+                            //更新商机结算状态
+                            if (ListUtil.isNotEmpty(updateOpportunityList)) {
+                                unionOpportunityService.updateBatch(updateOpportunityList);
+                            }
+                            //退款列表
+                            if(ListUtil.isNotEmpty(refundOpportunityList)){
+                                //去退款
+                                refundOpportunity(orderNo, refundFee, totalFee, refundOpportunityList);
+                            }
+                        }catch (Exception e){
+                            logger.error("操作失败",e);
+                            status.setRollbackOnly();
+                            return GtJsonResult.instanceErrorMsg(e.getMessage());
+                        }
+                        return GtJsonResult.instanceSuccessMsg();
+                    }
+                });
+                if(gtJsonResult.isSuccess()){
+                    //成功
+                    // socket通知
+                    if (StringUtil.isNotEmpty(socketKey)) {
+                        socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
+                    }
+                    result.put("code", 0);
+                    result.put("msg", "成功");
+                }else {
+                    //异常
+                    result.put("code", -1);
+                    result.put("msg", gtJsonResult.getErrorMsg());
+                    return JSONObject.toJSONString(result);
                 }
+            }else {
+                result.put("code", -1);
+                result.put("msg", "不存在商机信息");
+                return JSONObject.toJSONString(result);
             }
-
-            if (ListUtil.isNotEmpty(updatePayList)) {
-                updateBatch(updatePayList);
-            }
-            if (ListUtil.isNotEmpty(saveIncomeList)) {
-                unionBrokerageIncomeService.saveBatch(saveIncomeList);
-            }
-            if (ListUtil.isNotEmpty(updateOpportunityList)) {
-                unionOpportunityService.updateBatch(updateOpportunityList);
-            }
-            for (UnionBrokeragePay pay : payList) {
-
-            }
-            List<Integer> opIds = new ArrayList<Integer>();
-
-
-            // socket通知
-            if (StringUtil.isNotEmpty(socketKey)) {
-                socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
-            }
-            result.put("code", 0);
-            result.put("msg", "成功");
-            return JSONObject.toJSONString(result);
-        } catch (Exception e) {
+        }catch (Exception e) {
             logger.error("", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
+        }finally {
+            if(rLock != null){
+                rLock.unlock();
+            }
+            if(rLock1 != null){
+                rLock1.unlock();
+            }
+        }
+
+        return JSONObject.toJSONString(result);
+    }
+
+    @Async
+    private void refundOpportunity(final String orderNo, final double refundFee, final double totalFee, final List<UnionOpportunity> refundOpportunityList) {
+        try{
+            UnionRefundOrder successRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_SUCCESS, RefundOrderConstant.TYPE_OPPORTUNITY);
+            //没有退款
+            if(successRefundOrder == null){
+                final GtJsonResult gtJsonResult = wxPayService.refundOrder(orderNo,refundFee, totalFee);
+                final Map data = (Map)gtJsonResult.getData();
+
+                Boolean result = transactionTemplate.execute(new TransactionCallback<Boolean>(){
+
+                    @Override
+                    public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                    try{
+                        Date currentDate = new Date();
+                        UnionRefundOrder applyRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
+                        if(applyRefundOrder == null){
+                            applyRefundOrder = new UnionRefundOrder();
+                            applyRefundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                            applyRefundOrder.setCreateTime(currentDate);
+                            applyRefundOrder.setRefundMoney(refundFee);
+                            applyRefundOrder.setSysOrderNo(orderNo);
+                            applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
+                            applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                            applyRefundOrder.setTotalMoney(totalFee);
+                            unionRefundOrderService.save(applyRefundOrder);
+
+                            if(ListUtil.isNotEmpty(refundOpportunityList)){
+                                List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
+                                for(UnionOpportunity opportunity : refundOpportunityList){
+                                    UnionRefundOpportunity refundOpportunity = new UnionRefundOpportunity();
+                                    refundOpportunity.setCreateTime(new Date());
+                                    refundOpportunity.setOpportunityId(opportunity.getId());
+                                    refundOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                    refundOpportunity.setRefundOrderId(applyRefundOrder.getId());
+                                    refundOpporList.add(refundOpportunity);
+                                }
+                                unionRefundOpportunityService.saveBatch(refundOpporList);
+                            }
+                        }
+
+                        if(gtJsonResult.isSuccess()){
+                            UnionRefundOrder successRefundOrder = new UnionRefundOrder();
+                            successRefundOrder.setId(applyRefundOrder.getId());
+                            successRefundOrder.setModifyTime(new Date());
+                            successRefundOrder.setDesc("退款成功");
+                            successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                            successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
+                            unionRefundOrderService.update(successRefundOrder);
+                        }
+
+                    }catch (Exception e){
+                        logger.error("商机退款失败", e);
+                        transactionStatus.setRollbackOnly();
+                        return false;
+                    }
+                    return true;
+                    }
+                });
+            }
+        }catch (Exception e){
+            logger.error("商机退款失败", e);
         }
     }
+
+
 
     //********************************************* Base On Business - other *******************************************
 

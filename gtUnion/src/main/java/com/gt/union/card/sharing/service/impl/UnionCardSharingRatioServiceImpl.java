@@ -15,6 +15,7 @@ import com.gt.union.card.sharing.vo.CardSharingRatioVO;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
@@ -28,7 +29,10 @@ import org.redisson.api.RedissonClient;
 import org.redisson.client.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -59,6 +63,9 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
     @Autowired
     private RedissonClient redissonClient;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -242,75 +249,87 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void autoEqualDivisionRatio(List<UnionCardProject> projectList) throws Exception {
+    public void autoEqualDivisionRatio(final List<UnionCardProject> projectList) throws Exception {
         if (projectList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         UnionCardProject project = projectList.get(0);
-        Integer activityId = project.getActivityId();
-        Integer unionId = project.getUnionId();
-        UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
-        String autoEqualDivisionRatioLockKey = UnionCardSharingRatioCacheUtil.getAutoEqualDivisionRatioLockKey();
-        RLock rLock = redissonClient.getLock(autoEqualDivisionRatioLockKey);
-        try {
-            rLock.lock(5, TimeUnit.SECONDS);
-            if (!existValidByUnionIdAndActivityId(unionId, activityId) && activity.getSellBeginTime().compareTo(DateUtil.getCurrentDate()) < 0) {
-                Date currentDate = DateUtil.getCurrentDate();
-                boolean isIncludeUnionOwnerId = unionCardProjectService.existUnionOwnerId(projectList);
-                projectList = unionCardProjectService.filterInvalidMemberId(projectList);
+        final Integer activityId = project.getActivityId();
+        final Integer unionId = project.getUnionId();
+        final UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
+        GtJsonResult result = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+            @Override
+            public GtJsonResult doInTransaction(TransactionStatus transactionStatus) {
+                String autoEqualDivisionRatioLockKey = UnionCardSharingRatioCacheUtil.getAutoEqualDivisionRatioLockKey();
+                RLock rLock = redissonClient.getLock(autoEqualDivisionRatioLockKey);
+                try {
+                    rLock.lock(10, TimeUnit.SECONDS);
+                    if (!existValidByUnionIdAndActivityId(unionId, activityId) && activity.getSellBeginTime().compareTo(DateUtil.getCurrentDate()) < 0) {
+                        Date currentDate = DateUtil.getCurrentDate();
+                        boolean isIncludeUnionOwnerId = unionCardProjectService.existUnionOwnerId(projectList);
+                        List<UnionCardProject> newProjectList = unionCardProjectService.filterInvalidMemberId(projectList);
 
-                List<UnionCardSharingRatio> saveSharingRatioList = new ArrayList<>();
-                if (ListUtil.isNotEmpty(projectList)) {
-                    int size = projectList.size();
-                    BigDecimal averageSharingRatio = BigDecimalUtil.divide(1.0, Double.valueOf(size));
-                    BigDecimal sharedRatioSum = BigDecimal.ZERO;
-                    for (int i = size - 1; i >= 0; i--) {
-                        UnionCardProject tempProject = projectList.get(i);
+                        List<UnionCardSharingRatio> saveSharingRatioList = new ArrayList<>();
+                        if (ListUtil.isNotEmpty(newProjectList)) {
+                            int size = newProjectList.size();
+                            BigDecimal averageSharingRatio = BigDecimalUtil.divide(1.0, Double.valueOf(size));
+                            BigDecimal sharedRatioSum = BigDecimal.ZERO;
+                            for (int i = size - 1; i >= 0; i--) {
+                                UnionCardProject tempProject = newProjectList.get(i);
 
-                        UnionCardSharingRatio saveSharingRatio = new UnionCardSharingRatio();
-                        saveSharingRatio.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                        saveSharingRatio.setCreateTime(currentDate);
-                        saveSharingRatio.setUnionId(unionId);
-                        saveSharingRatio.setMemberId(tempProject.getMemberId());
-                        saveSharingRatio.setActivityId(activityId);
-                        saveSharingRatio.setRatio(BigDecimalUtil.toDouble(averageSharingRatio));
-                        saveSharingRatioList.add(saveSharingRatio);
+                                UnionCardSharingRatio saveSharingRatio = new UnionCardSharingRatio();
+                                saveSharingRatio.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                saveSharingRatio.setCreateTime(currentDate);
+                                saveSharingRatio.setUnionId(unionId);
+                                saveSharingRatio.setMemberId(tempProject.getMemberId());
+                                saveSharingRatio.setActivityId(activityId);
+                                saveSharingRatio.setRatio(BigDecimalUtil.toDouble(averageSharingRatio));
+                                saveSharingRatioList.add(saveSharingRatio);
 
-                        sharedRatioSum = BigDecimalUtil.add(sharedRatioSum, averageSharingRatio);
-                    }
-                    BigDecimal surplusRatio = BigDecimalUtil.subtract(1.0, sharedRatioSum);
-                    if (surplusRatio.doubleValue() > 0) {
-                        if (isIncludeUnionOwnerId) {
-                            for (UnionCardSharingRatio sharingRatio : saveSharingRatioList) {
-                                UnionMember tempMember = unionMemberService.getValidReadById(sharingRatio.getMemberId());
-                                if (tempMember != null && MemberConstant.IS_UNION_OWNER_YES == tempMember.getIsUnionOwner()) {
-                                    BigDecimal ratio = BigDecimalUtil.add(sharingRatio.getRatio(), surplusRatio);
-                                    sharingRatio.setRatio(BigDecimalUtil.toDouble(ratio));
-                                    break;
+                                sharedRatioSum = BigDecimalUtil.add(sharedRatioSum, averageSharingRatio);
+                            }
+                            BigDecimal surplusRatio = BigDecimalUtil.subtract(1.0, sharedRatioSum);
+                            if (surplusRatio.doubleValue() > 0) {
+                                if (isIncludeUnionOwnerId) {
+                                    for (UnionCardSharingRatio sharingRatio : saveSharingRatioList) {
+                                        UnionMember tempMember = unionMemberService.getValidReadById(sharingRatio.getMemberId());
+                                        if (tempMember != null && MemberConstant.IS_UNION_OWNER_YES == tempMember.getIsUnionOwner()) {
+                                            BigDecimal ratio = BigDecimalUtil.add(sharingRatio.getRatio(), surplusRatio);
+                                            sharingRatio.setRatio(BigDecimalUtil.toDouble(ratio));
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    BigDecimal ratio = BigDecimalUtil.add(saveSharingRatioList.get(0).getRatio(), surplusRatio);
+                                    saveSharingRatioList.get(0).setRatio(BigDecimalUtil.toDouble(ratio));
                                 }
                             }
                         } else {
-                            BigDecimal ratio = BigDecimalUtil.add(saveSharingRatioList.get(0).getRatio(), surplusRatio);
-                            saveSharingRatioList.get(0).setRatio(BigDecimalUtil.toDouble(ratio));
+                            UnionCardSharingRatio saveSharingRatio = new UnionCardSharingRatio();
+                            saveSharingRatio.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                            saveSharingRatio.setCreateTime(currentDate);
+                            saveSharingRatio.setUnionId(unionId);
+                            saveSharingRatio.setMemberId(unionMemberService.getValidOwnerByUnionId(unionId).getId());
+                            saveSharingRatio.setActivityId(activityId);
+                            saveSharingRatio.setRatio(1.0);
+                            saveSharingRatioList.add(saveSharingRatio);
                         }
-                    }
-                } else {
-                    UnionCardSharingRatio saveSharingRatio = new UnionCardSharingRatio();
-                    saveSharingRatio.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                    saveSharingRatio.setCreateTime(currentDate);
-                    saveSharingRatio.setUnionId(unionId);
-                    saveSharingRatio.setMemberId(unionMemberService.getValidOwnerByUnionId(unionId).getId());
-                    saveSharingRatio.setActivityId(activityId);
-                    saveSharingRatio.setRatio(1.0);
-                    saveSharingRatioList.add(saveSharingRatio);
-                }
 
-                saveBatch(saveSharingRatioList);
+                        saveBatch(saveSharingRatioList);
+                    }
+                } catch (Exception e){
+                    transactionStatus.setRollbackOnly();
+                    return GtJsonResult.instanceErrorMsg();
+                }finally {
+                    rLock.unlock();
+                }
+                return null;
             }
-        } finally {
-            rLock.unlock();
+        });
+
+        if(result != null){
+            throw new Exception();
         }
 
     }

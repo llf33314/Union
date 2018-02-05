@@ -1,5 +1,9 @@
 package com.gt.union.refund.opportunity.service;
 
+import com.gt.union.refund.opportunity.entity.UnionRefundOpportunity;
+
+import java.util.List;
+
 /**
  * 服务接口
  *
@@ -8,4 +12,9 @@ package com.gt.union.refund.opportunity.service;
  */
 public interface IUnionRefundOpportunityService {
 
+	/**
+	 * 批量插入商机退款列表
+	 * @param refundOpportunityList
+	 */
+	void saveBatch(List<UnionRefundOpportunity> refundOpportunityList) throws Exception;
 }

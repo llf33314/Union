@@ -46,4 +46,13 @@ public interface WxPayService {
 	 * @return
 	 */
 	GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource) throws Exception;
+
+	/**
+	 * 退款
+	 * @param sysOrderNo	支付订单号
+	 * @param refundFee		退款金额
+	 * @param totalFee		总金额
+	 * @return
+	 */
+	GtJsonResult refundOrder(String sysOrderNo, Double refundFee, Double totalFee);
 }

@@ -64,6 +64,10 @@ public class UnionRefundOrder extends Model<UnionRefundOrder> {
     @TableField("refund_order_no")
     private String refundOrderNo;
 
+    @ApiModelProperty(value = "订单总金额")
+    @TableField("total_money")
+    private Double totalMoney;
+
     /**
      * 退款金额
      */
@@ -139,6 +143,14 @@ public class UnionRefundOrder extends Model<UnionRefundOrder> {
 
     public void setRefundOrderNo(String refundOrderNo) {
         this.refundOrderNo = refundOrderNo;
+    }
+
+    public Double getTotalMoney() {
+        return totalMoney;
+    }
+
+    public void setTotalMoney(Double totalMoney) {
+        this.totalMoney = totalMoney;
     }
 
     public Double getRefundMoney() {
