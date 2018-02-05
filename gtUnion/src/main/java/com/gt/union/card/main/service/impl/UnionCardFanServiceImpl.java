@@ -317,7 +317,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             }
             return fan;
         } finally {
-            if (key != null) {
+            if (rLock != null) {
                 rLock.unlock();
             }
         }
