@@ -76,11 +76,11 @@ public class UnionVerifierController {
     @ApiOperation(value = "新增平台管理者", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String save(
-            HttpServletRequest request,
-            @ApiParam(value = "验证码", name = "code", required = true)
-            @RequestParam(value = "code") String code,
-            @ApiParam(value = "表单信息", name = "verifier", required = true)
-            @RequestBody UnionVerifier verifier) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "验证码", name = "code", required = true)
+        @RequestParam(value = "code") String code,
+        @ApiParam(value = "表单信息", name = "verifier", required = true)
+        @RequestBody UnionVerifier verifier) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -97,9 +97,9 @@ public class UnionVerifierController {
     @ApiOperation(value = "删除平台管理者", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{verifierId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
     public String removeById(
-            HttpServletRequest request,
-            @ApiParam(value = "平台管理者id", name = "verifierId", required = true)
-            @PathVariable("verifierId") Integer verifierId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "平台管理者id", name = "verifierId", required = true)
+        @PathVariable("verifierId") Integer verifierId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

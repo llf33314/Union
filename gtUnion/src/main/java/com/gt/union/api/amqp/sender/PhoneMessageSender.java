@@ -19,7 +19,7 @@ import java.util.UUID;
  * @version 2017-10-19 16:27:37
  */
 @Component
-public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnCallback{
+public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnCallback {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -30,7 +30,7 @@ public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, Rabbi
     public void sendMsg(SmsMessage smsMessage) {
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
         this.rabbitTemplate.convertAndSend(amqpConfig.getUnionExchange(), amqpConfig.getUnionRoutPhoneKey(),
-                smsMessage.toString(), correlationData);
+            smsMessage.toString(), correlationData);
         rabbitTemplate.setConfirmCallback(this);
         rabbitTemplate.setReturnCallback(this);
     }
@@ -47,11 +47,11 @@ public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, Rabbi
 
     @Override
     public void returnedMessage(Message message, int i, String s, String s1, String s2) {
-        try{
+        try {
             String msg = new String(message.getBody(), "UTF-8");
             System.out.println(msg);
             System.out.println("消息找不到队列");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("数据转换异常");
         }
 

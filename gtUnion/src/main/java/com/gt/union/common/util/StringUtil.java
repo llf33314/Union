@@ -80,5 +80,5 @@ public class StringUtil {
     public static boolean isEmail(String str) {
         return Pattern.matches(EMAIL_PATTERN, str);
     }
-    
+
 }

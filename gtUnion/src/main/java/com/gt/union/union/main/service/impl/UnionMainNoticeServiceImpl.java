@@ -246,7 +246,7 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
         // (2)db
         EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainNoticeDao.selectList(entityWrapper);
         setValidCache(result, unionId, UnionMainNoticeCacheUtil.TYPE_UNION_ID);
         return result;
@@ -268,7 +268,7 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
         // (2)db
         EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainNoticeDao.selectList(entityWrapper);
         setInvalidCache(result, unionId, UnionMainNoticeCacheUtil.TYPE_UNION_ID);
         return result;

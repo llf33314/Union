@@ -65,20 +65,20 @@ public class PhoneMessageReceiver {
 
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-                try{
+                try {
                     String msg = new String(message.getBody(), "UTF-8");
                     logger.info(msg);
-                    if(msg.indexOf("tmplId") > -1){
+                    if (msg.indexOf("tmplId") > -1) {
                         TemplateSmsMessage templateSmsMessage = JSONArray.parseObject(msg, TemplateSmsMessage.class);
                         smsService.sendTempSms(templateSmsMessage);
-                    }else {
+                    } else {
                         PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
                         smsService.sendSms(phoneMessage);
                     }
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     logger.error("发送短信错误");
-                }finally {
+                } finally {
                     //确认消息成功消费
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                 }

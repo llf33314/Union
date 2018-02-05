@@ -100,8 +100,8 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
 
         EntityWrapper<UnionMainPackage> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("level", level)
-                .orderBy("year", true);
+            .eq("level", level)
+            .orderBy("year", true);
 
         return unionMainPackageDao.selectList(entityWrapper);
     }

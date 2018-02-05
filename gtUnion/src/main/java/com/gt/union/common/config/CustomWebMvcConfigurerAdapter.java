@@ -31,14 +31,14 @@ public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureMessageConverters(
-            List<HttpMessageConverter<?>> converters) {
+        List<HttpMessageConverter<?>> converters) {
         super.configureMessageConverters(converters);
         converters.add(responseBodyConverter());
     }
 
     @Override
     public void configureContentNegotiation(
-            ContentNegotiationConfigurer configurer) {
+        ContentNegotiationConfigurer configurer) {
         configurer.favorPathExtension(false);
     }
 

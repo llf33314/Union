@@ -35,66 +35,67 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class BusUserApiController {
 
-	private Logger logger = LoggerFactory.getLogger(BusUserApiController.class);
+    private Logger logger = LoggerFactory.getLogger(BusUserApiController.class);
 
-	@Autowired
-	private IBusUserService busUserService;
+    @Autowired
+    private IBusUserService busUserService;
 
-	@Autowired
-	private MemberService memberService;
+    @Autowired
+    private MemberService memberService;
 
-	@Autowired
-	private SocketService socketService;
+    @Autowired
+    private SocketService socketService;
 
-	@ApiOperation(value = "获取商家公众号信息 如果为null，表示没有公众号信息，有则返回商家公众号id", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/wxPublicUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult getWxPublicUserByBusId(HttpServletRequest request) throws Exception {
-		BusUser busUser = SessionUtils.getLoginUser(request);
-		Integer busId = busUser.getId();
-		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			busId = busUser.getPid();
-		}
-		WxPublicUsers publicUsers = busUserService.getWxPublicUserByBusId(busId);
-		return GtJsonResult.instanceSuccessMsg(publicUsers == null ? null : publicUsers.getId());
-	}
-
-
-	@ApiOperation(value = "获取商家公众号二维码链接", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/wxPublicUserQRCode/{publicId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult getWxPublicUserQRCode(HttpServletRequest request,
-					  @ApiParam(value = "商家公众号id", name = "publicId", required = true)
-					  @PathVariable(value = "publicId") Integer publicId) throws Exception {
-		BusUser busUser = SessionUtils.getLoginUser(request);
-		Integer busId = busUser.getId();
-		Integer extendId = busId;
-		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			busId = busUser.getPid();
-		}
-		String socketKey = PropertiesUtil.getSocketKey() + "qrCode_" + extendId;
-		String qrCodeUrl = busUserService.getWxPublicUserQRCode(publicId, busId, extendId);
-		Map<String,Object> data = new HashMap<String,Object>();
-		data.put("qrCodeUrl", qrCodeUrl);
-		data.put("qrCodeSocketKey", socketKey);
-		return GtJsonResult.instanceSuccessMsg(data);
-	}
+    @ApiOperation(value = "获取商家公众号信息 如果为null，表示没有公众号信息，有则返回商家公众号id", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/wxPublicUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult getWxPublicUserByBusId(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        WxPublicUsers publicUsers = busUserService.getWxPublicUserByBusId(busId);
+        return GtJsonResult.instanceSuccessMsg(publicUsers == null ? null : publicUsers.getId());
+    }
 
 
-	/**
-	 * 关注推送回调
-	 * @param request
-	 * @param param
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/79B4DE7C/followCallback", produces = "application/json;charset=UTF-8")
-	public void wxPublicUserFollowCallback(HttpServletRequest request,
-											  @RequestBody Map<String,Object> param) throws Exception {
-		Member member = memberService.getById(CommonUtil.toInteger(param.get("memberId")));
-		Map<String,Object> data = new HashMap<String,Object>();
-		data.put("nickName", StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
-		data.put("memberId",member.getId());
-		data.put("headurl",member.getHeadimgurl());
-		data.put("time", DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm"));
-		logger.info("关注回调----------" + JSON.toJSONString(data));
-		socketService.socketCommonSendMessage(PropertiesUtil.getSocketKey() + "qrCode_" + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
-	}
+    @ApiOperation(value = "获取商家公众号二维码链接", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/wxPublicUserQRCode/{publicId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult getWxPublicUserQRCode(HttpServletRequest request,
+                                              @ApiParam(value = "商家公众号id", name = "publicId", required = true)
+                                              @PathVariable(value = "publicId") Integer publicId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        Integer extendId = busId;
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        String socketKey = PropertiesUtil.getSocketKey() + "qrCode_" + extendId;
+        String qrCodeUrl = busUserService.getWxPublicUserQRCode(publicId, busId, extendId);
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("qrCodeUrl", qrCodeUrl);
+        data.put("qrCodeSocketKey", socketKey);
+        return GtJsonResult.instanceSuccessMsg(data);
+    }
+
+
+    /**
+     * 关注推送回调
+     *
+     * @param request
+     * @param param
+     * @throws Exception
+     */
+    @RequestMapping(value = "/79B4DE7C/followCallback", produces = "application/json;charset=UTF-8")
+    public void wxPublicUserFollowCallback(HttpServletRequest request,
+                                           @RequestBody Map<String, Object> param) throws Exception {
+        Member member = memberService.getById(CommonUtil.toInteger(param.get("memberId")));
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("nickName", StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
+        data.put("memberId", member.getId());
+        data.put("headurl", member.getHeadimgurl());
+        data.put("time", DateTimeKit.format(new Date(), "yyyy-MM-dd HH:mm"));
+        logger.info("关注回调----------" + JSON.toJSONString(data));
+        socketService.socketCommonSendMessage(PropertiesUtil.getSocketKey() + "qrCode_" + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data), "");
+    }
 }

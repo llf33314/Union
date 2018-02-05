@@ -30,22 +30,22 @@ import java.util.List;
 @RequestMapping("/jxc/api")
 public class JxcProductController {
 
-	@Autowired
-	private JxcProductService jxcProductService;
+    @Autowired
+    private JxcProductService jxcProductService;
 
-	@ApiOperation(value = "分页：获取商家进销存商品信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/list/jxcProduct", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult<Page<List<JxcProduct>>> listJxcProductPage(
-			HttpServletRequest request, Page page,
-			@ApiParam(value = "门店id", name = "shopId", required = true)
-			@RequestParam(value = "shopId") Integer shopId,
-			@ApiParam(value = "商品分类id", name = "classId")
-			@RequestParam(value = "classId", required = false) Integer classId,
-			@ApiParam(value = "搜索条件(名称/条码/编码/全拼码)", name = "search")
-			@RequestParam(value = "search", required = false) String search) throws Exception {
-		Page<List<JxcProduct>> resultPage = jxcProductService.listProductByShopIdAndClassIdAndSearchPage(shopId, classId, search, page.getCurrent(), page.getSize());
-		return GtJsonResult.instanceSuccessMsg(resultPage);
-	}
+    @ApiOperation(value = "分页：获取商家进销存商品信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list/jxcProduct", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Page<List<JxcProduct>>> listJxcProductPage(
+        HttpServletRequest request, Page page,
+        @ApiParam(value = "门店id", name = "shopId", required = true)
+        @RequestParam(value = "shopId") Integer shopId,
+        @ApiParam(value = "商品分类id", name = "classId")
+        @RequestParam(value = "classId", required = false) Integer classId,
+        @ApiParam(value = "搜索条件(名称/条码/编码/全拼码)", name = "search")
+        @RequestParam(value = "search", required = false) String search) throws Exception {
+        Page<List<JxcProduct>> resultPage = jxcProductService.listProductByShopIdAndClassIdAndSearchPage(shopId, classId, search, page.getCurrent(), page.getSize());
+        return GtJsonResult.instanceSuccessMsg(resultPage);
+    }
 
 
 }

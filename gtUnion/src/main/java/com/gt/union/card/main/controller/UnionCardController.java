@@ -72,13 +72,13 @@ public class UnionCardController {
     @ApiOperation(value = "财务-数据统计-联盟折扣卡领卡统计", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/discountCard/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getDiscountCardStatisticsVO(
-            HttpServletRequest request,
-            @ApiParam(value = "1:按天统计;2:按月统计", name = "type", required = true)
-            @RequestParam(value = "type") Integer type,
-            @ApiParam(value = "统计开始时间", name = "beginTime", required = true)
-            @RequestParam(value = "beginTime") Long beginTime,
-            @ApiParam(value = "统计结束时间", name = "endTime")
-            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "1:按天统计;2:按月统计", name = "type", required = true)
+        @RequestParam(value = "type") Integer type,
+        @ApiParam(value = "统计开始时间", name = "beginTime", required = true)
+        @RequestParam(value = "beginTime") Long beginTime,
+        @ApiParam(value = "统计结束时间", name = "endTime")
+        @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -140,9 +140,9 @@ public class UnionCardController {
     @ApiOperation(value = "前台-办理联盟卡-校验手机验证码", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/apply/phone", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String checkCardPhoneVO(
-            HttpServletRequest request,
-            @ApiParam(value = "表单内容", name = "cardPhoneVO", required = true)
-            @RequestBody CardPhoneVO vo) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "表单内容", name = "cardPhoneVO", required = true)
+        @RequestBody CardPhoneVO vo) throws Exception {
         // mock
         CardPhoneResponseVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
@@ -156,9 +156,9 @@ public class UnionCardController {
     @ApiOperation(value = "前台-办理联盟卡-确定", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/apply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveApplyByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "办理联盟卡对象", name = "applyPostVO", required = true)
-            @RequestBody CardPhoneResponseVO applyPostVO) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "办理联盟卡对象", name = "applyPostVO", required = true)
+        @RequestBody CardPhoneResponseVO applyPostVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

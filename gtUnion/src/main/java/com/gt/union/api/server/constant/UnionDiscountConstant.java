@@ -6,13 +6,13 @@ package com.gt.union.api.server.constant;
  **/
 public interface UnionDiscountConstant {
 
-	/**
-	 * //不显示
-	 */
-	int UNION_DISCOUNT_CODE_NON = -1;
+    /**
+     * //不显示
+     */
+    int UNION_DISCOUNT_CODE_NON = -1;
 
-	/**
-	 * //返回折扣
-	 */
-	int UNION_DISCOUNT_CODE_SUCCESS = 1;
+    /**
+     * //返回折扣
+     */
+    int UNION_DISCOUNT_CODE_SUCCESS = 1;
 }

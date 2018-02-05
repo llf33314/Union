@@ -50,20 +50,20 @@ public class UnionConsumeController {
     @ApiOperation(value = "分页：前台-消费核销记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageConsumeVO(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId,
-            @ApiParam(value = "门店id", name = "shopId")
-            @RequestParam(value = "shopId", required = false) Integer shopId,
-            @ApiParam(value = "卡号", name = "cardNumber")
-            @RequestParam(value = "cardNumber", required = false) String cardNumber,
-            @ApiParam(value = "手机号", name = "phone")
-            @RequestParam(value = "phone", required = false) String phone,
-            @ApiParam(value = "开始时间", name = "beginTime")
-            @RequestParam(value = "beginTime", required = false) Long beginTime,
-            @ApiParam(value = "结束时间", name = "endTime")
-            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @RequestParam(value = "unionId", required = false) Integer unionId,
+        @ApiParam(value = "门店id", name = "shopId")
+        @RequestParam(value = "shopId", required = false) Integer shopId,
+        @ApiParam(value = "卡号", name = "cardNumber")
+        @RequestParam(value = "cardNumber", required = false) String cardNumber,
+        @ApiParam(value = "手机号", name = "phone")
+        @RequestParam(value = "phone", required = false) String phone,
+        @ApiParam(value = "开始时间", name = "beginTime")
+        @RequestParam(value = "beginTime", required = false) Long beginTime,
+        @ApiParam(value = "结束时间", name = "endTime")
+        @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -87,20 +87,20 @@ public class UnionConsumeController {
     @ApiOperation(value = "导出：前台-消费核销记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportConsumeVO(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId,
-            @ApiParam(value = "门店id", name = "shopId")
-            @RequestParam(value = "shopId", required = false) Integer shopId,
-            @ApiParam(value = "卡号", name = "cardNumber")
-            @RequestParam(value = "cardNumber", required = false) String cardNumber,
-            @ApiParam(value = "手机号", name = "phone")
-            @RequestParam(value = "phone", required = false) String phone,
-            @ApiParam(value = "开始时间", name = "beginTime")
-            @RequestParam(value = "beginTime", required = false) Long beginTime,
-            @ApiParam(value = "结束时间", name = "endTime")
-            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @RequestParam(value = "unionId", required = false) Integer unionId,
+        @ApiParam(value = "门店id", name = "shopId")
+        @RequestParam(value = "shopId", required = false) Integer shopId,
+        @ApiParam(value = "卡号", name = "cardNumber")
+        @RequestParam(value = "cardNumber", required = false) String cardNumber,
+        @ApiParam(value = "手机号", name = "phone")
+        @RequestParam(value = "phone", required = false) String phone,
+        @ApiParam(value = "开始时间", name = "beginTime")
+        @RequestParam(value = "beginTime", required = false) Long beginTime,
+        @ApiParam(value = "结束时间", name = "endTime")
+        @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -174,8 +174,8 @@ public class UnionConsumeController {
                 Cell payStatusCell = row.createCell(cellIndex++);
                 Integer payStatus = vo.getConsume().getPayStatus();
                 payStatusCell.setCellValue(ConsumeConstant.PAY_STATUS_PAYING == payStatus ? "支付中"
-                        : ConsumeConstant.PAY_STATUS_SUCCESS == payStatus ? "已支付"
-                        : ConsumeConstant.PAY_STATUS_FAIL == payStatus ? "已退款" : "");
+                    : ConsumeConstant.PAY_STATUS_SUCCESS == payStatus ? "已支付"
+                    : ConsumeConstant.PAY_STATUS_FAIL == payStatus ? "已退款" : "");
                 payStatusCell.setCellStyle(centerCellStyle);
                 // 消费时间
                 Cell consumeTimeCell = row.createCell(cellIndex);
@@ -195,13 +195,13 @@ public class UnionConsumeController {
     @ApiOperation(value = "前台-联盟卡消费核销-支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/fanId/{fanId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveConsumePayVOByUnionIdAndFanId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "联盟卡粉丝id", name = "fanId", required = true)
-            @PathVariable("fanId") Integer fanId,
-            @ApiParam(value = "表单信息", name = "postVO", required = true)
-            @RequestBody ConsumePostVO postVO) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "联盟卡粉丝id", name = "fanId", required = true)
+        @PathVariable("fanId") Integer fanId,
+        @ApiParam(value = "表单信息", name = "postVO", required = true)
+        @RequestBody ConsumePostVO postVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

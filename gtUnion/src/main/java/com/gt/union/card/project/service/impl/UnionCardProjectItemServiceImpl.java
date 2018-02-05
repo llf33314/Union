@@ -80,8 +80,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", itemId)
-                .eq("project_id", projectId);
+            .eq("id", itemId)
+            .eq("project_id", projectId);
 
         return unionCardProjectItemDao.selectOne(entityWrapper);
     }
@@ -96,8 +96,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("project_id", projectId)
-                .eq("type", type);
+            .eq("project_id", projectId)
+            .eq("type", type);
 
         return unionCardProjectItemDao.selectList(entityWrapper);
     }
@@ -110,13 +110,13 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .exists(" SELECT p.id FROM t_union_card_project p"
-                        + " WHERE p.id=t_union_card_project_item.project_id"
-                        + " AND p.del_status=" + CommonConstant.DEL_STATUS_NO
-                        + " AND p.union_id=" + unionId
-                        + " AND p.member_id=" + memberId
-                        + " AND p.activity_id=" + activityId
-                        + " AND p.status=" + projectStatus);
+            .exists(" SELECT p.id FROM t_union_card_project p"
+                + " WHERE p.id=t_union_card_project_item.project_id"
+                + " AND p.del_status=" + CommonConstant.DEL_STATUS_NO
+                + " AND p.union_id=" + unionId
+                + " AND p.member_id=" + memberId
+                + " AND p.activity_id=" + activityId
+                + " AND p.status=" + projectStatus);
 
         return unionCardProjectItemDao.selectList(entityWrapper);
     }
@@ -230,11 +230,11 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
-        for(UnionCardProjectItem item : saveItemList){
-            if(item.getNumber() == null || item.getNumber() < 0){
+        for (UnionCardProjectItem item : saveItemList) {
+            if (item.getNumber() == null || item.getNumber() < 0) {
                 throw new BusinessException("项目数量不能为空，且不能小于0");
             }
-            if(item.getNumber() > ConfigConstant.PROJECT_ITEM_MAX_COUNT){
+            if (item.getNumber() > ConfigConstant.PROJECT_ITEM_MAX_COUNT) {
                 throw new BusinessException("项目数量不可超过10000");
             }
         }
@@ -320,11 +320,11 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         // 判断活动是否设置了需要项目审核
         if (updateProject != null) {
             updateProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
-                    ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
+                ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
         }
         if (saveProject != null) {
             saveProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
-                    ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
+                ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
         }
         if (ActivityConstant.IS_PROJECT_CHECK_YES != activity.getIsProjectCheck()) {
             saveFlow = new UnionCardProjectFlow();
@@ -534,8 +534,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (ListUtil.isNotEmpty(projectIdList)) {
             EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
             entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                    .in("project_id", projectIdList)
-                    .eq(ListUtil.isEmpty(projectList), "project_id", null);
+                .in("project_id", projectIdList)
+                .eq(ListUtil.isEmpty(projectList), "project_id", null);
 
             result = unionCardProjectItemDao.selectCount(entityWrapper);
         }
@@ -551,14 +551,14 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("type", itemType)
-                .exists("SELECT p.id FROM t_union_card_project p"
-                        + " WHERE p.del_status=" + CommonConstant.DEL_STATUS_NO
-                        + " AND p.id=t_union_card_project_item.project_id"
-                        + " AND p.union_id=" + unionId
-                        + " AND p.member_id=" + memberId
-                        + " AND p.activity_id=" + activityId
-                        + " AND p.status=" + projectStatus);
+            .eq("type", itemType)
+            .exists("SELECT p.id FROM t_union_card_project p"
+                + " WHERE p.del_status=" + CommonConstant.DEL_STATUS_NO
+                + " AND p.id=t_union_card_project_item.project_id"
+                + " AND p.union_id=" + unionId
+                + " AND p.member_id=" + memberId
+                + " AND p.activity_id=" + activityId
+                + " AND p.status=" + projectStatus);
 
         return unionCardProjectItemDao.selectOne(entityWrapper) != null;
     }
@@ -571,14 +571,14 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("type", itemType)
-                .exists("SELECT p.id FROM t_union_card_project p"
-                        + " WHERE p.del_status=" + CommonConstant.DEL_STATUS_NO
-                        + " AND p.id=t_union_card_project_item.project_id"
-                        + " AND p.union_id=" + unionId
-                        + " AND p.member_id=" + memberId
-                        + " AND p.activity_id in (" + ListUtil.toString(activityIdList) + ")"
-                        + " AND p.status=" + projectStatus);
+            .eq("type", itemType)
+            .exists("SELECT p.id FROM t_union_card_project p"
+                + " WHERE p.del_status=" + CommonConstant.DEL_STATUS_NO
+                + " AND p.id=t_union_card_project_item.project_id"
+                + " AND p.union_id=" + unionId
+                + " AND p.member_id=" + memberId
+                + " AND p.activity_id in (" + ListUtil.toString(activityIdList) + ")"
+                + " AND p.status=" + projectStatus);
 
         return unionCardProjectItemDao.selectOne(entityWrapper) != null;
     }
@@ -638,7 +638,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardProjectItemDao.selectOne(entityWrapper);
     }
@@ -651,7 +651,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardProjectItemDao.selectOne(entityWrapper);
     }
@@ -694,7 +694,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("project_id", projectId);
+            .eq("project_id", projectId);
 
         return unionCardProjectItemDao.selectList(entityWrapper);
     }
@@ -707,7 +707,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("project_id", projectId);
+            .eq("project_id", projectId);
 
         return unionCardProjectItemDao.selectList(entityWrapper);
     }

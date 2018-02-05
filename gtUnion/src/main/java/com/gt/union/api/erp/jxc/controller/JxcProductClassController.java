@@ -27,15 +27,15 @@ import java.util.List;
 @RequestMapping("/jxc/api")
 public class JxcProductClassController {
 
-	@Autowired
-	private JxcProductClassService jxcProductClassService;
+    @Autowired
+    private JxcProductClassService jxcProductClassService;
 
-	@ApiOperation(value = "分页：获取商家进销存商品分类", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/list/jxcProductClass", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult<List<JxcProductClass>> listJxcProductClass(HttpServletRequest request) throws Exception {
-		BusUser busUser = SessionUtils.getLoginUser(request);
-		Integer busId = busUser.getId();
-		List<JxcProductClass> list = jxcProductClassService.listProductClassByBusId(busId);
-		return GtJsonResult.instanceSuccessMsg(list);
-	}
+    @ApiOperation(value = "分页：获取商家进销存商品分类", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list/jxcProductClass", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<List<JxcProductClass>> listJxcProductClass(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        List<JxcProductClass> list = jxcProductClassService.listProductClassByBusId(busId);
+        return GtJsonResult.instanceSuccessMsg(list);
+    }
 }

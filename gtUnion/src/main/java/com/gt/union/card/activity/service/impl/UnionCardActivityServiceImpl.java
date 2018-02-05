@@ -81,8 +81,8 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", activityId)
-                .eq("union_id", unionId);
+            .eq("id", activityId)
+            .eq("union_id", unionId);
 
         return unionCardActivityDao.selectOne(entityWrapper);
     }
@@ -255,7 +255,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (ListUtil.isNotEmpty(validActivityCardList)) {
             for (UnionCard validActivityCard : validActivityCardList) {
                 if (!unionCardProjectItemService.existValidByUnionIdAndMemberIdAndActivityIdAndProjectStatusAndItemType(
-                        unionId, member.getId(), validActivityCard.getActivityId(), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT)) {
+                    unionId, member.getId(), validActivityCard.getActivityId(), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT)) {
                     continue;
                 }
                 CardActivityConsumeVO vo = new CardActivityConsumeVO();
@@ -502,8 +502,8 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .le("sell_begin_time", DateUtil.getCurrentDate());
+            .eq("union_id", unionId)
+            .le("sell_begin_time", DateUtil.getCurrentDate());
 
         return unionCardActivityDao.selectCount(entityWrapper);
     }
@@ -565,7 +565,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardActivityDao.selectOne(entityWrapper);
     }
@@ -578,7 +578,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardActivityDao.selectOne(entityWrapper);
     }
@@ -621,7 +621,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardActivityDao.selectList(entityWrapper);
     }
@@ -634,7 +634,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardActivityDao.selectList(entityWrapper);
     }

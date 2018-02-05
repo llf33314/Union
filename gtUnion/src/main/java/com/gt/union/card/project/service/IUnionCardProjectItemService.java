@@ -41,7 +41,7 @@ public interface IUnionCardProjectItemService {
 
     /**
      * 获取未删除的优惠列表信息
-     * 
+     *
      * @param unionId       联盟id
      * @param memberId      盟员id
      * @param activityId    活动id

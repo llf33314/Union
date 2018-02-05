@@ -22,6 +22,7 @@ import java.util.List;
 
 /**
  * 商家门店信息RestApi
+ *
  * @author hongjiye
  * @time 2017-11-30 11:03
  **/
@@ -30,29 +31,29 @@ import java.util.List;
 @RequestMapping("/api/shop")
 public class ShopApiController {
 
-	@Autowired
-	private ShopService shopService;
+    @Autowired
+    private ShopService shopService;
 
-	@ApiOperation(value = "获取商家门店列表信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult<List<ShopVO>> listShopByBusId(HttpServletRequest request) throws Exception {
-		BusUser busUser = SessionUtils.getLoginUser(request);
-		Integer busId = busUser.getId();
-		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			busId = busUser.getPid();
-		}
-		List<WsWxShopInfoExtend> list = shopService.listByBusId(busId);
-		List<ShopVO> dataList = new ArrayList<ShopVO>();
-		if(ListUtil.isNotEmpty(list)){
-			for(WsWxShopInfoExtend info : list){
-				ShopVO vo = new ShopVO();
-				vo.setName(info.getBusinessName());
-				vo.setId(info.getId());
-				dataList.add(vo);
-			}
-		}
-		return GtJsonResult.instanceSuccessMsg(dataList);
-	}
+    @ApiOperation(value = "获取商家门店列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<List<ShopVO>> listShopByBusId(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        List<WsWxShopInfoExtend> list = shopService.listByBusId(busId);
+        List<ShopVO> dataList = new ArrayList<ShopVO>();
+        if (ListUtil.isNotEmpty(list)) {
+            for (WsWxShopInfoExtend info : list) {
+                ShopVO vo = new ShopVO();
+                vo.setName(info.getBusinessName());
+                vo.setId(info.getId());
+                dataList.add(vo);
+            }
+        }
+        return GtJsonResult.instanceSuccessMsg(dataList);
+    }
 
 
 }

@@ -55,14 +55,14 @@ public class UnionCardFanController {
     @ApiOperation(value = "分页：我的联盟-首页-联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageFanVOByUnionId(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @RequestParam(value = "unionId") Integer unionId,
-            @ApiParam(value = "联盟卡号", name = "number")
-            @RequestParam(value = "number", required = false) String optNumber,
-            @ApiParam(value = "手机号", name = "phone")
-            @RequestParam(value = "phone", required = false) String optPhone) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @RequestParam(value = "unionId") Integer unionId,
+        @ApiParam(value = "联盟卡号", name = "number")
+        @RequestParam(value = "number", required = false) String optNumber,
+        @ApiParam(value = "手机号", name = "phone")
+        @RequestParam(value = "phone", required = false) String optPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -83,14 +83,14 @@ public class UnionCardFanController {
     @ApiOperation(value = "导出：我的联盟-首页-联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportFanVOByUnionId(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @RequestParam(value = "unionId") Integer unionId,
-            @ApiParam(value = "联盟卡号", name = "number")
-            @RequestParam(value = "number", required = false) String optNumber,
-            @ApiParam(value = "手机号", name = "phone")
-            @RequestParam(value = "phone", required = false) String optPhone) throws Exception {
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @RequestParam(value = "unionId") Integer unionId,
+        @ApiParam(value = "联盟卡号", name = "number")
+        @RequestParam(value = "number", required = false) String optNumber,
+        @ApiParam(value = "手机号", name = "phone")
+        @RequestParam(value = "phone", required = false) String optPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -134,11 +134,11 @@ public class UnionCardFanController {
     @ApiOperation(value = "我的联盟-首页-联盟卡-分页数据-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{fanId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getFanDetailVOIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟卡粉丝信息id", name = "fanId", required = true)
-            @PathVariable("fanId") Integer fanId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @RequestParam(value = "unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟卡粉丝信息id", name = "fanId", required = true)
+        @PathVariable("fanId") Integer fanId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @RequestParam(value = "unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -157,11 +157,11 @@ public class UnionCardFanController {
     @ApiOperation(value = "前台-联盟卡消费核销-搜索", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getSearchVO(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟卡号或手机号", name = "numberOrPhone", required = true)
-            @RequestParam(value = "numberOrPhone") String numberOrPhone,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟卡号或手机号", name = "numberOrPhone", required = true)
+        @RequestParam(value = "numberOrPhone") String numberOrPhone,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

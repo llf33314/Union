@@ -41,9 +41,9 @@ public class UnionMainController {
     @ApiOperation(value = "我的联盟-联盟设置-联盟基本信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getUnionMainVOById(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -62,8 +62,8 @@ public class UnionMainController {
     @ApiOperation(value = "分页：我的联盟-加入联盟-选择联盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/join/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageOther(
-            HttpServletRequest request,
-            Page page) throws Exception {
+        HttpServletRequest request,
+        Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -122,11 +122,11 @@ public class UnionMainController {
     @ApiOperation(value = "我的联盟-联盟设置-联盟基本信息-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateUnionMainVOById(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "表单信息", name = "unionMainVO", required = true)
-            @RequestBody UnionVO unionMainVO) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "表单信息", name = "unionMainVO", required = true)
+        @RequestBody UnionVO unionMainVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

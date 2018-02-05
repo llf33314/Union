@@ -15,59 +15,60 @@ import java.util.Map;
 
 /**
  * socket服务类
+ *
  * @author hongjiye
- * Created by Administrator on 2017/9/21 0021.
+ * @time 2017/9/21 0021.
  */
 @Service
-public class SocketServiceImpl implements SocketService{
+public class SocketServiceImpl implements SocketService {
 
-	private Logger logger = LoggerFactory.getLogger(SocketServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(SocketServiceImpl.class);
 
-	@Override
-	public boolean socketCommonSendMessage(String socketKey,String message,String pushStyle) {
-		String url = PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do";
-		try {
-			Map<String,Object> params = new HashMap<>();
-			if(pushStyle == null){
-				params.put("pushStyle","");
-			}else {
-				params.put("pushStyle",pushStyle);
-			}
-			params.put("pushMsg", message);
-			params.put("pushName",socketKey);
-			logger.info("socket推送参数：{}", JSON.toJSONString(params));
-			SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(params), PropertiesUtil.getWxmpSignKey());
-		}catch (Exception e){
-			logger.error("socket公用推送错误",e);
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean socketCommonSendMessage(String socketKey, String message, String pushStyle) {
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/socket/getSocketApi.do";
+        try {
+            Map<String, Object> params = new HashMap<>();
+            if (pushStyle == null) {
+                params.put("pushStyle", "");
+            } else {
+                params.put("pushStyle", pushStyle);
+            }
+            params.put("pushMsg", message);
+            params.put("pushName", socketKey);
+            logger.info("socket推送参数：{}", JSON.toJSONString(params));
+            SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(params), PropertiesUtil.getWxmpSignKey());
+        } catch (Exception e) {
+            logger.error("socket公用推送错误", e);
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean socketPaySendMessage(String socketKey, Integer status, String pushStyle, String orderNo) {
-		String url = PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do";
-		try {
-			Map<String,Object> params = new HashMap<>();
-			if(pushStyle == null){
-				params.put("pushStyle","");
-			}else {
-				params.put("pushStyle",pushStyle);
-			}
-			Map data = new HashMap<>();
-			data.put("status",status);
-			data.put("socketKey",socketKey);
-			data.put("orderNo",orderNo);
+    @Override
+    public boolean socketPaySendMessage(String socketKey, Integer status, String pushStyle, String orderNo) {
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/socket/getSocketApi.do";
+        try {
+            Map<String, Object> params = new HashMap<>();
+            if (pushStyle == null) {
+                params.put("pushStyle", "");
+            } else {
+                params.put("pushStyle", pushStyle);
+            }
+            Map data = new HashMap<>();
+            data.put("status", status);
+            data.put("socketKey", socketKey);
+            data.put("orderNo", orderNo);
 
-			params.put("pushMsg", JSON.toJSONString(data));
-			params.put("pushName",socketKey);
-			logger.info("socket推送参数：{}", JSON.toJSONString(params));
-			SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(params), PropertiesUtil.getWxmpSignKey());
-		}catch (Exception e){
-			logger.error("socket支付推送错误",e);
-			return false;
-		}
-		return true;
-	}
+            params.put("pushMsg", JSON.toJSONString(data));
+            params.put("pushName", socketKey);
+            logger.info("socket推送参数：{}", JSON.toJSONString(params));
+            SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(params), PropertiesUtil.getWxmpSignKey());
+        } catch (Exception e) {
+            logger.error("socket支付推送错误", e);
+            return false;
+        }
+        return true;
+    }
 }
 

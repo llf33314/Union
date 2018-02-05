@@ -63,8 +63,8 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
 
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", verifierId)
-                .eq("bus_id", busId);
+            .eq("id", verifierId)
+            .eq("bus_id", busId);
 
         return unionVerifierDao.selectOne(entityWrapper);
     }
@@ -250,7 +250,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
 
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionVerifierDao.selectOne(entityWrapper);
     }
@@ -263,7 +263,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
 
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionVerifierDao.selectOne(entityWrapper);
     }
@@ -306,7 +306,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
 
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         return unionVerifierDao.selectList(entityWrapper);
     }
@@ -319,7 +319,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
 
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         return unionVerifierDao.selectList(entityWrapper);
     }

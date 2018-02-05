@@ -12,7 +12,7 @@ public class BaseException extends Exception {
     /**
      * 失败：友好的用户提示消息
      */
-    protected String errorMsg;
+    private final String errorMsg;
 
     public BaseException(String errorMsg) {
         super(errorMsg);
@@ -27,7 +27,4 @@ public class BaseException extends Exception {
         return errorMsg;
     }
 
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
 }

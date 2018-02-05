@@ -65,8 +65,8 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
         if (project != null) {
             EntityWrapper<UnionCardProjectFlow> entityWrapper = new EntityWrapper<>();
             entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                    .eq("project_id", project.getId())
-                    .orderBy("create_time", true);
+                .eq("project_id", project.getId())
+                .orderBy("create_time", true);
 
             result = unionCardProjectFlowDao.selectList(entityWrapper);
         }
@@ -121,7 +121,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
 
         EntityWrapper<UnionCardProjectFlow> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardProjectFlowDao.selectOne(entityWrapper);
     }
@@ -134,7 +134,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
 
         EntityWrapper<UnionCardProjectFlow> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardProjectFlowDao.selectOne(entityWrapper);
     }
@@ -177,7 +177,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
 
         EntityWrapper<UnionCardProjectFlow> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("project_id", projectId);
+            .eq("project_id", projectId);
 
         return unionCardProjectFlowDao.selectList(entityWrapper);
     }
@@ -190,7 +190,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
 
         EntityWrapper<UnionCardProjectFlow> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("project_id", projectId);
+            .eq("project_id", projectId);
 
         return unionCardProjectFlowDao.selectList(entityWrapper);
     }

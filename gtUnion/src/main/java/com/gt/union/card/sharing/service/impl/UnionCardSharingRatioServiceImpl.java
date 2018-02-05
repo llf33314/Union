@@ -77,9 +77,9 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("activity_id", activityId);
+            .eq("union_id", unionId)
+            .eq("member_id", memberId)
+            .eq("activity_id", activityId);
 
         return unionCardSharingRatioDao.selectOne(entityWrapper);
     }
@@ -94,9 +94,9 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId)
-                .orderBy(orderBy, isAsc);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId)
+            .orderBy(orderBy, isAsc);
 
         return unionCardSharingRatioDao.selectList(entityWrapper);
     }
@@ -258,7 +258,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         final Integer activityId = project.getActivityId();
         final Integer unionId = project.getUnionId();
         final UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
-        GtJsonResult result = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+        GtJsonResult result = transactionTemplate.execute(new TransactionCallback<GtJsonResult>() {
             @Override
             public GtJsonResult doInTransaction(TransactionStatus transactionStatus) {
                 String autoEqualDivisionRatioLockKey = UnionCardSharingRatioCacheUtil.getAutoEqualDivisionRatioLockKey();
@@ -318,17 +318,17 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
                         saveBatch(saveSharingRatioList);
                     }
-                } catch (Exception e){
+                } catch (Exception e) {
                     transactionStatus.setRollbackOnly();
                     return GtJsonResult.instanceErrorMsg();
-                }finally {
+                } finally {
                     rLock.unlock();
                 }
                 return null;
             }
         });
 
-        if(result != null){
+        if (result != null) {
             throw new Exception();
         }
 
@@ -344,8 +344,8 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId);
 
         return unionCardSharingRatioDao.selectCount(entityWrapper) > 0;
     }
@@ -489,7 +489,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardSharingRatioDao.selectOne(entityWrapper);
     }
@@ -502,7 +502,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardSharingRatioDao.selectOne(entityWrapper);
     }
@@ -545,7 +545,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardSharingRatioDao.selectList(entityWrapper);
     }
@@ -558,7 +558,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardSharingRatioDao.selectList(entityWrapper);
     }
@@ -583,7 +583,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardSharingRatioDao.selectList(entityWrapper);
     }
@@ -596,7 +596,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardSharingRatioDao.selectList(entityWrapper);
     }
@@ -621,7 +621,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardSharingRatioDao.selectList(entityWrapper);
     }
@@ -634,7 +634,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
 
         EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardSharingRatioDao.selectList(entityWrapper);
     }

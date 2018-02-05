@@ -44,9 +44,9 @@ public class UnionCallBackController {
     //支付后回调
     @RequestMapping(value = "/79B4DE7C/{model}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String updateCallbackByModel(
-            @PathVariable("model") String model,
-            @RequestParam(value = "socketKey", required = false) String socketKey,
-            @RequestBody Map<String, Object> param) throws Exception {
+        @PathVariable("model") String model,
+        @RequestParam(value = "socketKey", required = false) String socketKey,
+        @RequestBody Map<String, Object> param) throws Exception {
         logger.info("支付成功回调模块：{}，支付成功后回调参数：{}", model, JSONObject.toJSONString(param));
 
         Object objPayType = param.get("payType");
@@ -80,7 +80,7 @@ public class UnionCallBackController {
             Object objReturnCode = param.get("return_code");
             String returnCode = objReturnCode != null ? objReturnCode.toString().trim() : "";
             isSuccess = "SUCCESS".equals(resultCode.toUpperCase()) && "SUCCESS".equals(returnCode.toUpperCase())
-                    ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
+                ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
         } else {
             // 支付宝支付
             Object objPayOrderNo = param.get("trade_no");

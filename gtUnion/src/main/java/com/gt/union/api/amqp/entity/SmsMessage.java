@@ -8,8 +8,8 @@ import com.alibaba.fastjson.JSON;
  **/
 public class SmsMessage {
 
-	@Override
-	public String toString() {
-		return JSON.toJSONString(this);
-	}
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
 }

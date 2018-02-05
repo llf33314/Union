@@ -52,12 +52,12 @@ public class UnionMemberController {
     @ApiOperation(value = "分页：我的联盟-首页-盟员列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/index/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageIndexByUnionId(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "盟员名称", name = "memberName")
-            @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "盟员名称", name = "memberName")
+        @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -79,12 +79,12 @@ public class UnionMemberController {
     @ApiOperation(value = "分页：我的联盟-联盟卡设置-折扣卡设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/discount/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageWriteByUnionId(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "盟员名称", name = "memberName")
-            @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "盟员名称", name = "memberName")
+        @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -106,12 +106,12 @@ public class UnionMemberController {
     @ApiOperation(value = "导出：我的联盟-首页-盟员列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/index/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportWriteByUnionId(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "盟员名称", name = "memberName")
-            @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "盟员名称", name = "memberName")
+        @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -160,11 +160,11 @@ public class UnionMemberController {
     @ApiOperation(value = "我的联盟-首页-盟员列表-分页数据-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "盟员id", name = "memberId", required = true)
-            @PathVariable(value = "memberId") Integer memberId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "盟员id", name = "memberId", required = true)
+        @PathVariable(value = "memberId") Integer memberId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -183,9 +183,9 @@ public class UnionMemberController {
     @ApiOperation(value = "我的联盟-联盟设置-基础设置；我的联盟-联盟卡设置-折扣卡设置-折扣设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/busUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -204,9 +204,9 @@ public class UnionMemberController {
     @ApiOperation(value = "辅助接口：获取指定联盟下具有写权限的但不包括我的盟员列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/read/other", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listOtherWriteByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -226,13 +226,13 @@ public class UnionMemberController {
     @ApiOperation(value = "我的联盟-联盟设置-基础设置-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "盟员id", name = "memberId", required = true)
-            @PathVariable("memberId") Integer memberId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "盟员", name = "member", required = true)
-            @RequestBody UnionMember member) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "盟员id", name = "memberId", required = true)
+        @PathVariable("memberId") Integer memberId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "盟员", name = "member", required = true)
+        @RequestBody UnionMember member) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -247,13 +247,13 @@ public class UnionMemberController {
     @ApiOperation(value = "我的联盟-联盟卡设置-折扣卡设置-折扣设置-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}/unionId/{unionId}/discount", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateDiscountByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "盟员id", name = "memberId", required = true)
-            @PathVariable("memberId") Integer memberId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "折扣", name = "discount", required = true)
-            @RequestBody Double discount) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "盟员id", name = "memberId", required = true)
+        @PathVariable("memberId") Integer memberId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "折扣", name = "discount", required = true)
+        @RequestBody Double discount) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

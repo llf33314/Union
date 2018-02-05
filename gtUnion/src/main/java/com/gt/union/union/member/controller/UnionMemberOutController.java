@@ -41,10 +41,10 @@ public class UnionMemberOutController {
     @ApiOperation(value = "分页：我的联盟-退盟管理-退盟审核", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageOutVOByUnionId(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -65,10 +65,10 @@ public class UnionMemberOutController {
     @ApiOperation(value = "分页：我的联盟-退盟管理-退盟过渡期", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/period/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pagePeriodByUnionId(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -91,13 +91,13 @@ public class UnionMemberOutController {
     @ApiOperation(value = "我的联盟-退盟管理-退盟审核-分页数据-同意或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{outId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateStatusByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "退盟id", name = "outId", required = true)
-            @PathVariable("outId") Integer outId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
-            @RequestParam(value = "isPass") Integer isPass) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "退盟id", name = "outId", required = true)
+        @PathVariable("outId") Integer outId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
+        @RequestParam(value = "isPass") Integer isPass) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -114,11 +114,11 @@ public class UnionMemberOutController {
     @ApiOperation(value = "我的联盟-退盟管理-退盟过渡期-退盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "退盟理由", name = "reason", required = true)
-            @RequestBody String reason) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "退盟理由", name = "reason", required = true)
+        @RequestBody String reason) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -133,11 +133,11 @@ public class UnionMemberOutController {
     @ApiOperation(value = "我的联盟-首页-盟员列表-分页数据-移出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/applyMemberId/{applyMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveByUnionIdAndApplyMemberId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "盟员id", name = "applyMemberId", required = true)
-            @PathVariable("applyMemberId") Integer applyMemberId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "盟员id", name = "applyMemberId", required = true)
+        @PathVariable("applyMemberId") Integer applyMemberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -155,11 +155,11 @@ public class UnionMemberOutController {
     @ApiOperation(value = "我的联盟-首页-盟员列表-分页数据-撤消移出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{outId}/unionId/{unionId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
     public String removeByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "退盟申请id", name = "outId")
-            @PathVariable("outId") Integer outId,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "退盟申请id", name = "outId")
+        @PathVariable("outId") Integer outId,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

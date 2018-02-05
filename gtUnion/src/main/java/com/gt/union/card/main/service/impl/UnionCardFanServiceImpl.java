@@ -216,7 +216,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         List<UnionCard> activityCardList = unionCardService.listValidUnexpiredByFanIdAndType(fan.getId(), CardConstant.TYPE_ACTIVITY);
         if (ListUtil.isNotEmpty(activityCardList)) {
             isProjectAvailable = unionCardProjectItemService.existValidByUnionIdAndMemberIdAndActivityIdListAndProjectStatusAndItemType(
-                    currentUnionId, currentMember.getId(), unionCardService.getActivityIdList(activityCardList), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT);
+                currentUnionId, currentMember.getId(), unionCardService.getActivityIdList(activityCardList), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT);
         }
         result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
 
@@ -239,10 +239,10 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .andNew()
-                .eq("number", numberOrPhone)
-                .or()
-                .eq("phone", numberOrPhone);
+            .andNew()
+            .eq("number", numberOrPhone)
+            .or()
+            .eq("phone", numberOrPhone);
 
         return unionCardFanDao.selectOne(entityWrapper);
     }
@@ -251,7 +251,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
     public UnionCardFan getValidByPhone(String phone) throws Exception {
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("phone", phone);
+            .eq("phone", phone);
 
         return unionCardFanDao.selectOne(entityWrapper);
     }
@@ -275,14 +275,14 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         // 获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .like(StringUtil.isNotEmpty(optNumber), "number", optNumber)
-                .like(StringUtil.isNotEmpty(optPhone), "phone", optPhone)
-                .exists(" SELECT c.id FROM t_union_card c "
-                        + " WHERE c.fan_id=t_union_card_fan.id "
-                        + " AND c.union_id=" + unionId
-                        + " AND c.type=" + CardConstant.TYPE_DISCOUNT
-                        + " AND c.del_status=" + CommonConstant.COMMON_NO
-                        + " AND c.validity >= now() ");
+            .like(StringUtil.isNotEmpty(optNumber), "number", optNumber)
+            .like(StringUtil.isNotEmpty(optPhone), "phone", optPhone)
+            .exists(" SELECT c.id FROM t_union_card c "
+                + " WHERE c.fan_id=t_union_card_fan.id "
+                + " AND c.union_id=" + unionId
+                + " AND c.type=" + CardConstant.TYPE_DISCOUNT
+                + " AND c.del_status=" + CommonConstant.COMMON_NO
+                + " AND c.validity >= now() ");
         List<UnionCardFan> fanList = unionCardFanDao.selectList(entityWrapper);
         // 统计粉丝联盟积分，即fan在union下所有有效的折扣卡和活动卡的积分之和
         List<CardFanVO> result = new ArrayList<>();
@@ -337,7 +337,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("phone", phone);
+            .eq("phone", phone);
 
         return unionCardFanDao.selectCount(entityWrapper) > 0;
     }
@@ -381,7 +381,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardFanDao.selectOne(entityWrapper);
     }
@@ -394,7 +394,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardFanDao.selectOne(entityWrapper);
     }

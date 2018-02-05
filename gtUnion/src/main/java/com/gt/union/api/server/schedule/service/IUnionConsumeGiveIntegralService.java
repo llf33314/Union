@@ -9,10 +9,11 @@ import java.util.Map;
  * @time 2018-01-03 16:58
  **/
 public interface IUnionConsumeGiveIntegralService {
-	/**
-	 * 赠送积分
-	 * @param param
-     * @throws Exception    统一异常处理
-	 */
-	void giveConsumeIntegral(Map param) throws Exception;
+    /**
+     * 赠送积分
+     *
+     * @param param
+     * @throws Exception 统一异常处理
+     */
+    void giveConsumeIntegral(Map param) throws Exception;
 }

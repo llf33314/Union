@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  缓存键工具类
+ * 缓存键工具类
  *
  * @author hongjiye
  * @version 2018-02-02 16:58:00
  */
 public class UnionRefundCardCacheUtil {
-    
+
     public static String getIdKey(Integer id) {
         return "unionRefundCard:" + id;
     }
@@ -23,5 +23,5 @@ public class UnionRefundCardCacheUtil {
         return result;
     }
 
-    
+
 }

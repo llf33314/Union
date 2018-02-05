@@ -11,13 +11,14 @@ import java.util.List;
  **/
 public interface CarErpService {
 
-	/**
-	 * 查询服务项目列表
-	 * @param shopId		门店id
-	 * @param search		查询条件
-	 * @param busId			商家id
-	 * @param page			分页条件
-	 * @return
-	 */
-	List<ErpServerVO> listErpServer(Integer shopId, String search, Integer busId, Page page);
+    /**
+     * 查询服务项目列表
+     *
+     * @param shopId 门店id
+     * @param search 查询条件
+     * @param busId  商家id
+     * @param page   分页条件
+     * @return
+     */
+    List<ErpServerVO> listErpServer(Integer shopId, String search, Integer busId, Page page);
 }

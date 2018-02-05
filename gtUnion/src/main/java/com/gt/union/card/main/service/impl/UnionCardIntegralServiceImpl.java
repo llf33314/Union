@@ -37,8 +37,8 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId);
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId);
 
         return unionCardIntegralDao.selectOne(entityWrapper);
     }
@@ -61,8 +61,8 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId);
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId);
 
         entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
         Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
@@ -78,7 +78,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
         Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
@@ -94,7 +94,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
         Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
@@ -159,7 +159,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardIntegralDao.selectOne(entityWrapper);
     }
@@ -172,7 +172,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardIntegralDao.selectOne(entityWrapper);
     }
@@ -215,7 +215,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardIntegralDao.selectList(entityWrapper);
     }
@@ -228,7 +228,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardIntegralDao.selectList(entityWrapper);
     }
@@ -253,7 +253,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardIntegralDao.selectList(entityWrapper);
     }
@@ -266,7 +266,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
         EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardIntegralDao.selectList(entityWrapper);
     }

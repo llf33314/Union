@@ -16,28 +16,28 @@ import org.springframework.stereotype.Service;
 @Service("unionPhoneBrokeragePayService")
 public class UnionPhoneBrokeragePayServiceImpl implements IUnionBrokeragePayStrategyService {
 
-	@Autowired
-	private WxPayService wxPayService;
+    @Autowired
+    private WxPayService wxPayService;
 
-	@Override
-	public UnionPayVO unionBrokerageApply(String orderNo, Double payMoneySum, Integer memberId, Integer busId) {
-		UnionPayVO result = new UnionPayVO();
-		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=";
+    @Override
+    public UnionPayVO unionBrokerageApply(String orderNo, Double payMoneySum, Integer memberId, Integer busId) {
+        UnionPayVO result = new UnionPayVO();
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=";
 
-		PayParam payParam = new PayParam();
-		payParam.setTotalFee(payMoneySum);
-		payParam.setOrderNum(orderNo);
-		payParam.setIsreturn(CommonConstant.COMMON_YES);
-		payParam.setReturnUrl(PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/toPayList");
-		payParam.setNotifyUrl(notifyUrl);
-		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-		payParam.setPayWay(1);
-		payParam.setDesc("商机佣金");
-		payParam.setPayDuoFen(true);
-		payParam.setMemberId(memberId);
-		String payUrl = wxPayService.pay(payParam);
+        PayParam payParam = new PayParam();
+        payParam.setTotalFee(payMoneySum);
+        payParam.setOrderNum(orderNo);
+        payParam.setIsreturn(CommonConstant.COMMON_YES);
+        payParam.setReturnUrl(PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/toPayList");
+        payParam.setNotifyUrl(notifyUrl);
+        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
+        payParam.setPayWay(1);
+        payParam.setDesc("商机佣金");
+        payParam.setPayDuoFen(true);
+        payParam.setMemberId(memberId);
+        String payUrl = wxPayService.pay(payParam);
 
-		result.setPayUrl(payUrl);
-		return result;
-	}
+        result.setPayUrl(payUrl);
+        return result;
+    }
 }

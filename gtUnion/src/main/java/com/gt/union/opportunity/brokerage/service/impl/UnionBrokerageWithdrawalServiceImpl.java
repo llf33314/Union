@@ -67,7 +67,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokerageWithdrawalDao.selectMap(entityWrapper);
@@ -114,7 +114,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionBrokerageWithdrawalDao.selectOne(entityWrapper);
     }
@@ -127,7 +127,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionBrokerageWithdrawalDao.selectOne(entityWrapper);
     }
@@ -170,7 +170,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         return unionBrokerageWithdrawalDao.selectList(entityWrapper);
     }
@@ -183,7 +183,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         return unionBrokerageWithdrawalDao.selectList(entityWrapper);
     }
@@ -208,7 +208,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("verifier_id", verifierId);
+            .eq("verifier_id", verifierId);
 
         return unionBrokerageWithdrawalDao.selectList(entityWrapper);
     }
@@ -221,7 +221,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("verifier_id", verifierId);
+            .eq("verifier_id", verifierId);
 
         return unionBrokerageWithdrawalDao.selectList(entityWrapper);
     }

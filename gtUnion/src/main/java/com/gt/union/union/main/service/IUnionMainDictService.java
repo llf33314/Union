@@ -186,5 +186,5 @@ public interface IUnionMainDictService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionMainDict> updateUnionMainDictList) throws Exception;
-    
+
 }

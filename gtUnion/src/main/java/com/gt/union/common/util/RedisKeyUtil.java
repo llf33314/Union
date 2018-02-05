@@ -2,8 +2,9 @@ package com.gt.union.common.util;
 
 /**
  * redis缓存键工具
+ *
  * @author hongjiye
- * Created by Administrator on 2017/8/18 0018.
+ * @time 2017/8/18 0018.
  */
 public class RedisKeyUtil {
     /**
@@ -22,9 +23,10 @@ public class RedisKeyUtil {
 
     /**
      * 获取进销存权限缓存key
+     *
      * @return
      */
-    public static final String getJxcAuthorityKey(){
+    public static final String getJxcAuthorityKey() {
         return "jxc:authority";
     }
 

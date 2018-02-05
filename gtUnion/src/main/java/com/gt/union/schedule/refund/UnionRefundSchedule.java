@@ -27,53 +27,54 @@ import java.util.Map;
  **/
 public class UnionRefundSchedule {
 
-	private Logger logger = Logger.getLogger(UnionRefundSchedule.class);
+    private Logger logger = Logger.getLogger(UnionRefundSchedule.class);
 
-	@Autowired
-	private PhoneMessageSender phoneMessageSender;
+    @Autowired
+    private PhoneMessageSender phoneMessageSender;
 
-	@Autowired
-	private IUnionRefundOrderService unionRefundOrderService;
+    @Autowired
+    private IUnionRefundOrderService unionRefundOrderService;
 
-	@Autowired
-	private WxPayService wxPayService;
+    @Autowired
+    private WxPayService wxPayService;
 
-	@Autowired
-	private TransactionTemplate transactionTemplate;
-	/**
-	 * 商机退款 每两小时执行一次
-	 */
-	@Scheduled(cron = "0 0 0/2 * * *")
-	public void refundOpportunity() {
-		try {
-			Date currentDate = DateUtil.getCurrentDate();
-			logger.info(currentDate + " 开始执行<商机退款>定时任务器：商机重复支付退款");
-			List<UnionRefundOrder> list = unionRefundOrderService.listValidByStatusAndType(RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
-			if(ListUtil.isNotEmpty(list)){
-				for(UnionRefundOrder order : list){
-					try{
-						GtJsonResult result = wxPayService.refundOrder(order.getSysOrderNo(), order.getRefundMoney(), order.getTotalMoney());
-						if(result.isSuccess()){
-							Map data = (Map)result.getData();
-							UnionRefundOrder successRefundOrder = new UnionRefundOrder();
-							successRefundOrder.setId(order.getId());
-							successRefundOrder.setModifyTime(new Date());
-							successRefundOrder.setDesc("退款成功");
-							successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
-							successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
-							unionRefundOrderService.update(successRefundOrder);
-						}
-					}catch (Exception e){
-						logger.error("执行<商机退款>定时任务器：商机重复支付退款失败", e);
-						phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
-								"时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT)+",执行<商机退款>定时任务器：商机重复支付退款->出现异常(" + e.getMessage() + ")"));
-					}
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
-				}
-			}
+    /**
+     * 商机退款 每两小时执行一次
+     */
+    @Scheduled(cron = "0 0 0/2 * * *")
+    public void refundOpportunity() {
+        try {
+            Date currentDate = DateUtil.getCurrentDate();
+            logger.info(currentDate + " 开始执行<商机退款>定时任务器：商机重复支付退款");
+            List<UnionRefundOrder> list = unionRefundOrderService.listValidByStatusAndType(RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
+            if (ListUtil.isNotEmpty(list)) {
+                for (UnionRefundOrder order : list) {
+                    try {
+                        GtJsonResult result = wxPayService.refundOrder(order.getSysOrderNo(), order.getRefundMoney(), order.getTotalMoney());
+                        if (result.isSuccess()) {
+                            Map data = (Map) result.getData();
+                            UnionRefundOrder successRefundOrder = new UnionRefundOrder();
+                            successRefundOrder.setId(order.getId());
+                            successRefundOrder.setModifyTime(new Date());
+                            successRefundOrder.setDesc("退款成功");
+                            successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                            successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
+                            unionRefundOrderService.update(successRefundOrder);
+                        }
+                    } catch (Exception e) {
+                        logger.error("执行<商机退款>定时任务器：商机重复支付退款失败", e);
+                        phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
+                            "时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT) + ",执行<商机退款>定时任务器：商机重复支付退款->出现异常(" + e.getMessage() + ")"));
+                    }
 
-		} catch (Exception e) {
-			logger.error("执行<商机退款>定时任务器：商机重复支付退款失败", e);
-		}
-	}
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("执行<商机退款>定时任务器：商机重复支付退款失败", e);
+        }
+    }
 }

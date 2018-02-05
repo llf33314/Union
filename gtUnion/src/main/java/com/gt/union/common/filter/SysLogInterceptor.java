@@ -29,13 +29,13 @@ public class SysLogInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler
-            , Exception ex) throws Exception {
+        , Exception ex) throws Exception {
         super.afterCompletion(request, response, handler, ex);
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler
-            , ModelAndView modelAndView) throws Exception {
+        , ModelAndView modelAndView) throws Exception {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             SysLogAnnotation annotation = handlerMethod.getMethodAnnotation(SysLogAnnotation.class);
@@ -56,7 +56,7 @@ public class SysLogInterceptor extends HandlerInterceptorAdapter {
                 logObj.put("opt_ip", IPKit.getIpAddr(request));
                 logObj.put("opt_paramers", KeysUtil.getEncString(JSONObject.toJSONString(getParamers(request))));
                 String date = DateTimeKit.getDateTime(DateTimeKit.DEFAULT_DATE_FORMAT_YYYYMM);
-				daoUtil.saveObjectByMap("", "t_bus_log_"+date, logObj);
+                daoUtil.saveObjectByMap("", "t_bus_log_" + date, logObj);
             }
         }
         super.postHandle(request, response, handler, modelAndView);
@@ -64,7 +64,7 @@ public class SysLogInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response
-            , Object handler) throws Exception {
+        , Object handler) throws Exception {
         return super.preHandle(request, response, handler);
     }
 

@@ -8,12 +8,13 @@ import com.gt.api.bean.session.Member;
  **/
 public interface ITokenApiService {
 
-	/**
-	 * 根据token获取粉丝信息
-	 * @param token		token
-	 * @param busId		商家id
-	 * @return
-	 * @throws Exception
-	 */
-	Member getMemberByToken(String token, Integer busId) throws Exception;
+    /**
+     * 根据token获取粉丝信息
+     *
+     * @param token token
+     * @param busId 商家id
+     * @return
+     * @throws Exception
+     */
+    Member getMemberByToken(String token, Integer busId) throws Exception;
 }

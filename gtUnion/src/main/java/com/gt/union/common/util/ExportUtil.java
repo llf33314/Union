@@ -13,8 +13,9 @@ import java.util.Date;
 
 /**
  * 导出excel工具类
+ *
  * @author hongjiye
- * Created by Administrator on 2017/8/10 0010.
+ * @time 2017/8/10 0010.
  */
 public class ExportUtil {
 
@@ -36,8 +37,8 @@ public class ExportUtil {
         // 先去掉文件名称中的空格,然后转换编码格式为utf-8,保证不出现乱码,这个文件名称用于浏览器的下载框中自动显示的文件名
         OutputStream os = new BufferedOutputStream(response.getOutputStream());
         response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode(filename + DateTimeKit.format(new Date()) + ".xlsx",
-                        "UTF-8") + "\"");
+            "attachment;filename=\"" + URLEncoder.encode(filename + DateTimeKit.format(new Date()) + ".xlsx",
+                "UTF-8") + "\"");
         response.setContentType("application/vnd.ms-excel");
         // 输出文件
         wb.write(os);

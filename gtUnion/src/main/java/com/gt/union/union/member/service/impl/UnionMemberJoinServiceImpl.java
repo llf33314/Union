@@ -178,14 +178,14 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 throw new BusinessException("请推荐商家主账号信息");
             }
-            if(busUser.getEndTime().getTime() < System.currentTimeMillis()){
+            if (busUser.getEndTime().getTime() < System.currentTimeMillis()) {
                 throw new BusinessException("被推荐的商家已过期");
             }
             List<Map> menus = busUserService.haveMenus(busUser.getId(), "s1400");
-            if(ListUtil.isEmpty(menus)){
+            if (ListUtil.isEmpty(menus)) {
                 throw new BusinessException("被推荐的商家没有联盟权限");
             }
-            if(!Boolean.valueOf(menus.get(0).get("have").toString())){
+            if (!Boolean.valueOf(menus.get(0).get("have").toString())) {
                 throw new BusinessException("被推荐的商家没有联盟权限");
             }
         } else {
@@ -491,7 +491,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         // (2)db
         EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("apply_member_id", applyMemberId);
+            .eq("apply_member_id", applyMemberId);
         result = unionMemberJoinDao.selectList(entityWrapper);
         setValidCache(result, applyMemberId, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
         return result;
@@ -513,7 +513,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         // (2)db
         EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("apply_member_id", applyMemberId);
+            .eq("apply_member_id", applyMemberId);
         result = unionMemberJoinDao.selectList(entityWrapper);
         setInvalidCache(result, applyMemberId, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
         return result;
@@ -556,7 +556,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         // (2)db
         EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("recommend_member_id", recommendMemberId);
+            .eq("recommend_member_id", recommendMemberId);
         result = unionMemberJoinDao.selectList(entityWrapper);
         setValidCache(result, recommendMemberId, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
         return result;
@@ -578,7 +578,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         // (2)db
         EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("recommend_member_id", recommendMemberId);
+            .eq("recommend_member_id", recommendMemberId);
         result = unionMemberJoinDao.selectList(entityWrapper);
         setInvalidCache(result, recommendMemberId, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
         return result;
@@ -621,7 +621,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         // (2)db
         EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMemberJoinDao.selectList(entityWrapper);
         setValidCache(result, unionId, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
         return result;
@@ -643,7 +643,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         // (2)db
         EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMemberJoinDao.selectList(entityWrapper);
         setInvalidCache(result, unionId, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
         return result;

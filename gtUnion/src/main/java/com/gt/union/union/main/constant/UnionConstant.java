@@ -21,7 +21,7 @@ public interface UnionConstant {
      * 加盟方式：推荐
      */
     int JOIN_TYPE_RECOMMEND = 1;
-    
+
     /**
      * 加盟方式：申请、推荐
      */
@@ -61,12 +61,12 @@ public interface UnionConstant {
      * 盟主服务订单支付类型：微信
      */
     int PERMIT_PAY_TYPE_WX = 1;
-    
+
     /**
      * 盟主服务订单支付类型：支付宝
      */
     int PERMIT_PAY_TYPE_ALIPAY = 2;
-    
+
     /**
      * 入盟申请必填字段：负责人名称
      */

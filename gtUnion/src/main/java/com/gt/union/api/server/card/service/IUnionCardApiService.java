@@ -9,12 +9,13 @@ import com.gt.union.api.entity.result.UnionDiscountResult;
  **/
 public interface IUnionCardApiService {
 
-	/**
-	 * 根据手机号和商家id获取联盟折扣
-	 * @param phone		手机号
-	 * @param busId		商家id
-	 * @return
-     * @throws Exception    统一异常处理
-	 */
-	UnionDiscountResult getConsumeUnionCardDiscount(String phone, Integer busId) throws Exception;
+    /**
+     * 根据手机号和商家id获取联盟折扣
+     *
+     * @param phone 手机号
+     * @param busId 商家id
+     * @return
+     * @throws Exception 统一异常处理
+     */
+    UnionDiscountResult getConsumeUnionCardDiscount(String phone, Integer busId) throws Exception;
 }

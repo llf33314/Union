@@ -4,7 +4,6 @@ import com.gt.api.dto.ResponseUtils;
 import com.gt.union.api.entity.param.UnionCardDiscountParam;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.api.server.card.service.IUnionCardApiService;
-import com.gt.union.api.server.constant.UnionDiscountConstant;
 import com.gt.union.api.server.entity.param.RequestApiParam;
 import com.gt.union.api.server.ApiBaseController;
 import com.gt.union.common.constant.CommonConstant;
@@ -22,8 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 联盟卡对外服务接口
+ *
  * @author hongjiye
- * Created by Administrator on 2017/8/23 0023.
+ * @time 2017/8/23 0023.
  */
 @RestController
 @RequestMapping("/api/card/8A5DA52E")
@@ -31,28 +31,25 @@ public class UnionCardApiController extends ApiBaseController {
 
     private Logger logger = Logger.getLogger(UnionCardApiController.class);
 
-	@Autowired
+    @Autowired
     private IUnionCardApiService unionCardApiService;
 
-	@ApiOperation(value = "线上--根据商家和粉丝获取联盟卡折扣，session的member不能为空", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/consumeUnionDiscount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionCardDiscountParam> requestApiParam){
-		try {
-			UnionCardDiscountParam param = requestApiParam.getReqdata();
-			super.verification(request, response, requestApiParam);
-			UnionDiscountResult data = unionCardApiService.getConsumeUnionCardDiscount(param.getPhone(), param.getBusId());
-			return ResponseUtils.createBySuccess(data);
-		} catch (BaseException e) {
-			logger.error(e.getMessage(), e);
-			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
-		}catch (Exception e) {
-			logger.error(CommonConstant.SYS_ERROR, e);
-			return ResponseUtils.createByError();
-		}
-	}
-
-
-
+    @ApiOperation(value = "线上--根据商家和粉丝获取联盟卡折扣，session的member不能为空", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/consumeUnionDiscount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionCardDiscountParam> requestApiParam) {
+        try {
+            UnionCardDiscountParam param = requestApiParam.getReqdata();
+            super.verification(request, requestApiParam);
+            UnionDiscountResult data = unionCardApiService.getConsumeUnionCardDiscount(param.getPhone(), param.getBusId());
+            return ResponseUtils.createBySuccess(data);
+        } catch (BaseException e) {
+            logger.error(e.getMessage(), e);
+            return ResponseUtils.createByErrorMessage(e.getErrorMsg());
+        } catch (Exception e) {
+            logger.error(CommonConstant.SYS_ERROR, e);
+            return ResponseUtils.createByError();
+        }
+    }
 
 
 }

@@ -540,7 +540,7 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
         // (2)db
         EntityWrapper<UnionMemberOut> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("apply_member_id", applyMemberId);
+            .eq("apply_member_id", applyMemberId);
         result = unionMemberOutDao.selectList(entityWrapper);
         setValidCache(result, applyMemberId, UnionMemberOutCacheUtil.TYPE_APPLY_MEMBER_ID);
         return result;
@@ -562,7 +562,7 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
         // (2)db
         EntityWrapper<UnionMemberOut> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("apply_member_id", applyMemberId);
+            .eq("apply_member_id", applyMemberId);
         result = unionMemberOutDao.selectList(entityWrapper);
         setInvalidCache(result, applyMemberId, UnionMemberOutCacheUtil.TYPE_APPLY_MEMBER_ID);
         return result;
@@ -605,7 +605,7 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
         // (2)db
         EntityWrapper<UnionMemberOut> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMemberOutDao.selectList(entityWrapper);
         setValidCache(result, unionId, UnionMemberOutCacheUtil.TYPE_UNION_ID);
         return result;
@@ -627,7 +627,7 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
         // (2)db
         EntityWrapper<UnionMemberOut> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMemberOutDao.selectList(entityWrapper);
         setInvalidCache(result, unionId, UnionMemberOutCacheUtil.TYPE_UNION_ID);
         return result;

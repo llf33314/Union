@@ -40,9 +40,9 @@ public class UnionIndexController {
     @ApiOperation(value = "我的联盟-首页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionIndex", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getIndexVO(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

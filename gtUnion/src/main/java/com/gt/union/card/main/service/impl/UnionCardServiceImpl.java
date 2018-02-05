@@ -207,10 +207,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId)
-                .eq("type", type);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId)
+            .eq("type", type);
 
         return unionCardDao.selectOne(entityWrapper);
     }
@@ -223,10 +223,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId)
-                .eq("activity_id", activityId);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId)
+            .eq("activity_id", activityId);
 
         return unionCardDao.selectOne(entityWrapper);
     }
@@ -241,9 +241,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("type", type)
-                .ge("create_time", geCreateTime);
+            .eq("union_id", unionId)
+            .eq("type", type)
+            .ge("create_time", geCreateTime);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -256,9 +256,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId)
-                .eq("type", type);
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId)
+            .eq("type", type);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -271,9 +271,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId)
-                .eq("activity_id", activityId);
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId)
+            .eq("activity_id", activityId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -286,9 +286,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -301,10 +301,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId)
-                .eq("type", type);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId)
+            .eq("type", type);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -317,9 +317,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("fan_id", fanId)
-                .eq("type", type);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("fan_id", fanId)
+            .eq("type", type);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -469,9 +469,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
         }
 
         //编程式事务
-        GtJsonResult result = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+        GtJsonResult result = transactionTemplate.execute(new TransactionCallback<GtJsonResult>() {
             Date currentDate = DateUtil.getCurrentDate();
             List<UnionCard> saveDiscountCardList = new ArrayList<>();
+
             @Override
             public GtJsonResult doInTransaction(TransactionStatus status) {
 
@@ -479,7 +480,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 if (ListUtil.isNotEmpty(unionIdList)) {
                     String key = RedissonKeyUtil.getUnionCardByFanIdKey(fanId);
                     RLock rLock = redissonClient.getLock(key);
-                    try{
+                    try {
                         rLock.lock(5, TimeUnit.SECONDS);
                         for (Integer unionId : unionIdList) {
                             UnionMain union = unionMainService.getValidById(unionId);
@@ -507,11 +508,11 @@ public class UnionCardServiceImpl implements IUnionCardService {
                         if (ListUtil.isNotEmpty(saveDiscountCardList) && ListUtil.isEmpty(activityIdList)) {
                             saveBatch(saveDiscountCardList);
                         }
-                    }catch (BaseException e){
+                    } catch (BaseException e) {
                         return GtJsonResult.instanceErrorMsg(e.getErrorMsg());
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         return GtJsonResult.instanceErrorMsg();
-                    }finally {
+                    } finally {
                         rLock.unlock();
                     }
 
@@ -519,7 +520,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
                 // 办理活动卡
                 // 新增未付款的联盟卡购买记录，并返回支付链接
-                try{
+                try {
                     if (ListUtil.isNotEmpty(activityIdList)) {
                         List<UnionCardRecord> saveCardRecordList = new ArrayList<>();
                         String orderNo = "LM" + ConfigConstant.PAY_MODEL_CARD + DateUtil.getSerialNumber();
@@ -575,24 +576,24 @@ public class UnionCardServiceImpl implements IUnionCardService {
                             return GtJsonResult.instanceSuccessMsg(result);
                         }
                     }
-                }catch (Exception e){
+                } catch (BaseException e) {
                     status.setRollbackOnly();
-                    if(e instanceof BaseException){
-                        return GtJsonResult.instanceErrorMsg(((BaseException) e).getErrorMsg());
-                    }
+                    return GtJsonResult.instanceErrorMsg(e.getErrorMsg());
+                } catch (Exception e) {
+                    status.setRollbackOnly();
                     return GtJsonResult.instanceErrorMsg();
                 }
                 return null;
             }
         });
 
-        if(result != null){
-            if(result.isSuccess()){
-                return (UnionPayVO)result.getData();
-            }else {
-                if(StringUtil.isNotEmpty(result.getErrorMsg())){
+        if (result != null) {
+            if (result.isSuccess()) {
+                return (UnionPayVO) result.getData();
+            } else {
+                if (StringUtil.isNotEmpty(result.getErrorMsg())) {
                     throw new BusinessException(result.getErrorMsg());
-                }else {
+                } else {
                     throw new Exception();
                 }
             }
@@ -669,10 +670,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         }
         String key = RedissonKeyUtil.getUnionCardOrderKey(orderNo);
         RLock rLock = redissonClient.getLock(key);
+        //TODO redisson锁
         rLock.lock(5, TimeUnit.SECONDS);
-        try{
+        try {
 
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         for (UnionCardRecord record : recordList) {
             Integer payStatus = record.getPayStatus();
             if (CardConstant.PAY_STATUS_SUCCESS == payStatus || CardConstant.PAY_STATUS_FAIL == payStatus || CardConstant.PAY_STATUS_RETURN == payStatus) {
@@ -681,14 +684,14 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 return JSONObject.toJSONString(result);
             }
         }
-        GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+        GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>() {
             @Override
             public GtJsonResult doInTransaction(TransactionStatus transactionStatus) {
                 List<UnionCardRecord> updateRecordList = new ArrayList<>();
                 Date currentDate = DateUtil.getCurrentDate();
                 Map<Integer, Integer> unionIds = new HashMap<Integer, Integer>();
                 List<UnionCard> saveDiscountCardList = new ArrayList<>();
-                try{
+                try {
                     for (UnionCardRecord record : recordList) {
 
                         // 根据订单信息生成活动卡
@@ -769,7 +772,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                     if (ListUtil.isNotEmpty(saveIncomeList)) {
                         unionBrokerageIncomeService.saveBatch(saveIncomeList);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     transactionStatus.setRollbackOnly();
                     logger.error("办理联盟卡支付成功回调错误", e);
                     return GtJsonResult.instanceErrorMsg(e.getMessage());
@@ -778,7 +781,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
             }
         });
 
-        if(gtJsonResult.isSuccess()){
+        if (gtJsonResult.isSuccess()) {
             // socket通知
             if (StringUtil.isNotEmpty(socketKey)) {
                 socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
@@ -786,7 +789,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
             result.put("code", 0);
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);
-        }else {
+        } else {
             result.put("code", -1);
             result.put("msg", gtJsonResult.getErrorMsg());
             return JSONObject.toJSONString(result);
@@ -829,7 +832,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         BigDecimal surplusSharingMoney = BigDecimalUtil.subtract(payMoney, sharedMoneySum);
         if (surplusSharingRatio.doubleValue() > 0 && surplusSharingMoney.doubleValue() > 0) {
             Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId || ListUtil.isEmpty(ratioList))
-                    ? unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId() : ratioList.get(0).getMemberId();
+                ? unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId() : ratioList.get(0).getMemberId();
 
             UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();
             ownerSaveSharingRecord.setDelStatus(CommonConstant.DEL_STATUS_NO);
@@ -912,8 +915,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("type", type);
+            .eq("union_id", unionId)
+            .eq("type", type);
 
         return unionCardDao.selectCount(entityWrapper);
     }
@@ -926,8 +929,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId);
 
         return unionCardDao.selectCount(entityWrapper);
     }
@@ -940,10 +943,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId)
-                .eq("type", type);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId)
+            .eq("type", type);
 
         return unionCardDao.selectCount(entityWrapper) > 0;
     }
@@ -956,10 +959,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId)
-                .eq("activity_id", activityId);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("union_id", unionId)
+            .eq("fan_id", fanId)
+            .eq("activity_id", activityId);
 
         return unionCardDao.selectCount(entityWrapper) > 0;
     }
@@ -1092,7 +1095,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardDao.selectOne(entityWrapper);
     }
@@ -1105,7 +1108,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardDao.selectOne(entityWrapper);
     }
@@ -1180,7 +1183,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -1193,7 +1196,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -1218,7 +1221,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -1231,7 +1234,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -1256,7 +1259,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -1269,7 +1272,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -1294,7 +1297,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -1307,7 +1310,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardDao.selectList(entityWrapper);
     }

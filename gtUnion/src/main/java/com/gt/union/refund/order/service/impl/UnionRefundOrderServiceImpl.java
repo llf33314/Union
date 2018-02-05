@@ -22,56 +22,56 @@ public class UnionRefundOrderServiceImpl implements IUnionRefundOrderService {
     @Autowired
     private IUnionRefundOrderDao unionRefundOrderDao;
 
-	@Override
-	public void save(UnionRefundOrder refundOrder) throws Exception {
-		if (refundOrder == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
+    @Override
+    public void save(UnionRefundOrder refundOrder) throws Exception {
+        if (refundOrder == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
 
-		unionRefundOrderDao.insert(refundOrder);
-	}
+        unionRefundOrderDao.insert(refundOrder);
+    }
 
-	@Override
-	public UnionRefundOrder getValidById(Integer refundOrderId) throws Exception {
-		if (refundOrderId == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		EntityWrapper wrapper = new EntityWrapper<>();
-		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		wrapper.eq("id", refundOrderId);
-		return unionRefundOrderDao.selectOne(wrapper);
-	}
+    @Override
+    public UnionRefundOrder getValidById(Integer refundOrderId) throws Exception {
+        if (refundOrderId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.eq("id", refundOrderId);
+        return unionRefundOrderDao.selectOne(wrapper);
+    }
 
-	@Override
-	public void update(UnionRefundOrder refundOrder) throws Exception {
-		if (refundOrder == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		unionRefundOrderDao.updateById(refundOrder);
-	}
+    @Override
+    public void update(UnionRefundOrder refundOrder) throws Exception {
+        if (refundOrder == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        unionRefundOrderDao.updateById(refundOrder);
+    }
 
-	@Override
-	public UnionRefundOrder getValidByOrderNoAndStatusAndType(String orderNo, Integer status, Integer type) throws Exception {
-		if (orderNo == null || status == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		EntityWrapper wrapper = new EntityWrapper<>();
-		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		wrapper.eq("sys_order_no", orderNo);
-		wrapper.eq("status", status);
-		wrapper.eq("type", type);
-		return unionRefundOrderDao.selectOne(wrapper);
-	}
+    @Override
+    public UnionRefundOrder getValidByOrderNoAndStatusAndType(String orderNo, Integer status, Integer type) throws Exception {
+        if (orderNo == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.eq("sys_order_no", orderNo);
+        wrapper.eq("status", status);
+        wrapper.eq("type", type);
+        return unionRefundOrderDao.selectOne(wrapper);
+    }
 
-	@Override
-	public List<UnionRefundOrder> listValidByStatusAndType(Integer status, Integer type) throws Exception {
-		if (type == null || status == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		EntityWrapper wrapper = new EntityWrapper<>();
-		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		wrapper.eq("status", status);
-		wrapper.eq("type", type);
-		return unionRefundOrderDao.selectList(wrapper);
-	}
+    @Override
+    public List<UnionRefundOrder> listValidByStatusAndType(Integer status, Integer type) throws Exception {
+        if (type == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.eq("status", status);
+        wrapper.eq("type", type);
+        return unionRefundOrderDao.selectList(wrapper);
+    }
 }

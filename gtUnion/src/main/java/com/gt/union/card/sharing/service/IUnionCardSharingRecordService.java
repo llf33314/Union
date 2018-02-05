@@ -41,7 +41,7 @@ public interface IUnionCardSharingRecordService {
      * @throws Exception 统一处理异常
      */
     List<CardSharingRecordVO> listCardSharingRecordVOByBusIdAndUnionId(
-            Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception;
+        Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 

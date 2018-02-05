@@ -41,7 +41,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("sys_order_no", orderNo);
+            .eq("sys_order_no", orderNo);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -93,7 +93,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardRecordDao.selectOne(entityWrapper);
     }
@@ -106,7 +106,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardRecordDao.selectOne(entityWrapper);
     }
@@ -119,7 +119,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("sys_order_no", orderNo);
+            .eq("sys_order_no", orderNo);
 
         return unionCardRecordDao.selectOne(entityWrapper);
     }
@@ -162,7 +162,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -175,7 +175,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -200,7 +200,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -213,7 +213,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -238,7 +238,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -251,7 +251,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -276,7 +276,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -289,7 +289,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -314,7 +314,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -327,7 +327,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
@@ -428,15 +428,15 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
         unionCardRecordDao.updateBatchById(updateUnionCardRecordList);
     }
 
-	@Override
-	public boolean updateRecordStatusByIds(List<Integer> recordIds, int payStatus) {
+    @Override
+    public boolean updateRecordStatusByIds(List<Integer> recordIds, int payStatus) {
         EntityWrapper wrapper = new EntityWrapper<>();
-        wrapper.in("id",recordIds);
+        wrapper.in("id", recordIds);
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         wrapper.eq("pay_status", ConsumeConstant.PAY_STATUS_PAYING);
         UnionCardRecord record = new UnionCardRecord();
         record.setPayStatus(payStatus);
         return unionCardRecordDao.update(record, wrapper);
-	}
+    }
 
 }

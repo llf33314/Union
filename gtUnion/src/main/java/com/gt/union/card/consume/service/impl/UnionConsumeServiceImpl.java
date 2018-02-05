@@ -123,7 +123,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("sys_order_no", orderNo);
+            .eq("sys_order_no", orderNo);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
@@ -136,8 +136,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("sys_order_no", orderNo)
-                .eq("business_type", model);
+            .eq("sys_order_no", orderNo)
+            .eq("business_type", model);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
@@ -150,8 +150,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("business_order_id", businessOrderId)
-                .eq("business_type", businessModel);
+            .eq("business_order_id", businessOrderId)
+            .eq("business_type", businessModel);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
@@ -212,7 +212,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
     @Override
     public List<ConsumeRecordVO> listConsumeRecordVOByBusId(
-            Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
+        Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -224,20 +224,20 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         payStatusList.add(ConsumeConstant.PAY_STATUS_FAIL);
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("member_id", memberIdList)
-                .eq(ListUtil.isEmpty(memberList), "member_id", null)
-                .eq(optUnionId != null, "union_id", optUnionId)
-                .eq(optShopId != null, "shop_id", optShopId)
-                .in("pay_status", payStatusList)
-                .ge(optBeginTime != null, "create_time", optBeginTime)
-                .le(optEndTime != null, "create_time", optEndTime)
-                .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
-                        " SELECT f.id FROM t_union_card_fan f "
-                                + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
-                                + " AND f.id = t_union_consume.fan_id "
-                                + (StringUtil.isNotEmpty(optCardNumber) ? (" AND f.number LIKE '%" + optCardNumber + "%' ") : "")
-                                + (StringUtil.isNotEmpty(optPhone) ? (" AND f.phone LIKE '%" + optPhone + "%' ") : ""))
-                .orderBy("create_time", false);
+            .in("member_id", memberIdList)
+            .eq(ListUtil.isEmpty(memberList), "member_id", null)
+            .eq(optUnionId != null, "union_id", optUnionId)
+            .eq(optShopId != null, "shop_id", optShopId)
+            .in("pay_status", payStatusList)
+            .ge(optBeginTime != null, "create_time", optBeginTime)
+            .le(optEndTime != null, "create_time", optEndTime)
+            .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
+                " SELECT f.id FROM t_union_card_fan f "
+                    + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
+                    + " AND f.id = t_union_consume.fan_id "
+                    + (StringUtil.isNotEmpty(optCardNumber) ? (" AND f.number LIKE '%" + optCardNumber + "%' ") : "")
+                    + (StringUtil.isNotEmpty(optPhone) ? (" AND f.phone LIKE '%" + optPhone + "%' ") : ""))
+            .orderBy("create_time", false);
 
         List<UnionConsume> consumeList = unionConsumeDao.selectList(entityWrapper);
 
@@ -246,7 +246,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
     @Override
     public Page pageConsumeRecordVOByBusId(
-            Page page, Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
+        Page page, Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -258,20 +258,20 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         payStatusList.add(ConsumeConstant.PAY_STATUS_FAIL);
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("member_id", memberIdList)
-                .eq(ListUtil.isEmpty(memberList), "member_id", null)
-                .eq(optUnionId != null, "union_id", optUnionId)
-                .eq(optShopId != null, "shop_id", optShopId)
-                .in("pay_status", payStatusList)
-                .ge(optBeginTime != null, "create_time", optBeginTime)
-                .le(optEndTime != null, "create_time", optEndTime)
-                .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
-                        " SELECT f.id FROM t_union_card_fan f "
-                                + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
-                                + " AND f.id = t_union_consume.fan_id "
-                                + (StringUtil.isNotEmpty(optCardNumber) ? (" AND f.number LIKE '%" + optCardNumber + "%' ") : "")
-                                + (StringUtil.isNotEmpty(optPhone) ? (" AND f.phone LIKE '%" + optPhone + "%' ") : ""))
-                .orderBy("create_time", false);
+            .in("member_id", memberIdList)
+            .eq(ListUtil.isEmpty(memberList), "member_id", null)
+            .eq(optUnionId != null, "union_id", optUnionId)
+            .eq(optShopId != null, "shop_id", optShopId)
+            .in("pay_status", payStatusList)
+            .ge(optBeginTime != null, "create_time", optBeginTime)
+            .le(optEndTime != null, "create_time", optEndTime)
+            .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
+                " SELECT f.id FROM t_union_card_fan f "
+                    + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
+                    + " AND f.id = t_union_consume.fan_id "
+                    + (StringUtil.isNotEmpty(optCardNumber) ? (" AND f.number LIKE '%" + optCardNumber + "%' ") : "")
+                    + (StringUtil.isNotEmpty(optPhone) ? (" AND f.phone LIKE '%" + optPhone + "%' ") : ""))
+            .orderBy("create_time", false);
 
         Page result = unionConsumeDao.selectPage(page, entityWrapper);
         List<UnionConsume> resultDataList = result.getRecords();
@@ -330,9 +330,9 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId)
-                .eq("pay_status", ConsumeConstant.PAY_STATUS_SUCCESS)
-                .orderBy("create_time", false);
+            .eq("fan_id", fanId)
+            .eq("pay_status", ConsumeConstant.PAY_STATUS_SUCCESS)
+            .orderBy("create_time", false);
 
         return unionConsumeDao.selectPage(page, entityWrapper);
     }
@@ -345,7 +345,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (busId == null || unionId == null || fanId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        logger.info("联盟卡消费核销参数信息：busId == " + busId + ", unionId == " + unionId + ", fanId == " + fanId + ", ConsumePostVO : " +JSONObject.toJSONString(vo));
+        logger.info("联盟卡消费核销参数信息：busId == " + busId + ", unionId == " + unionId + ", fanId == " + fanId + ", ConsumePostVO : " + JSONObject.toJSONString(vo));
         // 判断union有效性
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
@@ -388,11 +388,11 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (consumeMoney == null || consumeMoney < 0) {
             throw new BusinessException("消费金额不能为空，且不能小于0");
         }
-        if(consumeMoney > ConfigConstant.CONSUME_MAX_MONEY){
+        if (consumeMoney > ConfigConstant.CONSUME_MAX_MONEY) {
             throw new BusinessException("单次消费金额最大为5万元");
         }
         Integer isUseIntegral = vo.getIsUseIntegral();
-        if(CommonConstant.COMMON_YES == isUseIntegral && union.getIsIntegral() != UnionConstant.IS_INTEGRAL_YES ){
+        if (CommonConstant.COMMON_YES == isUseIntegral && union.getIsIntegral() != UnionConstant.IS_INTEGRAL_YES) {
             throw new BusinessException("不可使用积分抵扣");
         }
         Double discount = member.getDiscount() != null ? member.getDiscount() : 1.0;
@@ -511,14 +511,14 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
             PayParam payParam = new PayParam();
             payParam.setTotalFee(saveConsume.getPayMoney())
-                    .setOrderNum(saveConsume.getSysOrderNo())
-                    .setIsreturn(CommonConstant.COMMON_NO)
-                    .setNotifyUrl(notifyUrl)
-                    .setIsSendMessage(CommonConstant.COMMON_NO)
-                    .setPayWay(0)
-                    .setDesc("消费核销")
-                    .setPayDuoFen(false)
-                    .setBusId(busId);
+                .setOrderNum(saveConsume.getSysOrderNo())
+                .setIsreturn(CommonConstant.COMMON_NO)
+                .setNotifyUrl(notifyUrl)
+                .setIsSendMessage(CommonConstant.COMMON_NO)
+                .setPayWay(0)
+                .setDesc("消费核销")
+                .setPayDuoFen(false)
+                .setBusId(busId);
             WxPublicUsers publicUsers = busUserService.getWxPublicUserByBusId(busId);
             payParam.setAppid(CommonUtil.isNotEmpty(publicUsers) ? publicUsers.getAppid() : null);
 
@@ -553,7 +553,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
     @Override
     public String updateCallbackByOrderNo(final String orderNo, String socketKey, final String payType, final String payOrderNo, final Integer isSuccess) {
-        logger.info("联盟卡消费支付回调参数：" + "orderNo == " + orderNo + ",socketKey == " + socketKey + ",payType == " + payType + ",payOrderNo == " + payOrderNo + ",isSuccess == " +isSuccess);
+        logger.info("联盟卡消费支付回调参数：" + "orderNo == " + orderNo + ",socketKey == " + socketKey + ",payType == " + payType + ",payOrderNo == " + payOrderNo + ",isSuccess == " + isSuccess);
         Map<String, Object> result = new HashMap<>(2);
         if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
@@ -587,7 +587,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             result.put("msg", "订单已重复处理");
             return JSONObject.toJSONString(result);
         } else {
-            GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+            GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>() {
                 @Override
                 public GtJsonResult doInTransaction(TransactionStatus transactionStatus) {
                     UnionConsume updateConsume = new UnionConsume();
@@ -620,7 +620,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                     } else {
                         updateIntegral = new UnionCardIntegral();
                         updateIntegral.setId(integral.getId());
-                        Double temIntegral = BigDecimalUtil.subtract(integral.getIntegral(), CommonUtil.isNotEmpty(consume.getUseIntegral()) ?consume.getUseIntegral() : 0).doubleValue();
+                        Double temIntegral = BigDecimalUtil.subtract(integral.getIntegral(), CommonUtil.isNotEmpty(consume.getUseIntegral()) ? consume.getUseIntegral() : 0).doubleValue();
                         BigDecimal finalIntegral = BigDecimalUtil.add(temIntegral, CommonUtil.isNotEmpty(consume.getGiveIntegral()) ? consume.getGiveIntegral() : 0);
                         updateIntegral.setIntegral(BigDecimalUtil.toDouble(finalIntegral));
                     }
@@ -642,13 +642,13 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                     return GtJsonResult.instanceSuccessMsg();
                 }
             });
-            if(gtJsonResult.isSuccess()){
+            if (gtJsonResult.isSuccess()) {
                 // socket通知
                 socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
                 result.put("code", 0);
                 result.put("msg", "成功");
                 return JSONObject.toJSONString(result);
-            }else {
+            } else {
                 result.put("code", -1);
                 result.put("msg", gtJsonResult.getErrorMsg());
                 return JSONObject.toJSONString(result);
@@ -657,13 +657,14 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
     }
 
     /**
-     *  修改消费订单支付状态
-     * @param id       消费订单id
+     * 修改消费订单支付状态
+     *
+     * @param id        消费订单id
      * @param payStatus 支付状态
      */
     private boolean updateConsumeStatusById(Integer id, int payStatus) {
         EntityWrapper<UnionConsume> wrapper = new EntityWrapper<>();
-        wrapper.eq("id",id);
+        wrapper.eq("id", id);
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         wrapper.eq("pay_status", ConsumeConstant.PAY_STATUS_PAYING);
 
@@ -681,7 +682,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         }
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionConsumeDao.selectCount(entityWrapper);
     }
@@ -693,8 +694,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         }
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("fan_id", fanId)
-                .eq("pay_status", status);
+            .eq("fan_id", fanId)
+            .eq("pay_status", status);
 
         return unionConsumeDao.selectCount(entityWrapper);
     }
@@ -738,7 +739,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
@@ -751,7 +752,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
@@ -794,7 +795,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }
@@ -807,7 +808,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }
@@ -832,7 +833,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }
@@ -845,7 +846,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }
@@ -870,7 +871,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }
@@ -883,7 +884,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }
@@ -908,7 +909,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }
@@ -921,7 +922,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionConsumeDao.selectList(entityWrapper);
     }

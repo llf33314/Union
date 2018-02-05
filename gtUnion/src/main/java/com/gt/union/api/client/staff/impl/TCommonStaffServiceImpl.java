@@ -28,59 +28,59 @@ import java.util.Map;
 @Service
 public class TCommonStaffServiceImpl implements ITCommonStaffService {
 
-	private Logger logger = LoggerFactory.getLogger(TCommonStaffServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(TCommonStaffServiceImpl.class);
 
-	@Autowired
-	private IUnionVerifierService unionVerifierService;
+    @Autowired
+    private IUnionVerifierService unionVerifierService;
 
-	@Override
-	public List<TCommonStaff> listTCommonStaffByShopId(Integer shopId, Integer busId) {
-		logger.info("根据门店id获取员工列表shopId：{}", shopId);
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("shopId", shopId);
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getStaffListShopId.do";
-		try{
-			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
-			logger.info("根据门店id获取员工列表，结果：{}", result);
-			Map map = ApiResultHandlerUtil.getDataObject(result, Map.class);
-			List<TCommonStaff> list = JSONArray.parseArray(map.get("staffList").toString(), TCommonStaff.class);
-			List exitsList = new ArrayList<>();
-			if(ListUtil.isNotEmpty(list)){
-				List<UnionVerifier> verifiers = unionVerifierService.listValidFinanceByBusId(busId);
-				if(ListUtil.isNotEmpty(verifiers)){
-					for(TCommonStaff staff : list){
-						for(UnionVerifier verifier : verifiers){
-							if(staff.getId().equals(verifier.getEmployeeId())){
-								exitsList.add(staff);
-								break;
-							}
-						}
-					}
-					list.removeAll(exitsList);
-				}else {
-					return list;
-				}
-			}
-			return list;
-		}catch (Exception e){
-			logger.error("根据门店id获取员工列表错误", e);
-			return null;
-		}
-	}
+    @Override
+    public List<TCommonStaff> listTCommonStaffByShopId(Integer shopId, Integer busId) {
+        logger.info("根据门店id获取员工列表shopId：{}", shopId);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("shopId", shopId);
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getStaffListShopId.do";
+        try {
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
+            logger.info("根据门店id获取员工列表，结果：{}", result);
+            Map map = ApiResultHandlerUtil.getDataObject(result, Map.class);
+            List<TCommonStaff> list = JSONArray.parseArray(map.get("staffList").toString(), TCommonStaff.class);
+            List exitsList = new ArrayList<>();
+            if (ListUtil.isNotEmpty(list)) {
+                List<UnionVerifier> verifiers = unionVerifierService.listValidFinanceByBusId(busId);
+                if (ListUtil.isNotEmpty(verifiers)) {
+                    for (TCommonStaff staff : list) {
+                        for (UnionVerifier verifier : verifiers) {
+                            if (staff.getId().equals(verifier.getEmployeeId())) {
+                                exitsList.add(staff);
+                                break;
+                            }
+                        }
+                    }
+                    list.removeAll(exitsList);
+                } else {
+                    return list;
+                }
+            }
+            return list;
+        } catch (Exception e) {
+            logger.error("根据门店id获取员工列表错误", e);
+            return null;
+        }
+    }
 
-	@Override
-	public TCommonStaff getTCommonStaffById(Integer staffId) {
-		logger.info("根据员工id获取员工信息staffId：{}", staffId);
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("staffId", staffId);
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getStaffId.do";
-		try{
-			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
-			logger.info("根据员工id获取员工信息，结果：{}", result);
-			return ApiResultHandlerUtil.getDataObject(result, TCommonStaff.class);
-		}catch (Exception e){
-			logger.error("根据员工id获取员工信息错误", e);
-			return null;
-		}
-	}
+    @Override
+    public TCommonStaff getTCommonStaffById(Integer staffId) {
+        logger.info("根据员工id获取员工信息staffId：{}", staffId);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("staffId", staffId);
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getStaffId.do";
+        try {
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
+            logger.info("根据员工id获取员工信息，结果：{}", result);
+            return ApiResultHandlerUtil.getDataObject(result, TCommonStaff.class);
+        } catch (Exception e) {
+            logger.error("根据员工id获取员工信息错误", e);
+            return null;
+        }
+    }
 }

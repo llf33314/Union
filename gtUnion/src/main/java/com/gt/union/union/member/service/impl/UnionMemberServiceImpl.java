@@ -257,7 +257,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
 
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("status", status);
+            .eq("status", status);
 
         return unionMemberDao.selectList(entityWrapper);
     }
@@ -979,7 +979,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         // (2)db
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
         result = unionMemberDao.selectList(entityWrapper);
         setValidCache(result, busId, UnionMemberCacheUtil.TYPE_BUS_ID);
         return result;
@@ -1001,7 +1001,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         // (2)db
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
         result = unionMemberDao.selectList(entityWrapper);
         setInvalidCache(result, busId, UnionMemberCacheUtil.TYPE_BUS_ID);
         return result;
@@ -1044,7 +1044,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         // (2)db
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMemberDao.selectList(entityWrapper);
         setValidCache(result, unionId, UnionMemberCacheUtil.TYPE_UNION_ID);
         return result;
@@ -1066,7 +1066,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         // (2)db
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMemberDao.selectList(entityWrapper);
         setInvalidCache(result, unionId, UnionMemberCacheUtil.TYPE_UNION_ID);
         return result;

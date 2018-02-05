@@ -159,11 +159,11 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_bus_id", fromBusId)
-                .eq("status", status)
-                .in("to_bus_id", toBusIdList)
-                .eq(ListUtil.isEmpty(toBusIdList), "to_bus_id", null)
-                .orderBy("create_time", false);
+            .eq("from_bus_id", fromBusId)
+            .eq("status", status)
+            .in("to_bus_id", toBusIdList)
+            .eq(ListUtil.isEmpty(toBusIdList), "to_bus_id", null)
+            .orderBy("create_time", false);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -176,11 +176,11 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_bus_id", toBusId)
-                .eq("status", status)
-                .in("from_bus_id", fromBusIdList)
-                .eq(ListUtil.isEmpty(fromBusIdList), "from_bus_id", null)
-                .orderBy("create_time", false);
+            .eq("to_bus_id", toBusId)
+            .eq("status", status)
+            .in("from_bus_id", fromBusIdList)
+            .eq(ListUtil.isEmpty(fromBusIdList), "from_bus_id", null)
+            .orderBy("create_time", false);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -193,14 +193,14 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("sys_order_no", orderNo);
+            .eq("sys_order_no", orderNo);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
 
     @Override
     public Page pageBrokerageOpportunityVOByBusId(
-            Page page, Integer busId, Integer optUnionId, Integer optFromMemberId, Integer optIsClose, String optClientName, String optClientPhone) throws Exception {
+        Page page, Integer busId, Integer optUnionId, Integer optFromMemberId, Integer optIsClose, String optClientName, String optClientPhone) throws Exception {
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -210,15 +210,15 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         // 获取已被接受的商机推荐
         EntityWrapper<UnionOpportunity> opportunityEntityWrapper = new EntityWrapper<>();
         opportunityEntityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
-                .in("to_member_id", toMemberIdList)
-                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
-                .eq(optUnionId != null, "union_id", optUnionId)
-                .eq(optFromMemberId != null, "from_member_id", optFromMemberId)
-                .eq(optIsClose != null, "is_close", optIsClose)
-                .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
-                .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
-                .orderBy("is_close ASC, create_time", true);
+            .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
+            .in("to_member_id", toMemberIdList)
+            .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
+            .eq(optUnionId != null, "union_id", optUnionId)
+            .eq(optFromMemberId != null, "from_member_id", optFromMemberId)
+            .eq(optIsClose != null, "is_close", optIsClose)
+            .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
+            .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
+            .orderBy("is_close ASC, create_time", true);
 
         Page result = unionOpportunityService.pageSupport(page, opportunityEntityWrapper);
         // toVO
@@ -255,8 +255,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         // 按联盟创建时间顺序、盟员创建时间顺序排序
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.in("id", contactMemberIdList)
-                .eq(ListUtil.isEmpty(contactMemberIdList), "id", null)
-                .orderBy("union_id ASC, create_time", true);
+            .eq(ListUtil.isEmpty(contactMemberIdList), "id", null)
+            .orderBy("union_id ASC, create_time", true);
         Page result = unionMemberService.pageSupport(page, entityWrapper);
         // toVO
         List<UnionMember> dataList = result.getRecords();
@@ -291,8 +291,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         // 按联盟创建时间顺序、盟员创建时间顺序排序
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.in("id", contactMemberIdList)
-                .eq(ListUtil.isEmpty(contactMemberIdList), "id", null)
-                .orderBy("union_id ASC, create_time", true);
+            .eq(ListUtil.isEmpty(contactMemberIdList), "id", null)
+            .orderBy("union_id ASC, create_time", true);
         List<UnionMember> dataList = unionMemberService.listSupport(entityWrapper);
         // toVO
         return listBrokeragePayVO(busIdList, dataList);
@@ -331,7 +331,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        logger.info("商机支付请求参数信息：busId == " + busId + ", verifierId == " + verifierId + ", opportunityIdList : " +JSONObject.toJSONString(opportunityIdList) + ", memberId == " + memberId);
+        logger.info("商机支付请求参数信息：busId == " + busId + ", verifierId == " + verifierId + ", opportunityIdList : " + JSONObject.toJSONString(opportunityIdList) + ", memberId == " + memberId);
         logger.info("商机支付模块：=====>" + unionBrokeragePayStrategyService.getClass().getName());
         // 校验参数有效性
         List<UnionBrokeragePay> savePayList = new ArrayList<>();
@@ -400,7 +400,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         RLock rLock1 = redissonClient.getLock(orderKey);
         rLock1.lock(10, TimeUnit.SECONDS);
         RLock rLock = null;
-        try{
+        try {
             List<UnionBrokeragePay> payList = listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(payList)) {
                 result.put("code", -1);
@@ -424,7 +424,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             }
             List<UnionOpportunity> opportunities = unionOpportunityService.listByIdList(opportunityIds);
             final List<UnionOpportunity> refundOpportunityList = new ArrayList<>();
-            if(ListUtil.isNotEmpty(opportunities)){
+            if (ListUtil.isNotEmpty(opportunities)) {
                 //订单总额
                 double totalMoney = 0d;
                 //退款金额
@@ -433,13 +433,13 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 final List<UnionOpportunity> updateOpportunityList = new ArrayList<>();
                 final List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
                 final List<Integer> opportunityIdList = new ArrayList<Integer>();
-                for(UnionOpportunity opportunity : opportunities){
+                for (UnionOpportunity opportunity : opportunities) {
                     totalMoney = BigDecimalUtil.add(totalMoney, opportunity.getBrokerageMoney()).doubleValue();
-                    if(CommonConstant.COMMON_YES == opportunity.getIsClose()){
+                    if (CommonConstant.COMMON_YES == opportunity.getIsClose()) {
                         //已结算  需退款
                         refundMoney = BigDecimalUtil.add(refundMoney, opportunity.getBrokerageMoney()).doubleValue();
                         refundOpportunityList.add(opportunity);
-                    }else {
+                    } else {
                         //未结算
                         opportunityIdList.add(opportunity.getId());
 
@@ -468,12 +468,12 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 final double refundFee = refundMoney;
                 final double totalFee = totalMoney;
                 //事务
-                GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+                GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>() {
 
                     @Override
                     public GtJsonResult doInTransaction(TransactionStatus status) {
 
-                        try{
+                        try {
                             //更新订单状态
                             if (ListUtil.isNotEmpty(opportunityIdList)) {
                                 EntityWrapper wrapper = new EntityWrapper<>();
@@ -502,19 +502,19 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                                 unionOpportunityService.updateBatch(updateOpportunityList);
                             }
                             //退款列表
-                            if(ListUtil.isNotEmpty(refundOpportunityList)){
+                            if (ListUtil.isNotEmpty(refundOpportunityList)) {
                                 //去退款
                                 refundOpportunity(orderNo, refundFee, totalFee, refundOpportunityList);
                             }
-                        }catch (Exception e){
-                            logger.error("操作失败",e);
+                        } catch (Exception e) {
+                            logger.error("操作失败", e);
                             status.setRollbackOnly();
                             return GtJsonResult.instanceErrorMsg(e.getMessage());
                         }
                         return GtJsonResult.instanceSuccessMsg();
                     }
                 });
-                if(gtJsonResult.isSuccess()){
+                if (gtJsonResult.isSuccess()) {
                     //成功
                     // socket通知
                     if (StringUtil.isNotEmpty(socketKey)) {
@@ -522,24 +522,24 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                     }
                     result.put("code", 0);
                     result.put("msg", "成功");
-                }else {
+                } else {
                     //异常
                     result.put("code", -1);
                     result.put("msg", gtJsonResult.getErrorMsg());
                     return JSONObject.toJSONString(result);
                 }
-            }else {
+            } else {
                 result.put("code", -1);
                 result.put("msg", "不存在商机信息");
                 return JSONObject.toJSONString(result);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
-        }finally {
-            if(rLock != null){
+        } finally {
+            if (rLock != null) {
                 rLock.unlock();
             }
             rLock1.unlock();
@@ -550,70 +550,69 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
     @Async
     private void refundOpportunity(final String orderNo, final double refundFee, final double totalFee, final List<UnionOpportunity> refundOpportunityList) {
-        try{
+        try {
             UnionRefundOrder successRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_SUCCESS, RefundOrderConstant.TYPE_OPPORTUNITY);
             //没有退款
-            if(successRefundOrder == null){
+            if (successRefundOrder == null) {
                 //退款
-                final GtJsonResult gtJsonResult = wxPayService.refundOrder(orderNo,refundFee, totalFee);
-                final Map data = (Map)gtJsonResult.getData();
+                final GtJsonResult gtJsonResult = wxPayService.refundOrder(orderNo, refundFee, totalFee);
+                final Map data = (Map) gtJsonResult.getData();
 
-                transactionTemplate.execute(new TransactionCallback(){
+                transactionTemplate.execute(new TransactionCallback() {
 
                     @Override
                     public Boolean doInTransaction(TransactionStatus transactionStatus) {
-                    try{
-                        Date currentDate = new Date();
-                        UnionRefundOrder applyRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
-                        if(applyRefundOrder == null){
-                            applyRefundOrder = new UnionRefundOrder();
-                            applyRefundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                            applyRefundOrder.setCreateTime(currentDate);
-                            applyRefundOrder.setRefundMoney(refundFee);
-                            applyRefundOrder.setSysOrderNo(orderNo);
-                            applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
-                            applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
-                            applyRefundOrder.setTotalMoney(totalFee);
-                            unionRefundOrderService.save(applyRefundOrder);
+                        try {
+                            Date currentDate = new Date();
+                            UnionRefundOrder applyRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_APPLYING, RefundOrderConstant.TYPE_OPPORTUNITY);
+                            if (applyRefundOrder == null) {
+                                applyRefundOrder = new UnionRefundOrder();
+                                applyRefundOrder.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                applyRefundOrder.setCreateTime(currentDate);
+                                applyRefundOrder.setRefundMoney(refundFee);
+                                applyRefundOrder.setSysOrderNo(orderNo);
+                                applyRefundOrder.setType(RefundOrderConstant.TYPE_OPPORTUNITY);
+                                applyRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                                applyRefundOrder.setTotalMoney(totalFee);
+                                unionRefundOrderService.save(applyRefundOrder);
 
-                            if(ListUtil.isNotEmpty(refundOpportunityList)){
-                                List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
-                                for(UnionOpportunity opportunity : refundOpportunityList){
-                                    UnionRefundOpportunity refundOpportunity = new UnionRefundOpportunity();
-                                    refundOpportunity.setCreateTime(new Date());
-                                    refundOpportunity.setOpportunityId(opportunity.getId());
-                                    refundOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                                    refundOpportunity.setRefundOrderId(applyRefundOrder.getId());
-                                    refundOpporList.add(refundOpportunity);
+                                if (ListUtil.isNotEmpty(refundOpportunityList)) {
+                                    List<UnionRefundOpportunity> refundOpporList = new ArrayList<UnionRefundOpportunity>();
+                                    for (UnionOpportunity opportunity : refundOpportunityList) {
+                                        UnionRefundOpportunity refundOpportunity = new UnionRefundOpportunity();
+                                        refundOpportunity.setCreateTime(new Date());
+                                        refundOpportunity.setOpportunityId(opportunity.getId());
+                                        refundOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                        refundOpportunity.setRefundOrderId(applyRefundOrder.getId());
+                                        refundOpporList.add(refundOpportunity);
+                                    }
+                                    unionRefundOpportunityService.saveBatch(refundOpporList);
                                 }
-                                unionRefundOpportunityService.saveBatch(refundOpporList);
                             }
-                        }
 
-                        if(gtJsonResult.isSuccess()){
-                            UnionRefundOrder successRefundOrder = new UnionRefundOrder();
-                            successRefundOrder.setId(applyRefundOrder.getId());
-                            successRefundOrder.setModifyTime(new Date());
-                            successRefundOrder.setDesc("退款成功");
-                            successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
-                            successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
-                            unionRefundOrderService.update(successRefundOrder);
-                        }
+                            if (gtJsonResult.isSuccess()) {
+                                UnionRefundOrder successRefundOrder = new UnionRefundOrder();
+                                successRefundOrder.setId(applyRefundOrder.getId());
+                                successRefundOrder.setModifyTime(new Date());
+                                successRefundOrder.setDesc("退款成功");
+                                successRefundOrder.setStatus(RefundOrderConstant.REFUND_STATUS_SUCCESS);
+                                successRefundOrder.setRefundOrderNo(CommonUtil.isNotEmpty(data.get("data")) ? data.get("data").toString() : "");
+                                unionRefundOrderService.update(successRefundOrder);
+                            }
 
-                    }catch (Exception e){
-                        logger.error("商机退款失败", e);
-                        transactionStatus.setRollbackOnly();
-                        return false;
-                    }
-                    return true;
+                        } catch (Exception e) {
+                            logger.error("商机退款失败", e);
+                            transactionStatus.setRollbackOnly();
+                            return false;
+                        }
+                        return true;
                     }
                 });
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("商机退款失败", e);
         }
     }
-
 
 
     //********************************************* Base On Business - other *******************************************
@@ -626,10 +625,10 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_bus_id", fromBusId)
-                .eq("status", status)
-                .in("to_bus_id", toBusIdList)
-                .eq(ListUtil.isEmpty(toBusIdList), "to_bus_id", null);
+            .eq("from_bus_id", fromBusId)
+            .eq("status", status)
+            .in("to_bus_id", toBusIdList)
+            .eq(ListUtil.isEmpty(toBusIdList), "to_bus_id", null);
 
         entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokeragePayDao.selectMap(entityWrapper);
@@ -645,10 +644,10 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("from_bus_id", fromBusIdList)
-                .eq(ListUtil.isEmpty(fromBusIdList), "from_bus_id", null)
-                .eq("status", status)
-                .eq("to_bus_id", toBusId);
+            .in("from_bus_id", fromBusIdList)
+            .eq(ListUtil.isEmpty(fromBusIdList), "from_bus_id", null)
+            .eq("status", status)
+            .eq("to_bus_id", toBusId);
 
         entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokeragePayDao.selectMap(entityWrapper);
@@ -664,8 +663,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("opportunity_id", opportunityId)
-                .eq("status", status);
+            .eq("opportunity_id", opportunityId)
+            .eq("status", status);
 
         return unionBrokeragePayDao.selectCount(entityWrapper) > 0;
     }
@@ -781,7 +780,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionBrokeragePayDao.selectOne(entityWrapper);
     }
@@ -794,7 +793,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionBrokeragePayDao.selectOne(entityWrapper);
     }
@@ -837,7 +836,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_bus_id", fromBusId);
+            .eq("from_bus_id", fromBusId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -850,7 +849,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("from_bus_id", fromBusId);
+            .eq("from_bus_id", fromBusId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -875,7 +874,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_bus_id", toBusId);
+            .eq("to_bus_id", toBusId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -888,7 +887,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("to_bus_id", toBusId);
+            .eq("to_bus_id", toBusId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -913,7 +912,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -926,7 +925,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -951,7 +950,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -964,7 +963,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -989,7 +988,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -1002,7 +1001,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -1027,7 +1026,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("opportunity_id", opportunityId);
+            .eq("opportunity_id", opportunityId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -1040,7 +1039,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("opportunity_id", opportunityId);
+            .eq("opportunity_id", opportunityId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -1065,7 +1064,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("verifier_id", verifierId);
+            .eq("verifier_id", verifierId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }
@@ -1078,7 +1077,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("verifier_id", verifierId);
+            .eq("verifier_id", verifierId);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }

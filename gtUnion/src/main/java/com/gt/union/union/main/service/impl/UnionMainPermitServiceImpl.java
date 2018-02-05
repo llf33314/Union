@@ -74,7 +74,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
 
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("sys_order_no", sysOrderNo);
+            .eq("sys_order_no", sysOrderNo);
 
         return unionMainPermitDao.selectOne(entityWrapper);
     }
@@ -126,14 +126,14 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey;
 
         PayParam payParam = new PayParam()
-                .setTotalFee(savePermit.getOrderMoney())
-                .setOrderNum(savePermit.getSysOrderNo())
-                .setIsreturn(CommonConstant.COMMON_NO)
-                .setNotifyUrl(notifyUrl)
-                .setIsSendMessage(CommonConstant.COMMON_NO)
-                .setPayWay(0)
-                .setDesc("购买盟主服务")
-                .setPayDuoFen(true);
+            .setTotalFee(savePermit.getOrderMoney())
+            .setOrderNum(savePermit.getSysOrderNo())
+            .setIsreturn(CommonConstant.COMMON_NO)
+            .setNotifyUrl(notifyUrl)
+            .setIsSendMessage(CommonConstant.COMMON_NO)
+            .setPayWay(0)
+            .setDesc("购买盟主服务")
+            .setPayDuoFen(true);
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setOrderNo(orderNo);
@@ -343,7 +343,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         // (2)db
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
         result = unionMainPermitDao.selectList(entityWrapper);
         setValidCache(result, busId, UnionMainPermitCacheUtil.TYPE_BUS_ID);
         return result;
@@ -365,7 +365,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         // (2)db
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
         result = unionMainPermitDao.selectList(entityWrapper);
         setInvalidCache(result, busId, UnionMainPermitCacheUtil.TYPE_BUS_ID);
         return result;
@@ -408,7 +408,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         // (2)db
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("package_id", packageId);
+            .eq("package_id", packageId);
         result = unionMainPermitDao.selectList(entityWrapper);
         setValidCache(result, packageId, UnionMainPermitCacheUtil.TYPE_PACKAGE_ID);
         return result;
@@ -430,7 +430,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         // (2)db
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("package_id", packageId);
+            .eq("package_id", packageId);
         result = unionMainPermitDao.selectList(entityWrapper);
         setInvalidCache(result, packageId, UnionMainPermitCacheUtil.TYPE_PACKAGE_ID);
         return result;

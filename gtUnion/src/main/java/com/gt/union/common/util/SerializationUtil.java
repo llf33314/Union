@@ -7,14 +7,16 @@ import java.io.ObjectOutputStream;
 
 /**
  * 序列化工具类
+ *
  * @author qusk
  * @date 2016年7月4日
  * @description
  */
 public class SerializationUtil {
 
-	/**
+    /**
      * 序列化
+     *
      * @param object
      * @return
      */
@@ -34,6 +36,7 @@ public class SerializationUtil {
 
     /**
      * 反序列化
+     *
      * @param bytes
      * @return
      */

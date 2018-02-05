@@ -73,6 +73,7 @@ public interface IH5BrokerageService {
 
     /**
      * 佣金平台-首页-我要提现-佣金明细-推荐佣金-分页
+     *
      * @param h5BrokerageUser
      * @param unionId
      * @param page
@@ -142,10 +143,10 @@ public interface IH5BrokerageService {
     /**
      * 佣金平台-首页-我需支付-未支付-一键支付
      *
-     * @param h5BrokerageUser 登录信息
-     * @param unionId         联盟id
+     * @param h5BrokerageUser                  登录信息
+     * @param unionId                          联盟id
      * @param unionBrokeragePayStrategyService
-	 * @param memberId
+     * @param memberId
      * @return UnionPayVO
      * @throws Exception 统一处理异常
      */

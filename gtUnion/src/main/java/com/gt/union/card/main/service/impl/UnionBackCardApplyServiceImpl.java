@@ -17,31 +17,31 @@ import java.util.List;
  * @time 2017-12-21 10:15
  **/
 @Service("unionBackCardApplyService")
-public class UnionBackCardApplyServiceImpl implements IUnionCardApplyService{
+public class UnionBackCardApplyServiceImpl implements IUnionCardApplyService {
 
-	@Autowired
-	private WxPayService wxPayService;
+    @Autowired
+    private WxPayService wxPayService;
 
-	@Override
-	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList) {
-		UnionPayVO result = new UnionPayVO();
-		String socketKey = PropertiesUtil.getSocketKey() + SocketKeyConstant.APPLY_CARD + busId;
-		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=" + socketKey;
+    @Override
+    public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList) {
+        UnionPayVO result = new UnionPayVO();
+        String socketKey = PropertiesUtil.getSocketKey() + SocketKeyConstant.APPLY_CARD + busId;
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=" + socketKey;
 
-		PayParam payParam = new PayParam();
-		payParam.setTotalFee(payMoneySum);
-		payParam.setOrderNum(orderNo);
-		payParam.setIsreturn(CommonConstant.COMMON_NO);
-		payParam.setNotifyUrl(notifyUrl);
-		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-		payParam.setPayWay(1);
-		payParam.setDesc("办理联盟卡");
-		payParam.setPayDuoFen(true);
-		String payUrl = wxPayService.qrCodePay(payParam);
+        PayParam payParam = new PayParam();
+        payParam.setTotalFee(payMoneySum);
+        payParam.setOrderNum(orderNo);
+        payParam.setIsreturn(CommonConstant.COMMON_NO);
+        payParam.setNotifyUrl(notifyUrl);
+        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
+        payParam.setPayWay(1);
+        payParam.setDesc("办理联盟卡");
+        payParam.setPayDuoFen(true);
+        String payUrl = wxPayService.qrCodePay(payParam);
 
-		result.setOrderNo(orderNo);
-		result.setPayUrl(payUrl);
-		result.setSocketKey(socketKey);
-		return result;
-	}
+        result.setOrderNo(orderNo);
+        result.setPayUrl(payUrl);
+        result.setSocketKey(socketKey);
+        return result;
+    }
 }

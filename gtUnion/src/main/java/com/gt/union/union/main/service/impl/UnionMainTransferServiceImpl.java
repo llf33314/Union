@@ -564,7 +564,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
         result = unionMainTransferDao.selectList(entityWrapper);
         setValidCache(result, fromMemberId, UnionMainTransferCacheUtil.TYPE_FROM_MEMBER_ID);
         return result;
@@ -586,7 +586,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
         result = unionMainTransferDao.selectList(entityWrapper);
         setInvalidCache(result, fromMemberId, UnionMainTransferCacheUtil.TYPE_FROM_MEMBER_ID);
         return result;
@@ -629,7 +629,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
         result = unionMainTransferDao.selectList(entityWrapper);
         setValidCache(result, toMemberId, UnionMainTransferCacheUtil.TYPE_TO_MEMBER_ID);
         return result;
@@ -651,7 +651,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
         result = unionMainTransferDao.selectList(entityWrapper);
         setInvalidCache(result, toMemberId, UnionMainTransferCacheUtil.TYPE_TO_MEMBER_ID);
         return result;
@@ -694,7 +694,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainTransferDao.selectList(entityWrapper);
         setValidCache(result, unionId, UnionMainTransferCacheUtil.TYPE_UNION_ID);
         return result;
@@ -716,7 +716,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainTransferDao.selectList(entityWrapper);
         setInvalidCache(result, unionId, UnionMainTransferCacheUtil.TYPE_UNION_ID);
         return result;

@@ -29,17 +29,17 @@ import java.util.List;
 @RequestMapping("/api/staff")
 public class StaffApiController {
 
-	@Autowired
-	private ITCommonStaffService commonStaffService;
+    @Autowired
+    private ITCommonStaffService commonStaffService;
 
-	@ApiOperation(value = "根据门店列表获取员工列表", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/list/{shopId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult<List<TCommonStaff>> listStaffByShopId(HttpServletRequest request,
-					 @ApiParam(value = "门店id", name = "shopId", required = true)
-					 @PathVariable(value = "shopId") Integer shopId) throws Exception {
-		BusUser busUser = SessionUtils.getLoginUser(request);
-		List<TCommonStaff> list = commonStaffService.listTCommonStaffByShopId(shopId, busUser.getId());
-		return GtJsonResult.instanceSuccessMsg(list);
-	}
+    @ApiOperation(value = "根据门店列表获取员工列表", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list/{shopId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<List<TCommonStaff>> listStaffByShopId(HttpServletRequest request,
+                                                              @ApiParam(value = "门店id", name = "shopId", required = true)
+                                                              @PathVariable(value = "shopId") Integer shopId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        List<TCommonStaff> list = commonStaffService.listTCommonStaffByShopId(shopId, busUser.getId());
+        return GtJsonResult.instanceSuccessMsg(list);
+    }
 
 }

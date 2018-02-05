@@ -10,7 +10,7 @@ import com.gt.union.common.util.PropertiesUtil;
  * @author linweicong
  * @version 2017-10-19 16:27:37
  */
-public class PhoneMessage extends SmsMessage{
+public class PhoneMessage extends SmsMessage {
     private String company;
 
     private Integer model;
@@ -24,7 +24,7 @@ public class PhoneMessage extends SmsMessage{
     /**
      * 默认构造函数，json转对象时需要
      */
-    private PhoneMessage(){
+    private PhoneMessage() {
     }
 
     public PhoneMessage(Integer busId, String mobiles, String content) {

@@ -25,7 +25,7 @@ public interface IUnionCardRecordService {
      * @throws Exception 统一处理异常
      */
     List<UnionCardRecord> listValidByOrderNo(String orderNo) throws Exception;
-    
+
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -306,9 +306,10 @@ public interface IUnionCardRecordService {
 
     /**
      * 修改办理联盟卡订单支付状态
-     * @param recordIds     办理联盟卡订单记录
-     * @param payStatus     支付状态
+     *
+     * @param recordIds 办理联盟卡订单记录
+     * @param payStatus 支付状态
      * @return
      */
-	boolean updateRecordStatusByIds(List<Integer> recordIds, int payStatus);
+    boolean updateRecordStatusByIds(List<Integer> recordIds, int payStatus);
 }

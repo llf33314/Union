@@ -11,26 +11,27 @@ import com.gt.union.wxapp.card.constant.WxAppCardConstant;
  **/
 public class WxAppCacheKeyUtil {
 
-	/**
-	 * 解密后的key
-	 * @param token
-	 * @param desKey
-	 * @return
-	 * @throws Exception
-	 */
-	public static String getRedisMemberKeyByToken(String token, String desKey) throws Exception {
-		try {
-			token = (new DESKeysUtil(desKey)).getDesString(token);
-		} catch (Exception e) {
-			return null;
-		}
+    /**
+     * 解密后的key
+     *
+     * @param token
+     * @param desKey
+     * @return
+     * @throws Exception
+     */
+    public static String getRedisMemberKeyByToken(String token, String desKey) throws Exception {
+        try {
+            token = (new DESKeysUtil(desKey)).getDesString(token);
+        } catch (Exception e) {
+            return null;
+        }
 
-		if(!token.startsWith(WxAppCardConstant.UNION_TOKEN_KEY)) {
-			throw new BusinessException(CommonConstant.TOKEN_ERROR);
-		} else {
-			token = token.split(WxAppCardConstant.REDIS_MEMBER_LINK)[0];
-			String redisUserKey = token.replace(WxAppCardConstant.UNION_TOKEN_KEY, "");
-			return redisUserKey;
-		}
-	}
+        if (!token.startsWith(WxAppCardConstant.UNION_TOKEN_KEY)) {
+            throw new BusinessException(CommonConstant.TOKEN_ERROR);
+        } else {
+            token = token.split(WxAppCardConstant.REDIS_MEMBER_LINK)[0];
+            String redisUserKey = token.replace(WxAppCardConstant.UNION_TOKEN_KEY, "");
+            return redisUserKey;
+        }
+    }
 }

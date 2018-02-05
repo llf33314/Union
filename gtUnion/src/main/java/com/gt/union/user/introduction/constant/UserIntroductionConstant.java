@@ -6,13 +6,13 @@ package com.gt.union.user.introduction.constant;
  **/
 public interface UserIntroductionConstant {
 
-	/**
-	 * 图片介绍
-	 */
-	int INTRODUCTION_IMG_TYPE = 1;
+    /**
+     * 图片介绍
+     */
+    int INTRODUCTION_IMG_TYPE = 1;
 
-	/**
-	 * 文字介绍
-	 */
-	int INTRODUCTION_TEXT_TYPE = 2;
+    /**
+     * 文字介绍
+     */
+    int INTRODUCTION_TEXT_TYPE = 2;
 }

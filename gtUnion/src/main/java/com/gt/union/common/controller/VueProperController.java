@@ -21,14 +21,14 @@ import java.util.Map;
 @RequestMapping("/vue/prop")
 public class VueProperController {
 
-	@ApiOperation(value = "根据门店列表获取员工列表", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/79B4DE7C/urls", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult listStaffByShopId(HttpServletRequest request) throws Exception {
-		Map<String,Object> data = new HashMap<String,Object>();
-		data.put("socketUrl", PropertiesUtil.getSocketUrl());
-		data.put("wxmpUrl", PropertiesUtil.getWxmpUrl());
-		data.put("unionUrl", PropertiesUtil.getUnionUrl());
-		data.put("sucUrl",PropertiesUtil.getSucUrl());
-		return GtJsonResult.instanceSuccessMsg(data);
-	}
+    @ApiOperation(value = "根据门店列表获取员工列表", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/79B4DE7C/urls", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult listStaffByShopId(HttpServletRequest request) throws Exception {
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("socketUrl", PropertiesUtil.getSocketUrl());
+        data.put("wxmpUrl", PropertiesUtil.getWxmpUrl());
+        data.put("unionUrl", PropertiesUtil.getUnionUrl());
+        data.put("sucUrl", PropertiesUtil.getSucUrl());
+        return GtJsonResult.instanceSuccessMsg(data);
+    }
 }

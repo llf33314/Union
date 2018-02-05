@@ -30,72 +30,72 @@ import java.util.Map;
 @Service
 public class UnionConsumeGiveIntegralServiceImpl implements IUnionConsumeGiveIntegralService {
 
-	private org.slf4j.Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
 
-	@Autowired
-	private IUnionConsumeService unionConsumeService;
+    @Autowired
+    private IUnionConsumeService unionConsumeService;
 
-	@Autowired
-	private IUnionMainService unionMainService;
+    @Autowired
+    private IUnionMainService unionMainService;
 
-	@Autowired
-	private IDictService dictService;
+    @Autowired
+    private IDictService dictService;
 
-	@Autowired
-	private IUnionCardIntegralService unionCardIntegralService;
+    @Autowired
+    private IUnionCardIntegralService unionCardIntegralService;
 
-	@Override
-	public void giveConsumeIntegral(Map param) throws Exception {
-		logger.info("定时任务赠送积分参数：{}", JSON.toJSONString(param));
-		Object model = param.get("model");
-		Object orderId = param.get("orderId");
-		if(CommonUtil.isEmpty(model) || CommonUtil.isEmpty(orderId)){
-			throw  new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		Integer businessModel = CommonUtil.toInteger(model);
-		Integer businessOrderId = CommonUtil.toInteger(orderId);
-		UnionConsume consume = unionConsumeService.getValidByBusinessOrderIdAndModel(businessOrderId, businessModel);
+    @Override
+    public void giveConsumeIntegral(Map param) throws Exception {
+        logger.info("定时任务赠送积分参数：{}", JSON.toJSONString(param));
+        Object model = param.get("model");
+        Object orderId = param.get("orderId");
+        if (CommonUtil.isEmpty(model) || CommonUtil.isEmpty(orderId)) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Integer businessModel = CommonUtil.toInteger(model);
+        Integer businessOrderId = CommonUtil.toInteger(orderId);
+        UnionConsume consume = unionConsumeService.getValidByBusinessOrderIdAndModel(businessOrderId, businessModel);
         boolean flag = consume != null && consume.getPayStatus() == ConsumeConstant.PAY_STATUS_SUCCESS && (CommonUtil.isEmpty(consume.getGiveIntegral()) || consume.getGiveIntegral() == 0);
         //是否赠送积分
-		if(flag){
-			//记录存在且支付成功且没有赠送积分
-			if(CommonUtil.isNotEmpty(consume.getUnionId())){
-				UnionMain main = unionMainService.getValidById(consume.getUnionId());
-				if(unionMainService.isUnionValid(main)){
-					if(main.getIsIntegral() == CommonConstant.COMMON_YES){
-						//开启积分
-						Double giveIntegral = dictService.getGiveIntegral();
-						double integral = BigDecimalUtil.toDouble(BigDecimalUtil.multiply(consume.getConsumeMoney() == null ? Double.valueOf(0) : consume.getConsumeMoney(), giveIntegral));
-						UnionConsume unionConsume = new UnionConsume();
-						unionConsume.setId(consume.getId());
-						unionConsume.setGiveIntegral(integral);
-						unionConsumeService.update(unionConsume);
+        if (flag) {
+            //记录存在且支付成功且没有赠送积分
+            if (CommonUtil.isNotEmpty(consume.getUnionId())) {
+                UnionMain main = unionMainService.getValidById(consume.getUnionId());
+                if (unionMainService.isUnionValid(main)) {
+                    if (main.getIsIntegral() == CommonConstant.COMMON_YES) {
+                        //开启积分
+                        Double giveIntegral = dictService.getGiveIntegral();
+                        double integral = BigDecimalUtil.toDouble(BigDecimalUtil.multiply(consume.getConsumeMoney() == null ? Double.valueOf(0) : consume.getConsumeMoney(), giveIntegral));
+                        UnionConsume unionConsume = new UnionConsume();
+                        unionConsume.setId(consume.getId());
+                        unionConsume.setGiveIntegral(integral);
+                        unionConsumeService.update(unionConsume);
 
-						//赠送积分
-						UnionCardIntegral unionCardIntegral = unionCardIntegralService.getValidByUnionIdAndFanId(consume.getUnionId(), consume.getFanId());
-						if (unionCardIntegral == null) {
-							UnionCardIntegral saveIntegral = new UnionCardIntegral();
-							saveIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
-							saveIntegral.setCreateTime(new Date());
-							saveIntegral.setFanId(consume.getFanId());
-							saveIntegral.setUnionId(consume.getUnionId());
-							saveIntegral.setIntegral(CommonUtil.isNotEmpty(unionConsume.getGiveIntegral()) ? unionConsume.getGiveIntegral() : 0);
-							unionCardIntegralService.save(saveIntegral);
-						} else {
-							Double cardIntegral = unionCardIntegral.getIntegral() == null ? Double.valueOf(0) : unionCardIntegral.getIntegral();
-							BigDecimal tempIntegral = BigDecimalUtil.add(cardIntegral, unionConsume.getGiveIntegral());
+                        //赠送积分
+                        UnionCardIntegral unionCardIntegral = unionCardIntegralService.getValidByUnionIdAndFanId(consume.getUnionId(), consume.getFanId());
+                        if (unionCardIntegral == null) {
+                            UnionCardIntegral saveIntegral = new UnionCardIntegral();
+                            saveIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                            saveIntegral.setCreateTime(new Date());
+                            saveIntegral.setFanId(consume.getFanId());
+                            saveIntegral.setUnionId(consume.getUnionId());
+                            saveIntegral.setIntegral(CommonUtil.isNotEmpty(unionConsume.getGiveIntegral()) ? unionConsume.getGiveIntegral() : 0);
+                            unionCardIntegralService.save(saveIntegral);
+                        } else {
+                            Double cardIntegral = unionCardIntegral.getIntegral() == null ? Double.valueOf(0) : unionCardIntegral.getIntegral();
+                            BigDecimal tempIntegral = BigDecimalUtil.add(cardIntegral, unionConsume.getGiveIntegral());
 
-							UnionCardIntegral updateIntegral = new UnionCardIntegral();
-							updateIntegral.setId(unionCardIntegral.getId());
-							updateIntegral.setIntegral(BigDecimalUtil.toDouble(tempIntegral));
-							unionCardIntegralService.update(updateIntegral);
-						}
+                            UnionCardIntegral updateIntegral = new UnionCardIntegral();
+                            updateIntegral.setId(unionCardIntegral.getId());
+                            updateIntegral.setIntegral(BigDecimalUtil.toDouble(tempIntegral));
+                            unionCardIntegralService.update(updateIntegral);
+                        }
 
-					}
-				}
-			}
+                    }
+                }
+            }
 
-		}
+        }
 
-	}
+    }
 }

@@ -42,9 +42,9 @@ public class UnionOpportunityController {
     @ApiOperation(value = "列表：我的佣金收入来源", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/toMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listFromMemberByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -63,9 +63,9 @@ public class UnionOpportunityController {
     @ApiOperation(value = "列表：我的佣金去向", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/fromMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listToMemberByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -84,16 +84,16 @@ public class UnionOpportunityController {
     @ApiOperation(value = "分页：商机-我的商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageToMe(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId,
-            @ApiParam(value = "受理状态(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
-            @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
-            @ApiParam(value = "客户名称", name = "clientName")
-            @RequestParam(value = "clientName", required = false) String clientName,
-            @ApiParam(value = "客户电话", name = "clientPhone")
-            @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @RequestParam(value = "unionId", required = false) Integer unionId,
+        @ApiParam(value = "受理状态(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
+        @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
+        @ApiParam(value = "客户名称", name = "clientName")
+        @RequestParam(value = "clientName", required = false) String clientName,
+        @ApiParam(value = "客户电话", name = "clientPhone")
+        @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -114,16 +114,16 @@ public class UnionOpportunityController {
     @ApiOperation(value = "分页：商机-我要推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fromMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageFromMe(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId,
-            @ApiParam(value = "受理状态(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
-            @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
-            @ApiParam(value = "客户名称", name = "clientName")
-            @RequestParam(value = "clientName", required = false) String clientName,
-            @ApiParam(value = "客户电话", name = "clientPhone")
-            @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @RequestParam(value = "unionId", required = false) Integer unionId,
+        @ApiParam(value = "受理状态(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
+        @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
+        @ApiParam(value = "客户名称", name = "clientName")
+        @RequestParam(value = "clientName", required = false) String clientName,
+        @ApiParam(value = "客户电话", name = "clientPhone")
+        @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -164,15 +164,15 @@ public class UnionOpportunityController {
     @ApiOperation(value = "商机-我的商机-分页数据-接受或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateStatusByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "商机id", name = "opportunityId", required = true)
-            @PathVariable("opportunityId") Integer opportunityId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "是否接受(0:否 1:是)", name = "isAccept", required = true)
-            @RequestParam(value = "isAccept") Integer isAccept,
-            @ApiParam(value = "受理金额，接受时必填", name = "acceptPrice")
-            @RequestParam(value = "acceptPrice", required = false) Double acceptPrice) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "商机id", name = "opportunityId", required = true)
+        @PathVariable("opportunityId") Integer opportunityId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "是否接受(0:否 1:是)", name = "isAccept", required = true)
+        @RequestParam(value = "isAccept") Integer isAccept,
+        @ApiParam(value = "受理金额，接受时必填", name = "acceptPrice")
+        @RequestParam(value = "acceptPrice", required = false) Double acceptPrice) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -189,11 +189,11 @@ public class UnionOpportunityController {
     @ApiOperation(value = "商机-我要推荐-我要推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveOpportunityVOByUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "表单信息", name = "opportunityVO", required = true)
-            @RequestBody OpportunityVO opportunityVO) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "表单信息", name = "opportunityVO", required = true)
+        @RequestBody OpportunityVO opportunityVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

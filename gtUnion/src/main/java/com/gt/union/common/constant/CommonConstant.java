@@ -76,7 +76,7 @@ public interface CommonConstant {
      * 找不到盟员信息或已退盟
      */
     String MEMBER_NOT_FOUND = "找不到盟员信息";
-    
+
     /**
      * 验证码有误
      */

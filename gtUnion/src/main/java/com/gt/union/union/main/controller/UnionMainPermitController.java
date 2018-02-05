@@ -44,9 +44,9 @@ public class UnionMainPermitController {
     @ApiOperation(value = "我的联盟-创建联盟-购买盟主服务-支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/packageId/{packageId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveByPackageId(
-            HttpServletRequest request,
-            @ApiParam(value = "套餐id", name = "packageId", required = true)
-            @PathVariable("packageId") Integer packageId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "套餐id", name = "packageId", required = true)
+        @PathVariable("packageId") Integer packageId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

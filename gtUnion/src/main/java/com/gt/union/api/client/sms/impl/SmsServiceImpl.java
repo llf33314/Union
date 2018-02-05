@@ -18,82 +18,83 @@ import java.util.Map;
 
 /**
  * 短信服务api
+ *
  * @author hongjiye
- * Created by Administrator on 2017/11/25 0022.
+ * @time 2017/11/25 0022.
  */
 @Service
 public class SmsServiceImpl implements SmsService {
 
-	private Logger logger = LoggerFactory.getLogger(SmsServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(SmsServiceImpl.class);
 
-	@Autowired
-	private RedisCacheUtil redisCacheUtil;
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
 
-	@Override
-	public boolean sendSms(PhoneMessage phoneMessage) {
-		logger.info("发送短信：{}", JSON.toJSONString(phoneMessage));
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
-		try {
-			RequestUtils requestUtils = new RequestUtils<PhoneMessage>();
-			requestUtils.setReqdata(phoneMessage);
-			String data = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(requestUtils), PropertiesUtil.getWxmpSignKey());
-			if(StringUtil.isEmpty(data)){
-				return false;
-			}
-			Map result = JSONObject.parseObject(data,Map.class);
-			if(CommonUtil.toInteger(result.get("code")) != 0){
-				return false;
-			}
-		}catch (Exception e){
-			logger.error("发送短信错误", e);
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean sendSms(PhoneMessage phoneMessage) {
+        logger.info("发送短信：{}", JSON.toJSONString(phoneMessage));
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
+        try {
+            RequestUtils requestUtils = new RequestUtils<PhoneMessage>();
+            requestUtils.setReqdata(phoneMessage);
+            String data = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(requestUtils), PropertiesUtil.getWxmpSignKey());
+            if (StringUtil.isEmpty(data)) {
+                return false;
+            }
+            Map result = JSONObject.parseObject(data, Map.class);
+            if (CommonUtil.toInteger(result.get("code")) != 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("发送短信错误", e);
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean sendTempSms(TemplateSmsMessage templateSmsMessage) {
-		logger.info("发送模板短信：{}", JSON.toJSONString(templateSmsMessage));
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsNew.do";
-		try {
-			RequestUtils requestUtils = new RequestUtils<TemplateSmsMessage>();
-			requestUtils.setReqdata(templateSmsMessage);
-			String data = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(requestUtils), PropertiesUtil.getWxmpSignKey());
-			if(StringUtil.isEmpty(data)){
-				return false;
-			}
-			Map result = JSONObject.parseObject(data,Map.class);
-			if(CommonUtil.toInteger(result.get("code")) != 0){
-				return false;
-			}
-		}catch (Exception e){
-			logger.error("发送模板短信错误", e);
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean sendTempSms(TemplateSmsMessage templateSmsMessage) {
+        logger.info("发送模板短信：{}", JSON.toJSONString(templateSmsMessage));
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsNew.do";
+        try {
+            RequestUtils requestUtils = new RequestUtils<TemplateSmsMessage>();
+            requestUtils.setReqdata(templateSmsMessage);
+            String data = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(requestUtils), PropertiesUtil.getWxmpSignKey());
+            if (StringUtil.isEmpty(data)) {
+                return false;
+            }
+            Map result = JSONObject.parseObject(data, Map.class);
+            if (CommonUtil.toInteger(result.get("code")) != 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("发送模板短信错误", e);
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean checkPhoneCode(Integer type, String code, String phone) {
-		logger.info("短信验证码校验type：{}，code：{}，phone：{}", type, code, phone);
-		try{
-			String key = "phoneCode:" + type + ":" + phone;
-			if(redisCacheUtil.exists(key)){
-				String checkCode = redisCacheUtil.get(type + ":" + phone);
-				checkCode = JSONArray.parseObject(checkCode, String.class);
-				if(CommonUtil.isEmpty(checkCode)){
-					return false;
-				}
-				if(!checkCode.equals(code)){
-					return false;
-				}
-			}else {
-				return false;
-			}
-		}catch (Exception e){
-			logger.error("短信验证码校验错误", e);
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean checkPhoneCode(Integer type, String code, String phone) {
+        logger.info("短信验证码校验type：{}，code：{}，phone：{}", type, code, phone);
+        try {
+            String key = "phoneCode:" + type + ":" + phone;
+            if (redisCacheUtil.exists(key)) {
+                String checkCode = redisCacheUtil.get(type + ":" + phone);
+                checkCode = JSONArray.parseObject(checkCode, String.class);
+                if (CommonUtil.isEmpty(checkCode)) {
+                    return false;
+                }
+                if (!checkCode.equals(code)) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("短信验证码校验错误", e);
+            return false;
+        }
+        return true;
+    }
 }

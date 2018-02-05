@@ -14,16 +14,16 @@ import java.util.List;
 @ApiModel(value = "h5联盟卡首页VO")
 public class IndexVO {
 
-	@ApiModelProperty(value = "首页联盟卡列表信息")
-	List<UnionCardVO> cardList;
+    @ApiModelProperty(value = "首页联盟卡列表信息")
+    List<UnionCardVO> cardList;
 
-	public List<UnionCardVO> getCardList() {
-		return cardList;
-	}
+    public List<UnionCardVO> getCardList() {
+        return cardList;
+    }
 
-	public void setCardList(List<UnionCardVO> cardList) {
-		this.cardList = cardList;
-	}
+    public void setCardList(List<UnionCardVO> cardList) {
+        this.cardList = cardList;
+    }
 
     @Override
     public String toString() {

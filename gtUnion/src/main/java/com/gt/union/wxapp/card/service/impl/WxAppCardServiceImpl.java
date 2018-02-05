@@ -151,7 +151,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
                     if (ListUtil.isNotEmpty(list)) {
                         for (UnionCardActivity activity : list) {
                             UnionCardVO activityCardVO = getActivityCard(activity, nowTime, unionMain.getId(), member.getId(), CommonUtil.isEmpty(fan) ? null : fan.getId());
-                            if(activityCardVO != null){
+                            if (activityCardVO != null) {
                                 activityCardList.add(activityCardVO);
                             }
                         }
@@ -161,12 +161,12 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             indexCardList.addAll(discountCardList);
             indexCardList.addAll(activityCardList);
         }
-        page = PageUtil.setRecord(page,indexCardList);
+        page = PageUtil.setRecord(page, indexCardList);
         return page;
     }
 
     @Override
-    public List<UnionMember> listNearUser(Integer busId, String enterpriseName) throws Exception{
+    public List<UnionMember> listNearUser(Integer busId, String enterpriseName) throws Exception {
         List<UnionMember> members = unionMemberService.listValidReadByBusId(busId);
         List<UnionMember> allList = new ArrayList<UnionMember>();
         if (ListUtil.isNotEmpty(members)) {
@@ -174,8 +174,8 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
                 UnionMain unionMain = unionMainService.getValidById(member.getUnionId());
                 if (unionMain != null && unionMainService.isUnionValid(unionMain)) {
                     List<UnionMember> memberList = unionMemberService.listValidReadByUnionId(unionMain.getId());
-                    if(ListUtil.isNotEmpty(memberList)){
-                        if(StringUtil.isNotEmpty(enterpriseName)){
+                    if (ListUtil.isNotEmpty(memberList)) {
+                        if (StringUtil.isNotEmpty(enterpriseName)) {
                             memberList = unionMemberService.filterByListEnterpriseName(memberList, enterpriseName);
                         }
                         allList.addAll(memberList);
@@ -202,24 +202,24 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
     }
 
 
-    private UnionCardVO getActivityCard(UnionCardActivity activity, long nowTime, Integer unionId, Integer memberId, Integer fanId) throws Exception{
+    private UnionCardVO getActivityCard(UnionCardActivity activity, long nowTime, Integer unionId, Integer memberId, Integer fanId) throws Exception {
         UnionCardVO activityCardVO = null;
-        if(nowTime > activity.getSellBeginTime().getTime()){
+        if (nowTime > activity.getSellBeginTime().getTime()) {
             //售卡开始
             activityCardVO = getUnionCardVO(activity.getName(), CardConstant.TYPE_ACTIVITY, unionId, activity.getId(), activity.getColor(), memberId);
-            if(nowTime > activity.getSellBeginTime().getTime() && nowTime < activity.getSellEndTime().getTime()){
+            if (nowTime > activity.getSellBeginTime().getTime() && nowTime < activity.getSellEndTime().getTime()) {
                 //售卡中
-                int count = unionCardService.countValidByUnionIdAndActivityId(unionId,activity.getId());
-                if(activity.getAmount() <= count){
+                int count = unionCardService.countValidByUnionIdAndActivityId(unionId, activity.getId());
+                if (activity.getAmount() <= count) {
                     //售罄
                     activityCardVO.setStatus(WxAppCardConstant.CARD_SELL_OUT);
-                }else {
+                } else {
                     if (CommonUtil.isNotEmpty(fanId) && unionCardService.existValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fanId, activity.getId())) {
                         //已办理
                         activityCardVO.setStatus(WxAppCardConstant.CARD_ACTIVITY_APPLY);
                     }
                 }
-            }else {
+            } else {
                 //结束
                 activityCardVO.setStatus(WxAppCardConstant.CARD_SELL_OUT);
             }
@@ -243,7 +243,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         if (unionMember == null) {
             throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
         }
-        if(!unionMember.getUnionId().equals(union.getId())){
+        if (!unionMember.getUnionId().equals(union.getId())) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         CardDetailVO result = new CardDetailVO();
@@ -252,10 +252,10 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
         if (CommonUtil.isEmpty(activityId)) {
             //折扣卡
-            if(!unionMemberService.existValidReadById(unionMember.getId()) || !unionMainService.isUnionValid(union)){
+            if (!unionMemberService.existValidReadById(unionMember.getId()) || !unionMainService.isUnionValid(union)) {
                 //联盟或盟员无效
                 result.setIsTransacted(CommonConstant.COMMON_NO);
-            }else {
+            } else {
                 if (fan != null && unionCardService.existValidUnexpiredByUnionIdAndFanIdAndType(unionId, fan.getId(), CardConstant.TYPE_DISCOUNT)) {
                     result.setIsTransacted(CommonConstant.COMMON_NO);
                 }
@@ -270,10 +270,10 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             if (CommonUtil.isEmpty(activity)) {
                 throw new BusinessException("找不到该联盟卡");
             }
-            if(!unionMemberService.existValidReadById(unionMember.getId()) || !unionMainService.isUnionValid(union)){
+            if (!unionMemberService.existValidReadById(unionMember.getId()) || !unionMainService.isUnionValid(union)) {
                 //联盟或盟员无效
                 result.setIsTransacted(CommonConstant.COMMON_NO);
-            }else {
+            } else {
                 if (fan != null) {
                     //办理过该活动卡
                     UnionCard card = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activityId);
@@ -289,7 +289,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
                             Integer activityCardCount = unionCardService.countValidByUnionIdAndActivityId(unionId, activityId);
                             if (activityCardCount >= activity.getAmount()) {
                                 result.setIsTransacted(CommonConstant.COMMON_NO);
-                            }else {
+                            } else {
                                 result.setValidityDay(activity.getValidityDay());
                             }
                         } else {
@@ -316,13 +316,13 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         return result;
     }
 
-    CardDetailVO checkActivity(UnionCardActivity activity, CardDetailVO result) throws Exception{
+    CardDetailVO checkActivity(UnionCardActivity activity, CardDetailVO result) throws Exception {
         if (DateTimeKit.isBetween(activity.getSellBeginTime(), activity.getSellEndTime())) {
             //有效期 可以卖
             Integer activityCardCount = unionCardService.countValidByUnionIdAndActivityId(activity.getUnionId(), activity.getId());
             if (activityCardCount >= activity.getAmount()) {
                 result.setIsTransacted(CommonConstant.COMMON_NO);
-            }else {
+            } else {
                 result.setValidityDay(activity.getValidityDay());
             }
         } else {
@@ -341,7 +341,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             Integer consumeCount = unionConsumeService.countValidPayByFanIdAndStatus(fan.getId(), ConsumeConstant.PAY_STATUS_SUCCESS);
             vo.setConsumeCount(consumeCount);
             vo.setCardNo(fan.getNumber());
-            vo.setCardImg(PropertiesUtil.getUnionUrl() + "/union/wxAppCard/"+PropertiesUtil.getAppVersion()+"/qr/cardNo?cardNo=" + fan.getNumber());
+            vo.setCardImg(PropertiesUtil.getUnionUrl() + "/union/wxAppCard/" + PropertiesUtil.getAppVersion() + "/qr/cardNo?cardNo=" + fan.getNumber());
         }
         return vo;
     }
@@ -379,7 +379,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         vo.setFan(fan);
         vo.setActivityIdList(activityList);
 
-        if(ListUtil.isEmpty(activityList)){
+        if (ListUtil.isEmpty(activityList)) {
             List unionList = new ArrayList<>();
             unionList.add(unionId);
             vo.setUnionIdList(unionList);
@@ -414,7 +414,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         if (unionMember == null) {
             throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
         }
-        if(!unionMember.getUnionId().equals(unionId)){
+        if (!unionMember.getUnionId().equals(unionId)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         List<CardDetailListVO> list = new ArrayList<>();
@@ -468,8 +468,8 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         if (fan != null) {
             EntityWrapper<UnionCard> wrapper = new EntityWrapper<>();
             wrapper.eq("fan_id", fan.getId())
-                    .eq("del_status", CommonConstant.DEL_STATUS_NO)
-                    .orderBy("type asc, create_time", false);
+                .eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .orderBy("type asc, create_time", false);
             page = unionCardService.pageSupport(page, wrapper);
             List<UnionCard> list = page.getRecords();
             if (ListUtil.isNotEmpty(list)) {
@@ -529,20 +529,20 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         payParam.setPayDuoFen(true);
         payParam.setMemberId(duoFenMemberId);
         String obj = wxPayService.wxAppPay(payParam);
-        String payUrl = PropertiesUtil.getWxmpUrl() + "/wxPay/79B4DE7C/commonpayVerApplet2_0.do?obj="+obj;
+        String payUrl = PropertiesUtil.getWxmpUrl() + "/wxPay/79B4DE7C/commonpayVerApplet2_0.do?obj=" + obj;
         String result = SignRestHttpUtil.reqGetUTF8(payUrl, null);
         Map data = JSONObject.parseObject(result, Map.class);
         data.put("signType", "MD5");
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }
 
-	@Override
-	public UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception {
-		return unionUserIntroductionService.getValidByBusId(busId);
-	}
+    @Override
+    public UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception {
+        return unionUserIntroductionService.getValidByBusId(busId);
+    }
 
-	@Override
-	public List<WsWxShopInfoExtend> listShopByBusId(Integer busId) {
-		return shopService.listByBusId(busId);
-	}
+    @Override
+    public List<WsWxShopInfoExtend> listShopByBusId(Integer busId) {
+        return shopService.listByBusId(busId);
+    }
 }

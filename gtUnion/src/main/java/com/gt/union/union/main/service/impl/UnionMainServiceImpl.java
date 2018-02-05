@@ -87,10 +87,10 @@ public class UnionMainServiceImpl implements IUnionMainService {
         // 缓存穿透：获取所有有效的，但不包括我创建和加入的联盟列表信息
         EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("join_type", UnionConstant.JOIN_TYPE_APPLY_RECOMMEND)
-                .notIn("id", unionIdList)
-                .orderBy("create_time", true);
+            .gt("validity", DateUtil.getCurrentDate())
+            .eq("join_type", UnionConstant.JOIN_TYPE_APPLY_RECOMMEND)
+            .notIn("id", unionIdList)
+            .orderBy("create_time", true);
 
         List<UnionMain> unionList = unionMainDao.selectList(entityWrapper);
         List<UnionVO> result = new ArrayList<>();

@@ -177,7 +177,7 @@ public class UnionMainDictServiceImpl implements IUnionMainDictService {
         // (2)db
         EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainDictDao.selectList(entityWrapper);
         setValidCache(result, unionId, UnionMainDictCacheUtil.TYPE_UNION_ID);
         return result;
@@ -199,7 +199,7 @@ public class UnionMainDictServiceImpl implements IUnionMainDictService {
         // (2)db
         EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainDictDao.selectList(entityWrapper);
         setInvalidCache(result, unionId, UnionMainDictCacheUtil.TYPE_UNION_ID);
         return result;

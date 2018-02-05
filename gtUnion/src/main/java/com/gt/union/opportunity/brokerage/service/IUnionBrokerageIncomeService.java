@@ -31,8 +31,8 @@ public interface IUnionBrokerageIncomeService {
      * @throws Exception 统一处理异常
      */
     Page pageBrokerageOpportunityVOByBusId(
-            Page page, Integer busId, Integer optUnionId, Integer optToMemberId,
-            Integer optIsClose, String optClientName, String optClientPhone) throws Exception;
+        Page page, Integer busId, Integer optUnionId, Integer optToMemberId,
+        Integer optIsClose, String optClientName, String optClientPhone) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 

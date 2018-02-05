@@ -33,77 +33,77 @@ import java.util.Map;
 @Service
 public class ErpServiceImpl implements ErpService {
 
-	private Logger logger = LoggerFactory.getLogger(ErpServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(ErpServiceImpl.class);
 
-	@Autowired
-	private CarErpService carErpService;
+    @Autowired
+    private CarErpService carErpService;
 
-	@Autowired
-	private ShopService shopService;
+    @Autowired
+    private ShopService shopService;
 
-	@Override
-	public List<ErpTypeVO> listErpByBusId(Integer busId) {
-		logger.info("根据商家id获取erp列表，busId:{}", busId);
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/ErploginApi/getErpListApi.do";
-		Map<String,Object> param = new HashMap<String,Object>();
-		param.put("userId",busId);
-		param.put("loginStyle",1);
-		param.put("loginUc",0);
-		List<ErpTypeVO> dataList = new ArrayList<ErpTypeVO>();
-		try{
-			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
-			logger.info("根据商家id获取erp列表，结果：{}", result);
-			Map data = ApiResultHandlerUtil.getDataObject(result,Map.class);
-			List<ErpTypeVO> list = JSON.parseArray(data.get("menusLevelList").toString(),ErpTypeVO.class);
-			if(ListUtil.isNotEmpty(list)){
-				for(ErpTypeVO vo : list){
-					for(int erpType : ConfigConstant.UNION_USER_ERP_TYPE){
-						if(erpType == vo.getErpModel()){
-							vo.setErpType(vo.getErpModel());
-							dataList.add(vo);
-						}
-					}
-				}
-			}
-		}catch (Exception e){
-			logger.error("根据商家id获取erp列表错误",e);
-			return null;
-		}
-		return dataList;
-	}
+    @Override
+    public List<ErpTypeVO> listErpByBusId(Integer busId) {
+        logger.info("根据商家id获取erp列表，busId:{}", busId);
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/ErploginApi/getErpListApi.do";
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("userId", busId);
+        param.put("loginStyle", 1);
+        param.put("loginUc", 0);
+        List<ErpTypeVO> dataList = new ArrayList<ErpTypeVO>();
+        try {
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
+            logger.info("根据商家id获取erp列表，结果：{}", result);
+            Map data = ApiResultHandlerUtil.getDataObject(result, Map.class);
+            List<ErpTypeVO> list = JSON.parseArray(data.get("menusLevelList").toString(), ErpTypeVO.class);
+            if (ListUtil.isNotEmpty(list)) {
+                for (ErpTypeVO vo : list) {
+                    for (int erpType : ConfigConstant.UNION_USER_ERP_TYPE) {
+                        if (erpType == vo.getErpModel()) {
+                            vo.setErpType(vo.getErpModel());
+                            dataList.add(vo);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("根据商家id获取erp列表错误", e);
+            return null;
+        }
+        return dataList;
+    }
 
-	@Override
-	public List<ErpServerVO> listErpServer(Integer shopId, Integer erpModel, String search, Page page, Integer busId) {
-		List<ErpServerVO> list = null;
-		switch (erpModel){
-			case 2:
-				//车小算
-				list = carErpService.listErpServer(shopId, search, busId, page);
-				if(ListUtil.isNotEmpty(list)){
-					for(ErpServerVO vo : list){
-						vo.setErpType(erpModel);
-						vo.setShopId(shopId);
-					}
-				}
-				break;
-			default:
-				break;
-		}
-		return list;
-	}
+    @Override
+    public List<ErpServerVO> listErpServer(Integer shopId, Integer erpModel, String search, Page page, Integer busId) {
+        List<ErpServerVO> list = null;
+        switch (erpModel) {
+            case 2:
+                //车小算
+                list = carErpService.listErpServer(shopId, search, busId, page);
+                if (ListUtil.isNotEmpty(list)) {
+                    for (ErpServerVO vo : list) {
+                        vo.setErpType(erpModel);
+                        vo.setShopId(shopId);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return list;
+    }
 
-	@Override
-	public Boolean userHasErpAuthority(Integer busId) {
-		List<ErpTypeVO> list = listErpByBusId(busId);
-		if(ListUtil.isEmpty(list)){
-			return false;
-		}
-		List<WsWxShopInfoExtend> shops = shopService.listByBusId(busId);
-		if(ListUtil.isEmpty(shops)){
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public Boolean userHasErpAuthority(Integer busId) {
+        List<ErpTypeVO> list = listErpByBusId(busId);
+        if (ListUtil.isEmpty(list)) {
+            return false;
+        }
+        List<WsWxShopInfoExtend> shops = shopService.listByBusId(busId);
+        if (ListUtil.isEmpty(shops)) {
+            return false;
+        }
+        return true;
+    }
 
 
 }

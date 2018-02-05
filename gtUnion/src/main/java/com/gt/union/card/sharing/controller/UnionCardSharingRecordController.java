@@ -46,16 +46,16 @@ public class UnionCardSharingRecordController {
     @ApiOperation(value = "分页：我的联盟-售卡佣金分成管理-售卡分成记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageSharingRecordVOByUnionId(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable(value = "unionId") Integer unionId,
-            @ApiParam(value = "联盟卡号", name = "cardNumber")
-            @RequestParam(value = "cardNumber", required = false) String cardNumber,
-            @ApiParam(value = "开始时间", name = "beginTime")
-            @RequestParam(value = "beginTime", required = false) Long beginTime,
-            @ApiParam(value = "结束时间", name = "endTime")
-            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable(value = "unionId") Integer unionId,
+        @ApiParam(value = "联盟卡号", name = "cardNumber")
+        @RequestParam(value = "cardNumber", required = false) String cardNumber,
+        @ApiParam(value = "开始时间", name = "beginTime")
+        @RequestParam(value = "beginTime", required = false) Long beginTime,
+        @ApiParam(value = "结束时间", name = "endTime")
+        @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -78,16 +78,16 @@ public class UnionCardSharingRecordController {
     @ApiOperation(value = "导出：我的联盟-售卡佣金分成管理-售卡分成记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportSharingRecordVOByUnionId(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable(value = "unionId") Integer unionId,
-            @ApiParam(value = "联盟卡号", name = "cardNumber")
-            @RequestParam(value = "cardNumber", required = false) String cardNumber,
-            @ApiParam(value = "开始时间", name = "beginTime")
-            @RequestParam(value = "beginTime", required = false) Long beginTime,
-            @ApiParam(value = "结束时间", name = "endTime")
-            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable(value = "unionId") Integer unionId,
+        @ApiParam(value = "联盟卡号", name = "cardNumber")
+        @RequestParam(value = "cardNumber", required = false) String cardNumber,
+        @ApiParam(value = "开始时间", name = "beginTime")
+        @RequestParam(value = "beginTime", required = false) Long beginTime,
+        @ApiParam(value = "结束时间", name = "endTime")
+        @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

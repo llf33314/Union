@@ -40,11 +40,11 @@ public class UnionCardProjectFlowController {
     @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByProjectIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "活动id", name = "activityId", required = true)
-            @PathVariable("activityId") Integer activityId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "活动id", name = "activityId", required = true)
+        @PathVariable("activityId") Integer activityId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

@@ -37,57 +37,57 @@ public class UnionUserIntroductionServiceImpl implements IUnionUserIntroductionS
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-	@Override
-	public UnionUserIntroduction getValidByBusId(Integer busId) throws Exception{
-		if(busId == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		UnionUserIntroduction result = null;
-		String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
-		String data = redisCacheUtil.get(key);
-		if(StringUtil.isNotEmpty(data)){
-			result = JSONArray.parseObject(data, UnionUserIntroduction.class);
-		}
-		EntityWrapper wrapper = new EntityWrapper<>();
-		wrapper.eq("bus_id", busId)
-				.eq("del_status", CommonConstant.DEL_STATUS_NO)
-				.orderBy("id", true);
-		result = unionUserIntroductionDao.selectOne(wrapper);
-		if(CommonUtil.isNotEmpty(result)){
-			redisCacheUtil.set(key, result);
-		}
-		return result;
-	}
+    @Override
+    public UnionUserIntroduction getValidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionUserIntroduction result = null;
+        String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
+        String data = redisCacheUtil.get(key);
+        if (StringUtil.isNotEmpty(data)) {
+            result = JSONArray.parseObject(data, UnionUserIntroduction.class);
+        }
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("bus_id", busId)
+            .eq("del_status", CommonConstant.DEL_STATUS_NO)
+            .orderBy("id", true);
+        result = unionUserIntroductionDao.selectOne(wrapper);
+        if (CommonUtil.isNotEmpty(result)) {
+            redisCacheUtil.set(key, result);
+        }
+        return result;
+    }
 
-	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public void saveOrUpdate(Integer busId, UnionUserIntroduction unionUserIntroduction) throws Exception{
-		if(busId == null || unionUserIntroduction == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		UnionUserIntroduction userIntroduction = getValidByBusId(busId);
-		String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
-		if(CommonUtil.isNotEmpty(userIntroduction)){
-			//编辑 删除以前的
-			UnionUserIntroduction introduction = new UnionUserIntroduction();
-			introduction.setId(userIntroduction.getId());
-			introduction.setDelStatus(CommonConstant.DEL_STATUS_YES);
-			unionUserIntroductionDao.updateById(introduction);
-			redisCacheUtil.remove(key);
-		}
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrUpdate(Integer busId, UnionUserIntroduction unionUserIntroduction) throws Exception {
+        if (busId == null || unionUserIntroduction == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionUserIntroduction userIntroduction = getValidByBusId(busId);
+        String key = UnionUserIntroductionCacheUtil.getBusIdKey(busId);
+        if (CommonUtil.isNotEmpty(userIntroduction)) {
+            //编辑 删除以前的
+            UnionUserIntroduction introduction = new UnionUserIntroduction();
+            introduction.setId(userIntroduction.getId());
+            introduction.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            unionUserIntroductionDao.updateById(introduction);
+            redisCacheUtil.remove(key);
+        }
 
-		UnionUserIntroduction saveUserIntroduction = new UnionUserIntroduction();
-		saveUserIntroduction.setId(null);
-		saveUserIntroduction.setBusId(busId);
-		saveUserIntroduction.setCreateTime(new Date());
-		saveUserIntroduction.setModifyTime(new Date());
-		saveUserIntroduction.setContent(unionUserIntroduction.getContent());
-		saveUserIntroduction.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        UnionUserIntroduction saveUserIntroduction = new UnionUserIntroduction();
+        saveUserIntroduction.setId(null);
+        saveUserIntroduction.setBusId(busId);
+        saveUserIntroduction.setCreateTime(new Date());
+        saveUserIntroduction.setModifyTime(new Date());
+        saveUserIntroduction.setContent(unionUserIntroduction.getContent());
+        saveUserIntroduction.setDelStatus(CommonConstant.DEL_STATUS_NO);
 
-		unionUserIntroductionDao.insert(saveUserIntroduction);
-		if(CommonUtil.isNotEmpty(saveUserIntroduction)){
-			redisCacheUtil.set(key, saveUserIntroduction);
-		}
-	}
+        unionUserIntroductionDao.insert(saveUserIntroduction);
+        if (CommonUtil.isNotEmpty(saveUserIntroduction)) {
+            redisCacheUtil.set(key, saveUserIntroduction);
+        }
+    }
 
 }

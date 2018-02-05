@@ -48,9 +48,9 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("from_member_id", fromMemberId)
-                .eq("to_member_id", toMemberId);
+            .eq("union_id", unionId)
+            .eq("from_member_id", fromMemberId)
+            .eq("to_member_id", toMemberId);
 
         return unionOpportunityRatioDao.selectOne(entityWrapper);
     }
@@ -74,9 +74,9 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         // 获取所有，但不包括自己的member列表
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .ne("bus_id", busId)
-                .orderBy("create_time", true);
+            .eq("union_id", unionId)
+            .ne("bus_id", busId)
+            .orderBy("create_time", true);
         Page result = unionMemberService.pageSupport(page, entityWrapper);
         // toVO
         result.setRecords(listOpportunityRatioVO(result.getRecords(), member.getId()));
@@ -252,7 +252,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionOpportunityRatioDao.selectOne(entityWrapper);
     }
@@ -265,7 +265,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionOpportunityRatioDao.selectOne(entityWrapper);
     }
@@ -308,7 +308,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionOpportunityRatioDao.selectList(entityWrapper);
     }
@@ -321,7 +321,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionOpportunityRatioDao.selectList(entityWrapper);
     }
@@ -346,7 +346,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
 
         return unionOpportunityRatioDao.selectList(entityWrapper);
     }
@@ -359,7 +359,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
 
         return unionOpportunityRatioDao.selectList(entityWrapper);
     }
@@ -384,7 +384,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionOpportunityRatioDao.selectList(entityWrapper);
     }
@@ -397,7 +397,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionOpportunityRatioDao.selectList(entityWrapper);
     }

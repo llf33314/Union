@@ -10,19 +10,20 @@ import java.util.List;
 
 /**
  * 表单请求参数实现类
+ *
  * @author hongjiye
- * Created by Administrator on 2017/8/16 0016.
+ * @time 2017/8/16 0016.
  */
 @Service
 public class UnionValidateServiceImpl implements IUnionValidateService {
 
-	@Override
-	public void checkBindingResult(BindingResult result) throws ParamException {
-		if (result.hasErrors()) {
-			List<ObjectError> errorList = result.getAllErrors();
-			for (ObjectError error : errorList) {
-				throw new ParamException(error.getDefaultMessage());
-			}
-		}
-	}
+    @Override
+    public void checkBindingResult(BindingResult result) throws ParamException {
+        if (result.hasErrors()) {
+            List<ObjectError> errorList = result.getAllErrors();
+            for (ObjectError error : errorList) {
+                throw new ParamException(error.getDefaultMessage());
+            }
+        }
+    }
 }

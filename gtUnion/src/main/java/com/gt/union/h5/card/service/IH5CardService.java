@@ -51,7 +51,6 @@ public interface IH5CardService {
      * @param phone  手机号
      * @param code   验证码
      * @throws Exception 统一处理异常
-     *
      */
     void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
 

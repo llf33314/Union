@@ -14,82 +14,82 @@ import java.util.List;
 @ApiModel(value = "我的联盟卡详情")
 public class MyCardDetailVO {
 
-	@ApiModelProperty(value = "用户昵称")
-	private String nickName;
+    @ApiModelProperty(value = "用户昵称")
+    private String nickName;
 
-	@ApiModelProperty(value = "用户头像")
-	private String heardImg;
+    @ApiModelProperty(value = "用户头像")
+    private String heardImg;
 
-	@ApiModelProperty(value = "联盟卡号")
-	private String cardNo;
+    @ApiModelProperty(value = "联盟卡号")
+    private String cardNo;
 
-	@ApiModelProperty(value = "联盟卡二维码")
-	private String cardImg;
+    @ApiModelProperty(value = "联盟卡二维码")
+    private String cardImg;
 
-	@ApiModelProperty(value = "联盟积分")
-	private Double integral;
+    @ApiModelProperty(value = "联盟积分")
+    private Double integral;
 
-	@ApiModelProperty(value = "消费记录数")
-	private Integer consumeCount;
+    @ApiModelProperty(value = "消费记录数")
+    private Integer consumeCount;
 
-	@ApiModelProperty(value = "联盟卡列表详情")
-	private List<MyUnionCardDetailVO> cardList;
+    @ApiModelProperty(value = "联盟卡列表详情")
+    private List<MyUnionCardDetailVO> cardList;
 
-	public String getNickName() {
-		return nickName;
-	}
+    public String getNickName() {
+        return nickName;
+    }
 
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
 
-	public String getHeardImg() {
-		return heardImg;
-	}
+    public String getHeardImg() {
+        return heardImg;
+    }
 
-	public void setHeardImg(String heardImg) {
-		this.heardImg = heardImg;
-	}
+    public void setHeardImg(String heardImg) {
+        this.heardImg = heardImg;
+    }
 
-	public String getCardNo() {
-		return cardNo;
-	}
+    public String getCardNo() {
+        return cardNo;
+    }
 
-	public void setCardNo(String cardNo) {
-		this.cardNo = cardNo;
-	}
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
 
-	public String getCardImg() {
-		return cardImg;
-	}
+    public String getCardImg() {
+        return cardImg;
+    }
 
-	public void setCardImg(String cardImg) {
-		this.cardImg = cardImg;
-	}
+    public void setCardImg(String cardImg) {
+        this.cardImg = cardImg;
+    }
 
-	public Double getIntegral() {
-		return integral;
-	}
+    public Double getIntegral() {
+        return integral;
+    }
 
-	public void setIntegral(Double integral) {
-		this.integral = integral;
-	}
+    public void setIntegral(Double integral) {
+        this.integral = integral;
+    }
 
-	public Integer getConsumeCount() {
-		return consumeCount;
-	}
+    public Integer getConsumeCount() {
+        return consumeCount;
+    }
 
-	public void setConsumeCount(Integer consumeCount) {
-		this.consumeCount = consumeCount;
-	}
+    public void setConsumeCount(Integer consumeCount) {
+        this.consumeCount = consumeCount;
+    }
 
-	public List<MyUnionCardDetailVO> getCardList() {
-		return cardList;
-	}
+    public List<MyUnionCardDetailVO> getCardList() {
+        return cardList;
+    }
 
-	public void setCardList(List<MyUnionCardDetailVO> cardList) {
-		this.cardList = cardList;
-	}
+    public void setCardList(List<MyUnionCardDetailVO> cardList) {
+        this.cardList = cardList;
+    }
 
     @Override
     public String toString() {

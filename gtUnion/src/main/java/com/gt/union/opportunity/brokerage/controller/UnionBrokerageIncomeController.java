@@ -42,18 +42,18 @@ public class UnionBrokerageIncomeController {
     @ApiOperation(value = "分页：商机-佣金结算-我的佣金收入", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageBrokerageOpportunityVO(
-            HttpServletRequest request,
-            Page page,
-            @ApiParam(value = "联盟id", name = "unionId")
-            @RequestParam(value = "unionId", required = false) Integer unionId,
-            @ApiParam(value = "接收盟员id", name = "toMemberId")
-            @RequestParam(value = "toMemberId", required = false) Integer toMemberId,
-            @ApiParam(value = "是否已结算(0:否 1:是)", name = "isClose")
-            @RequestParam(value = "isClose", required = false) Integer isClose,
-            @ApiParam(value = "客户名称", name = "clientName")
-            @RequestParam(value = "clientName", required = false) String clientName,
-            @ApiParam(value = "客户电话", name = "clientPhone")
-            @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
+        HttpServletRequest request,
+        Page page,
+        @ApiParam(value = "联盟id", name = "unionId")
+        @RequestParam(value = "unionId", required = false) Integer unionId,
+        @ApiParam(value = "接收盟员id", name = "toMemberId")
+        @RequestParam(value = "toMemberId", required = false) Integer toMemberId,
+        @ApiParam(value = "是否已结算(0:否 1:是)", name = "isClose")
+        @RequestParam(value = "isClose", required = false) Integer isClose,
+        @ApiParam(value = "客户名称", name = "clientName")
+        @RequestParam(value = "clientName", required = false) String clientName,
+        @ApiParam(value = "客户电话", name = "clientPhone")
+        @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -71,7 +71,7 @@ public class UnionBrokerageIncomeController {
             return GtJsonResult.instanceSuccessMsg(result).toString();
         }
     }
-    
+
     //-------------------------------------------------- put -----------------------------------------------------------
 
     //-------------------------------------------------- post ----------------------------------------------------------

@@ -73,9 +73,9 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("activity_id", activityId);
+            .eq("union_id", unionId)
+            .eq("member_id", memberId)
+            .eq("activity_id", activityId);
 
         return unionCardProjectDao.selectOne(entityWrapper);
     }
@@ -88,10 +88,10 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("activity_id", activityId)
-                .eq("status", status);
+            .eq("union_id", unionId)
+            .eq("member_id", memberId)
+            .eq("activity_id", activityId)
+            .eq("status", status);
 
         return unionCardProjectDao.selectOne(entityWrapper);
     }
@@ -104,9 +104,9 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", projectId)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId);
+            .eq("id", projectId)
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId);
 
         return unionCardProjectDao.selectOne(entityWrapper);
     }
@@ -171,9 +171,9 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("status", status);
+            .eq("union_id", unionId)
+            .eq("member_id", memberId)
+            .eq("status", status);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -186,8 +186,8 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -200,9 +200,9 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId)
-                .eq("status", status);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId)
+            .eq("status", status);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -215,12 +215,12 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId)
-                .eq("status", status)
-                .exists(" SELECT m.id FROM t_union_member m" +
-                        " WHERE m.id=t_union_card_project.member_id" +
-                        " AND m.del_status=" + CommonConstant.DEL_STATUS_NO);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId)
+            .eq("status", status)
+            .exists(" SELECT m.id FROM t_union_member m" +
+                " WHERE m.id=t_union_card_project.member_id" +
+                " AND m.del_status=" + CommonConstant.DEL_STATUS_NO);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -233,10 +233,10 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId)
-                .eq("status", status)
-                .orderBy(orderBy, isAsc);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId)
+            .eq("status", status)
+            .orderBy(orderBy, isAsc);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -280,7 +280,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
                 result.add(vo);
             }
         }
-        // 按时间顺序排序 
+        // 按时间顺序排序
         Collections.sort(result, new Comparator<CardProjectJoinMemberVO>() {
             @Override
             public int compare(CardProjectJoinMemberVO o1, CardProjectJoinMemberVO o2) {
@@ -437,9 +437,9 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId)
-                .eq("status", status);
+            .eq("union_id", unionId)
+            .eq("activity_id", activityId)
+            .eq("status", status);
 
         return unionCardProjectDao.selectCount(entityWrapper);
     }
@@ -452,10 +452,10 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("activity_id", activityId)
-                .eq("status", status);
+            .eq("union_id", unionId)
+            .eq("member_id", memberId)
+            .eq("activity_id", activityId)
+            .eq("status", status);
 
         return unionCardProjectDao.selectCount(entityWrapper) > 0;
     }
@@ -583,7 +583,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardProjectDao.selectOne(entityWrapper);
     }
@@ -596,7 +596,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardProjectDao.selectOne(entityWrapper);
     }
@@ -639,7 +639,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -652,7 +652,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -677,7 +677,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -690,7 +690,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -715,7 +715,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -728,7 +728,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }

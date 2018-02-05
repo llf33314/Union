@@ -73,7 +73,7 @@ public interface IUnionConsumeService {
      * @throws Exception 统一处理异常
      */
     List<ConsumeRecordVO> listConsumeRecordVOByBusId(
-            Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
+        Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
 
     /**
      * 分页：前台-消费核销记录
@@ -90,7 +90,7 @@ public interface IUnionConsumeService {
      * @throws Exception 统一处理异常
      */
     Page pageConsumeRecordVOByBusId(
-            Page page, Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
+        Page page, Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
 
     /**
      * 缓存穿透-分页：联盟卡手机端，我的消费记录列表
@@ -156,7 +156,7 @@ public interface IUnionConsumeService {
     /**
      * 根据联盟卡粉丝id计算消费记录数
      *
-     * @param fanId 联盟卡粉丝id
+     * @param fanId  联盟卡粉丝id
      * @param status 支付状态
      * @return Integer
      * @throws Exception 统一处理异常

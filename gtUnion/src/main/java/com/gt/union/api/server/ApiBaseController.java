@@ -12,17 +12,16 @@ import com.gt.union.common.util.StringUtil;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author hongjiye
- * Created by Administrator on 2017/9/4 0004.
+ * @time 2017/9/4 0004.
  */
 public class ApiBaseController {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private static Logger logger = Logger.getLogger(ApiBaseController.class);
 
-    public boolean verification(HttpServletRequest request, HttpServletResponse response, RequestApiParam<?> requestApiParam) throws Exception {
+    public boolean verification(HttpServletRequest request, RequestApiParam<?> requestApiParam) throws Exception {
         logger.info("*******************************************签名验证开启*******************************************");
         // 设置返回编码和类型
         String signKey = PropertiesUtil.getUnionSignKey();
@@ -74,7 +73,7 @@ public class ApiBaseController {
                 return SignEnum.SIGN_ERROR.getCode();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("API校验加密错误", e);
             return SignEnum.SIGN_ERROR.getCode();
         }
 

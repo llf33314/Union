@@ -23,21 +23,21 @@ import java.util.List;
 @Configuration
 public class RestTemplateConfig {
 
-	@Bean
-	public RestTemplate restTemplate(ClientHttpRequestFactory factory){
-		StringHttpMessageConverter m = new StringHttpMessageConverter(Charset.forName("UTF-8"));
-		RestTemplate restTemplate = new RestTemplateBuilder().additionalMessageConverters(m).build();
-		restTemplate.setRequestFactory(factory);
-		return restTemplate;
-	}
+    @Bean
+    public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
+        StringHttpMessageConverter m = new StringHttpMessageConverter(Charset.forName("UTF-8"));
+        RestTemplate restTemplate = new RestTemplateBuilder().additionalMessageConverters(m).build();
+        restTemplate.setRequestFactory(factory);
+        return restTemplate;
+    }
 
-	@Bean
-	public ClientHttpRequestFactory simpleClientHttpRequestFactory(){
-		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+    @Bean
+    public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         //5000ms
-		factory.setReadTimeout(5000);
+        factory.setReadTimeout(5000);
         //15000ms
-		factory.setConnectTimeout(15000);
-		return factory;
-	}
+        factory.setConnectTimeout(15000);
+        return factory;
+    }
 }

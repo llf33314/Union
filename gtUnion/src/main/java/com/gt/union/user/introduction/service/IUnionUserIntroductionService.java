@@ -10,20 +10,22 @@ import com.gt.union.user.introduction.entity.UnionUserIntroduction;
  */
 public interface IUnionUserIntroductionService {
 
-	/**
-	 *	查询有效商家简介
-	 * @param busId
-	 * @throws Exception 统一处理异常
-	 * @return
-	 */
-	UnionUserIntroduction getValidByBusId(Integer busId) throws Exception;
+    /**
+     * 查询有效商家简介
+     *
+     * @param busId
+     * @return
+     * @throws Exception 统一处理异常
+     */
+    UnionUserIntroduction getValidByBusId(Integer busId) throws Exception;
 
-	/**
-	 * 保存商家简介信息
-	 * @param busId	商家id
-	 * @param unionUserIntroduction	简介信息
-	 * @throws Exception 统一处理异常
-	 */
-	void saveOrUpdate(Integer busId, UnionUserIntroduction unionUserIntroduction) throws Exception;
+    /**
+     * 保存商家简介信息
+     *
+     * @param busId                 商家id
+     * @param unionUserIntroduction 简介信息
+     * @throws Exception 统一处理异常
+     */
+    void saveOrUpdate(Integer busId, UnionUserIntroduction unionUserIntroduction) throws Exception;
 
 }

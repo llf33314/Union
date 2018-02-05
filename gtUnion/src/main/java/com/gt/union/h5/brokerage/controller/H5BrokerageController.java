@@ -195,12 +195,12 @@ public class H5BrokerageController {
     public String checkLogin(HttpServletRequest request) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         BusUser busUser = SessionUtils.getUnionBus(request);
-        if(h5BrokerageUser == null){
+        if (h5BrokerageUser == null) {
             return GtJsonResult.instanceSuccessMsg(0).toString();
-        }else {
-            if(busUser != null){
+        } else {
+            if (busUser != null) {
                 return GtJsonResult.instanceSuccessMsg(1).toString();
-            }else {
+            } else {
                 return GtJsonResult.instanceSuccessMsg(0).toString();
             }
         }
@@ -219,7 +219,7 @@ public class H5BrokerageController {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
         if (member == null) {
-            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/h5Brokerage/pay/1?opportunityId=" + opportunityId +"&unionId=" + (CommonUtil.isNotEmpty(unionId) ? unionId : "")).toString();
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/h5Brokerage/pay/1?opportunityId=" + opportunityId + "&unionId=" + (CommonUtil.isNotEmpty(unionId) ? unionId : "")).toString();
         }
         UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -243,22 +243,22 @@ public class H5BrokerageController {
     @ApiOperation(value = "佣金平台-粉丝登录回调支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/pay/{type}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void pay(HttpServletRequest request, HttpServletResponse response,
-                            @ApiParam(value = "类型", name = "type  1：单个 2：批量", required = true)
-                            @PathVariable(value = "type") Integer type,
-                           @ApiParam(value = "联盟id", name = "unionId")
-                           @RequestParam(value = "unionId", required = false) Integer unionId,
-                          @ApiParam(value = "商机id", name = "opportunityId")
-                          @RequestParam(value = "opportunityId", required = false) Integer opportunityId) throws Exception {
+                    @ApiParam(value = "类型", name = "type  1：单个 2：批量", required = true)
+                    @PathVariable(value = "type") Integer type,
+                    @ApiParam(value = "联盟id", name = "unionId")
+                    @RequestParam(value = "unionId", required = false) Integer unionId,
+                    @ApiParam(value = "商机id", name = "opportunityId")
+                    @RequestParam(value = "opportunityId", required = false) Integer opportunityId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
         String url = "";
-        if(type == 1){
+        if (type == 1) {
             UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
             url = result.getPayUrl();
-        }else if(type == 2){
+        } else if (type == 2) {
             UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService, member.getId());
             url = result.getPayUrl();
-        }else {
+        } else {
             url = PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin";
         }
         response.sendRedirect(url);
@@ -270,8 +270,8 @@ public class H5BrokerageController {
     @ApiOperation(value = "获取佣金平台账号登录秘钥", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/loginSign", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String loginSign(HttpServletRequest request, HttpServletResponse response
-            , @ApiParam(name = "username", value = "商家账号", required = true) @RequestParam(name = "username") String username
-            , @ApiParam(name = "userpwd", value = "商家账号密码", required = true) @RequestParam(name = "userpwd") String userpwd
+        , @ApiParam(name = "username", value = "商家账号", required = true) @RequestParam(name = "username") String username
+        , @ApiParam(name = "userpwd", value = "商家账号密码", required = true) @RequestParam(name = "userpwd") String userpwd
     ) throws Exception {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("login_name", username);

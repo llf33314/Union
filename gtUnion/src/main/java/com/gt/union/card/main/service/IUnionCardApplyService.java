@@ -10,14 +10,15 @@ import java.util.List;
  **/
 public interface IUnionCardApplyService {
 
-	/**
-	 * 办理联盟卡
-	 * @param orderNo        订单号
-	 * @param payMoneySum    支付金额
-	 * @param busId            商家id
-	 * @param unionId
-	 * @param activityIdList
-	 * @return
-	 */
-	UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList);
+    /**
+     * 办理联盟卡
+     *
+     * @param orderNo        订单号
+     * @param payMoneySum    支付金额
+     * @param busId          商家id
+     * @param unionId
+     * @param activityIdList
+     * @return
+     */
+    UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList);
 }

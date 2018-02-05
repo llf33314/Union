@@ -75,7 +75,7 @@ public interface IUnionBrokeragePayService {
      * @throws Exception 统一处理异常
      */
     Page pageBrokerageOpportunityVOByBusId(
-            Page page, Integer busId, Integer optUnionId, Integer optFromMemberId, Integer optIsClose, String optClientName, String optClientPhone) throws Exception;
+        Page page, Integer busId, Integer optUnionId, Integer optFromMemberId, Integer optIsClose, String optClientName, String optClientPhone) throws Exception;
 
     /**
      * 分页：商机-佣金结算-支付明细
@@ -112,7 +112,7 @@ public interface IUnionBrokeragePayService {
      * @param verifierId                       佣金平台管理人员id
      * @param unionBrokeragePayStrategyService 回调策略接口
      * @param memberId
-	 * @return UnionPayVO
+     * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
     UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService, Integer memberId) throws Exception;

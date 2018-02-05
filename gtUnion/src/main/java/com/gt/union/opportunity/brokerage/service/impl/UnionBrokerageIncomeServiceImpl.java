@@ -45,8 +45,8 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
     @Override
     public Page pageBrokerageOpportunityVOByBusId(
-            Page page, Integer busId, Integer optUnionId, Integer optToMemberId,
-            Integer optIsClose, String optClientName, String optClientPhone) throws Exception {
+        Page page, Integer busId, Integer optUnionId, Integer optToMemberId,
+        Integer optIsClose, String optClientName, String optClientPhone) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -56,15 +56,15 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         // 分页查询结果
         EntityWrapper<UnionOpportunity> opportunityEntityWrapper = new EntityWrapper<>();
         opportunityEntityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
-                .in("from_member_id", fromMemberIdList)
-                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
-                .eq(optUnionId != null, "union_id", optUnionId)
-                .eq(optToMemberId != null, "to_member_id", optToMemberId)
-                .eq(optIsClose != null, "is_close", optIsClose)
-                .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
-                .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
-                .orderBy("is_close ASC, create_time", true);
+            .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
+            .in("from_member_id", fromMemberIdList)
+            .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
+            .eq(optUnionId != null, "union_id", optUnionId)
+            .eq(optToMemberId != null, "to_member_id", optToMemberId)
+            .eq(optIsClose != null, "is_close", optIsClose)
+            .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
+            .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
+            .orderBy("is_close ASC, create_time", true);
 
         Page result = unionOpportunityService.pageSupport(page, opportunityEntityWrapper);
         List<UnionOpportunity> resultListDate = result.getRecords();
@@ -90,7 +90,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
@@ -106,8 +106,8 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("type", type);
+            .eq("bus_id", busId)
+            .eq("type", type);
 
         entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
@@ -123,10 +123,10 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("type", type)
-                .in("member_id", memberIdList)
-                .eq(ListUtil.isEmpty(memberIdList), "member_id", null);
+            .eq("bus_id", busId)
+            .eq("type", type)
+            .in("member_id", memberIdList)
+            .eq(ListUtil.isEmpty(memberIdList), "member_id", null);
 
         entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
@@ -245,7 +245,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionBrokerageIncomeDao.selectOne(entityWrapper);
     }
@@ -258,7 +258,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionBrokerageIncomeDao.selectOne(entityWrapper);
     }
@@ -301,7 +301,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -314,7 +314,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -339,7 +339,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -352,7 +352,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("member_id", memberId);
+            .eq("member_id", memberId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -377,7 +377,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -390,7 +390,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -415,7 +415,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -428,7 +428,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -453,7 +453,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("opportunity_id", opportunityId);
+            .eq("opportunity_id", opportunityId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
@@ -466,7 +466,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("opportunity_id", opportunityId);
+            .eq("opportunity_id", opportunityId);
 
         return unionBrokerageIncomeDao.selectList(entityWrapper);
     }

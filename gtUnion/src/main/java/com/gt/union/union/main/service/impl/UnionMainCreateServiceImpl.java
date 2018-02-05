@@ -429,7 +429,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         // (2)db
         EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
         result = unionMainCreateDao.selectList(entityWrapper);
         setValidCache(result, busId, UnionMainCreateCacheUtil.TYPE_BUS_ID);
         return result;
@@ -451,7 +451,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         // (2)db
         EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("bus_id", busId);
+            .eq("bus_id", busId);
         result = unionMainCreateDao.selectList(entityWrapper);
         setInvalidCache(result, busId, UnionMainCreateCacheUtil.TYPE_BUS_ID);
         return result;
@@ -494,7 +494,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         // (2)db
         EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainCreateDao.selectList(entityWrapper);
         setValidCache(result, unionId, UnionMainCreateCacheUtil.TYPE_UNION_ID);
         return result;
@@ -516,7 +516,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         // (2)db
         EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
         result = unionMainCreateDao.selectList(entityWrapper);
         setInvalidCache(result, unionId, UnionMainCreateCacheUtil.TYPE_UNION_ID);
         return result;
@@ -559,7 +559,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         // (2)db
         EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("permit_id", permitId);
+            .eq("permit_id", permitId);
         result = unionMainCreateDao.selectList(entityWrapper);
         setValidCache(result, permitId, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
         return result;
@@ -581,7 +581,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         // (2)db
         EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("permit_id", permitId);
+            .eq("permit_id", permitId);
         result = unionMainCreateDao.selectList(entityWrapper);
         setInvalidCache(result, permitId, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
         return result;

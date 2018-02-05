@@ -186,8 +186,8 @@ public class LoginFilter implements Filter {
                 chain.doFilter(req, res);
             }
         } else {
-            if(busUser != null){
-                if(!h5BrokerageUser.getBusUser().getId().equals(busUser.getId())){
+            if (busUser != null) {
+                if (!h5BrokerageUser.getBusUser().getId().equals(busUser.getId())) {
 
                     h5BrokerageUser.setBusUser(busUser);
 
@@ -198,7 +198,7 @@ public class LoginFilter implements Filter {
 
                     UnionSessionUtil.setH5BrokerageUser(req, h5BrokerageUser);
                 }
-            }else {
+            } else {
                 res.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 return;
             }

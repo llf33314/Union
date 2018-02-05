@@ -26,37 +26,37 @@ import java.util.Map;
 @Service
 public class CarErpServiceImpl implements CarErpService {
 
-	private Logger logger = LoggerFactory.getLogger(CarErpServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(CarErpServiceImpl.class);
 
-	@Override
-	public List<ErpServerVO> listErpServer(Integer shopId, String search, Integer busId, Page page) {
-		logger.info("查询车小算服务项目列表门店id：{}，商家id：{}，search：{}", shopId, busId, search);
-		Map<String,Object> param = new HashMap<String,Object>();
-		param.put("shopId",shopId);
-		param.put("pageSize",page.getSize());
-		param.put("pageNum",page.getCurrent());
-		param.put("keyValue",search);
-		try{
-			String url = PropertiesUtil.getCarUrl() + "/openApi/v1/serveItemPage";
-			String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
-			logger.info("查询车小算服务项目列表，结果：{}", result);
-			JSONObject jsonObject = JSONObject.parseObject(result);
-			if(jsonObject.get("status").equals(1000)){
-				JSONObject object = jsonObject.getJSONObject("data");
-				List<Map> list = JSONArray.parseArray(object.get("list").toString(),Map.class);
-				List<ErpServerVO> data = new ArrayList(list.size());
-				for(Map map : list){
-					ErpServerVO vo = new ErpServerVO();
-					vo.setId(CommonUtil.toInteger(map.get("id")));
-					vo.setName(CommonUtil.toString(map.get("serveItemName")));
-					data.add(vo);
-				}
-				page.setTotal(CommonUtil.toInteger(object.get("total")));
-				return data;
-			}
-		}catch (Exception e){
-			logger.error("查询车小算服务项目列表错误", e);
-		}
-		return null;
-	}
+    @Override
+    public List<ErpServerVO> listErpServer(Integer shopId, String search, Integer busId, Page page) {
+        logger.info("查询车小算服务项目列表门店id：{}，商家id：{}，search：{}", shopId, busId, search);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("shopId", shopId);
+        param.put("pageSize", page.getSize());
+        param.put("pageNum", page.getCurrent());
+        param.put("keyValue", search);
+        try {
+            String url = PropertiesUtil.getCarUrl() + "/openApi/v1/serveItemPage";
+            String result = SignRestHttpUtil.wxmpPostByHttp(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
+            logger.info("查询车小算服务项目列表，结果：{}", result);
+            JSONObject jsonObject = JSONObject.parseObject(result);
+            if (jsonObject.get("status").equals(1000)) {
+                JSONObject object = jsonObject.getJSONObject("data");
+                List<Map> list = JSONArray.parseArray(object.get("list").toString(), Map.class);
+                List<ErpServerVO> data = new ArrayList(list.size());
+                for (Map map : list) {
+                    ErpServerVO vo = new ErpServerVO();
+                    vo.setId(CommonUtil.toInteger(map.get("id")));
+                    vo.setName(CommonUtil.toString(map.get("serveItemName")));
+                    data.add(vo);
+                }
+                page.setTotal(CommonUtil.toInteger(object.get("total")));
+                return data;
+            }
+        } catch (Exception e) {
+            logger.error("查询车小算服务项目列表错误", e);
+        }
+        return null;
+    }
 }

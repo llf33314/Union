@@ -54,15 +54,15 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("sharing_member_id", sharingMemberId);
+            .eq("union_id", unionId)
+            .eq("sharing_member_id", sharingMemberId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
 
     @Override
     public List<CardSharingRecordVO> listCardSharingRecordVOByBusIdAndUnionId(
-            Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception {
+        Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -125,7 +125,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         entityWrapper.setSqlSelect("IfNull(SUM(sharing_money),0) sharingMoneySum");
         Map<String, Object> resultMap = unionCardSharingRecordDao.selectMap(entityWrapper);
@@ -188,7 +188,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardSharingRecordDao.selectOne(entityWrapper);
     }
@@ -201,7 +201,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionCardSharingRecordDao.selectOne(entityWrapper);
     }
@@ -244,7 +244,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("sharing_member_id", sharingMemberId);
+            .eq("sharing_member_id", sharingMemberId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -257,7 +257,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("sharing_member_id", sharingMemberId);
+            .eq("sharing_member_id", sharingMemberId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -282,7 +282,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -295,7 +295,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -320,7 +320,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -333,7 +333,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -358,7 +358,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -371,7 +371,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("activity_id", activityId);
+            .eq("activity_id", activityId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -396,7 +396,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -409,7 +409,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("card_id", cardId);
+            .eq("card_id", cardId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -434,7 +434,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }
@@ -447,7 +447,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("fan_id", fanId);
+            .eq("fan_id", fanId);
 
         return unionCardSharingRecordDao.selectList(entityWrapper);
     }

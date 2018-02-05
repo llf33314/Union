@@ -16,27 +16,27 @@ import java.util.List;
 @ApiModel(value = "联盟卡详情页-列表信息")
 public class CardDetailListVO {
 
-	@ApiModelProperty(value = "盟员信息")
-	private UnionMember unionMember;
+    @ApiModelProperty(value = "盟员信息")
+    private UnionMember unionMember;
 
-	@ApiModelProperty(value = "盟员优惠项目信息")
-	private List<UnionCardProjectItem> unionCardProjectItems;
+    @ApiModelProperty(value = "盟员优惠项目信息")
+    private List<UnionCardProjectItem> unionCardProjectItems;
 
-	public UnionMember getUnionMember() {
-		return unionMember;
-	}
+    public UnionMember getUnionMember() {
+        return unionMember;
+    }
 
-	public void setUnionMember(UnionMember unionMember) {
-		this.unionMember = unionMember;
-	}
+    public void setUnionMember(UnionMember unionMember) {
+        this.unionMember = unionMember;
+    }
 
-	public List<UnionCardProjectItem> getUnionCardProjectItems() {
-		return unionCardProjectItems;
-	}
+    public List<UnionCardProjectItem> getUnionCardProjectItems() {
+        return unionCardProjectItems;
+    }
 
-	public void setUnionCardProjectItems(List<UnionCardProjectItem> unionCardProjectItems) {
-		this.unionCardProjectItems = unionCardProjectItems;
-	}
+    public void setUnionCardProjectItems(List<UnionCardProjectItem> unionCardProjectItems) {
+        this.unionCardProjectItems = unionCardProjectItems;
+    }
 
     @Override
     public String toString() {

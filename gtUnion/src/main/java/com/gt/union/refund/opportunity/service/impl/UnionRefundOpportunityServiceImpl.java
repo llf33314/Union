@@ -22,12 +22,12 @@ public class UnionRefundOpportunityServiceImpl implements IUnionRefundOpportunit
     @Autowired
     private IUnionRefundOpportunityDao unionRefundOpportunityDao;
 
-	@Override
-	public void saveBatch(List<UnionRefundOpportunity> refundOpportunityList) throws Exception {
-		if (refundOpportunityList == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
+    @Override
+    public void saveBatch(List<UnionRefundOpportunity> refundOpportunityList) throws Exception {
+        if (refundOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
 
-		unionRefundOpportunityDao.insertBatch(refundOpportunityList);
-	}
+        unionRefundOpportunityDao.insertBatch(refundOpportunityList);
+    }
 }

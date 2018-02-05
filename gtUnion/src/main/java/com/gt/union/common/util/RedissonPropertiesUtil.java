@@ -9,44 +9,44 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "redisson")
 public class RedissonPropertiesUtil {
 
-	private int timeout = 5000;
+    private int timeout = 5000;
 
-	private String password;
+    private String password;
 
-	private String[] sentinelAddresses;
+    private String[] sentinelAddresses;
 
-	private String masterName;
+    private String masterName;
 
-	public int getTimeout() {
-		return timeout;
-	}
+    public int getTimeout() {
+        return timeout;
+    }
 
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
 
-	public String[] getSentinelAddresses() {
-		return sentinelAddresses;
-	}
+    public String[] getSentinelAddresses() {
+        return sentinelAddresses;
+    }
 
-	public void setSentinelAddresses(String sentinelAddresses) {
-		this.sentinelAddresses = sentinelAddresses.split(",");
-	}
+    public void setSentinelAddresses(String sentinelAddresses) {
+        this.sentinelAddresses = sentinelAddresses.split(",");
+    }
 
-	public String getMasterName() {
-		return masterName;
-	}
+    public String getMasterName() {
+        return masterName;
+    }
 
-	public void setMasterName(String masterName) {
-		this.masterName = masterName;
-	}
+    public void setMasterName(String masterName) {
+        this.masterName = masterName;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }

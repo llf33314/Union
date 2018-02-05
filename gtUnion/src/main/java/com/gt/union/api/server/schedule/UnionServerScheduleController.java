@@ -31,28 +31,28 @@ import java.util.Map;
 @RequestMapping("/schedule/8A5DA52E")
 public class UnionServerScheduleController extends ApiBaseController {
 
-	private Logger logger = Logger.getLogger(UnionServerScheduleController.class);
+    private Logger logger = Logger.getLogger(UnionServerScheduleController.class);
 
-	@Autowired
-	private IUnionConsumeGiveIntegralService unionConsumeGiveIntegralService;
+    @Autowired
+    private IUnionConsumeGiveIntegralService unionConsumeGiveIntegralService;
 
-	@ApiOperation(value = "定时任务赠送积分", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/giveIntegral", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public ResponseUtils getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<Map> requestApiParam){
-		try {
-			Map param = requestApiParam.getReqdata();
-			boolean verification=super.verification(request, response, requestApiParam);
-			unionConsumeGiveIntegralService.giveConsumeIntegral(param);
-			return ResponseUtils.createBySuccess();
-		} catch (BaseException e) {
-			logger.error(e.getMessage(), e);
-			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
-		}catch (Exception e) {
-			logger.error(CommonConstant.SYS_ERROR, e);
-			UnionDiscountResult data = new UnionDiscountResult();
-			data.setCode(UnionDiscountConstant.UNION_DISCOUNT_CODE_NON);
-			return ResponseUtils.createByError();
-		}
-	}
+    @ApiOperation(value = "定时任务赠送积分", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/giveIntegral", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResponseUtils getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<Map> requestApiParam) {
+        try {
+            Map param = requestApiParam.getReqdata();
+            boolean verification = super.verification(request, requestApiParam);
+            unionConsumeGiveIntegralService.giveConsumeIntegral(param);
+            return ResponseUtils.createBySuccess();
+        } catch (BaseException e) {
+            logger.error(e.getMessage(), e);
+            return ResponseUtils.createByErrorMessage(e.getErrorMsg());
+        } catch (Exception e) {
+            logger.error(CommonConstant.SYS_ERROR, e);
+            UnionDiscountResult data = new UnionDiscountResult();
+            data.setCode(UnionDiscountConstant.UNION_DISCOUNT_CODE_NON);
+            return ResponseUtils.createByError();
+        }
+    }
 
 }

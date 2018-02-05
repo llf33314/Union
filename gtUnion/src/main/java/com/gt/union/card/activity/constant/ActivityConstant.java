@@ -2,7 +2,7 @@ package com.gt.union.card.activity.constant;
 
 /**
  * 活动常量接口
- * 
+ *
  * @author linweicong
  * @version 2017-12-11 17:55:27
  */

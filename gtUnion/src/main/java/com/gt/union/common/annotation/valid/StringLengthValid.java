@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  */
 @Constraint(validatedBy = StringLengthValidator.class)
 @Target({java.lang.annotation.ElementType.METHOD,
-        java.lang.annotation.ElementType.FIELD})
+    java.lang.annotation.ElementType.FIELD})
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 public @interface StringLengthValid {
 

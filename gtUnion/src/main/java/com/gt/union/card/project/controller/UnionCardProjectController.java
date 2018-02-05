@@ -41,11 +41,11 @@ public class UnionCardProjectController {
     @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-参与盟员数", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/joinMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listJoinMemberByActivityIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
-            @PathVariable("activityId") Integer activityId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+        @PathVariable("activityId") Integer activityId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -64,11 +64,11 @@ public class UnionCardProjectController {
     @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-待审核", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listProjectCheckByActivityIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
-            @PathVariable("activityId") Integer activityId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+        @PathVariable("activityId") Integer activityId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -87,11 +87,11 @@ public class UnionCardProjectController {
     @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getProjectVOByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "活动id", name = "activityId", required = true)
-            @PathVariable("activityId") Integer activityId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "活动id", name = "activityId", required = true)
+        @PathVariable("activityId") Integer activityId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -112,15 +112,15 @@ public class UnionCardProjectController {
     @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-审核项目-通过或不通过", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateProjectCheckByActivityIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
-            @PathVariable("activityId") Integer activityId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
-            @RequestParam(value = "isPass") Integer isPass,
-            @ApiParam(value = "表单内容", name = "updateVO", required = true)
-            @RequestBody CardProjectCheckUpdateVO updateVO) throws Exception {
+        HttpServletRequest request,
+        @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+        @PathVariable("activityId") Integer activityId,
+        @ApiParam(value = "联盟id", name = "unionId", required = true)
+        @PathVariable("unionId") Integer unionId,
+        @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
+        @RequestParam(value = "isPass") Integer isPass,
+        @ApiParam(value = "表单内容", name = "updateVO", required = true)
+        @RequestBody CardProjectCheckUpdateVO updateVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

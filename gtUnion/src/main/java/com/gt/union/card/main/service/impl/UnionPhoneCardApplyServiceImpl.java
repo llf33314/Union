@@ -17,14 +17,14 @@ import java.util.List;
  * @time 2017-12-21 10:22
  **/
 @Service("unionPhoneCardApplyService")
-public class UnionPhoneCardApplyServiceImpl implements IUnionCardApplyService{
+public class UnionPhoneCardApplyServiceImpl implements IUnionCardApplyService {
 
-	@Autowired
-	private WxPayService wxPayService;
+    @Autowired
+    private WxPayService wxPayService;
 
-	@Override
-	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList) {
-		UnionPayVO result = new UnionPayVO();
+    @Override
+    public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, List<Integer> activityIdList) {
+        UnionPayVO result = new UnionPayVO();
 //		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=";
 //
 //		PayParam payParam = new PayParam();
@@ -40,6 +40,6 @@ public class UnionPhoneCardApplyServiceImpl implements IUnionCardApplyService{
 //		String payUrl = wxPayService.pay(payParam);
 //
 //		result.setPayUrl(payUrl);
-		return result;
-	}
+        return result;
+    }
 }

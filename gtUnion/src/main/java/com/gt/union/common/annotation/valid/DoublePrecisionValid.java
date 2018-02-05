@@ -29,5 +29,6 @@ public @interface DoublePrecisionValid {
 
     //下面这两个属性必须添加
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

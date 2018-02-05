@@ -6,33 +6,33 @@ package com.gt.union.api.client.user.bean;
  **/
 public class UserUnionAuthority {
 
-	private Boolean authority;
+    private Boolean authority;
 
-	private Boolean pay;
+    private Boolean pay;
 
-	private String unionVersionName;
+    private String unionVersionName;
 
-	public Boolean getAuthority() {
-		return authority;
-	}
+    public Boolean getAuthority() {
+        return authority;
+    }
 
-	public void setAuthority(Boolean authority) {
-		this.authority = authority;
-	}
+    public void setAuthority(Boolean authority) {
+        this.authority = authority;
+    }
 
-	public Boolean getPay() {
-		return pay;
-	}
+    public Boolean getPay() {
+        return pay;
+    }
 
-	public void setPay(Boolean pay) {
-		this.pay = pay;
-	}
+    public void setPay(Boolean pay) {
+        this.pay = pay;
+    }
 
-	public String getUnionVersionName() {
-		return unionVersionName;
-	}
+    public String getUnionVersionName() {
+        return unionVersionName;
+    }
 
-	public void setUnionVersionName(String unionVersionName) {
-		this.unionVersionName = unionVersionName;
-	}
+    public void setUnionVersionName(String unionVersionName) {
+        this.unionVersionName = unionVersionName;
+    }
 }

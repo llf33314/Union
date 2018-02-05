@@ -27,7 +27,7 @@ public class CardProjectVO {
 
     @ApiModelProperty(value = "活动")
     private UnionCardActivity activity;
-    
+
     @ApiModelProperty(value = "活动状态")
     private Integer activityStatus;
 

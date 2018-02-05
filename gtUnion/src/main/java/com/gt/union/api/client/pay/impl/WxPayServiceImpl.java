@@ -24,40 +24,41 @@ import java.util.Map;
 
 /**
  * 微信支付服务
+ *
  * @author hongjiye
- * Created by Administrator on 2017/11/25 0022.
+ * @time 2017/11/25 0022.
  */
 @Service
 public class WxPayServiceImpl implements WxPayService {
     private Logger logger = LoggerFactory.getLogger(WxPayServiceImpl.class);
 
     @Override
-    public String qrCodePay(PayParam payParam){
+    public String qrCodePay(PayParam payParam) {
         StringBuilder builder = new StringBuilder("?");
         builder.append("totalFee=").append(payParam.getTotalFee())
-                .append("&model=").append(ConfigConstant.PAY_MODEL)
-                .append("&busId=").append(CommonUtil.isEmpty(payParam.getBusId()) ? PropertiesUtil.getDuofenBusId() : payParam.getBusId())
-                .append("&appidType=").append(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType())
-                .append("&appid=").append(payParam.getPayDuoFen() ? PropertiesUtil.getDuofenAppid() : CommonUtil.isEmpty(payParam.getAppid()) ? "" : payParam.getAppid())
-                .append("&orderNum=").append(payParam.getOrderNum())
-                .append("&desc=").append(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc())
-                .append("&isreturn=").append(payParam.getIsreturn())
-                .append("&returnUrl=").append(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl())
-                .append("&notifyUrl=").append(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl())
-                .append("&isSendMessage=").append(payParam.getIsSendMessage())
-                .append("&sendUrl=").append(CommonUtil.isEmpty(payParam.getSendUrl()) ? "" : payParam.getSendUrl())
-                .append("&payWay=").append(payParam.getPayWay())
-                .append("&sourceType=").append(1);
-        if(CommonUtil.isNotEmpty(payParam.getExtend())){
+            .append("&model=").append(ConfigConstant.PAY_MODEL)
+            .append("&busId=").append(CommonUtil.isEmpty(payParam.getBusId()) ? PropertiesUtil.getDuofenBusId() : payParam.getBusId())
+            .append("&appidType=").append(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType())
+            .append("&appid=").append(payParam.getPayDuoFen() ? PropertiesUtil.getDuofenAppid() : CommonUtil.isEmpty(payParam.getAppid()) ? "" : payParam.getAppid())
+            .append("&orderNum=").append(payParam.getOrderNum())
+            .append("&desc=").append(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc())
+            .append("&isreturn=").append(payParam.getIsreturn())
+            .append("&returnUrl=").append(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl())
+            .append("&notifyUrl=").append(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl())
+            .append("&isSendMessage=").append(payParam.getIsSendMessage())
+            .append("&sendUrl=").append(CommonUtil.isEmpty(payParam.getSendUrl()) ? "" : payParam.getSendUrl())
+            .append("&payWay=").append(payParam.getPayWay())
+            .append("&sourceType=").append(1);
+        if (CommonUtil.isNotEmpty(payParam.getExtend())) {
             builder.append("&extend=").append(JSON.toJSONString(payParam.getExtend()));
         }
         String param = builder.toString();
-        logger.info("二维码支付请求参数：{}",param);
+        logger.info("二维码支付请求参数：{}", param);
         return PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + param;
     }
 
     @Override
-    public String pay(PayParam payParam){
+    public String pay(PayParam payParam) {
         SubQrPayParams subQrPayParams = new SubQrPayParams();
         subQrPayParams.setAppid(payParam.getPayDuoFen() ? PropertiesUtil.getDuofenAppid() : payParam.getAppid());
         subQrPayParams.setAppidType(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType());
@@ -79,14 +80,14 @@ public class WxPayServiceImpl implements WxPayService {
         String obj = "";
         try {
             obj = KeysUtil.getEncString(JSON.toJSONString(subQrPayParams));
-        }catch (Exception e){
-            logger.error("手机端支付错误：=======>",e);
+        } catch (Exception e) {
+            logger.error("手机端支付错误：=======>", e);
         }
         return PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj=" + obj;
     }
 
-	@Override
-	public String wxAppPay(PayParam payParam) {
+    @Override
+    public String wxAppPay(PayParam payParam) {
         SubQrPayParams subQrPayParams = new SubQrPayParams();
         subQrPayParams.setAppid(payParam.getPayDuoFen() ? PropertiesUtil.getUnionAppId() : payParam.getAppid());
         subQrPayParams.setAppidType(1);
@@ -108,14 +109,14 @@ public class WxPayServiceImpl implements WxPayService {
         String obj = "";
         try {
             obj = KeysUtil.getEncString(JSON.toJSONString(subQrPayParams));
-        }catch (Exception e){
-            logger.error("微信小程序支付错误：=======>",e);
+        } catch (Exception e) {
+            logger.error("微信小程序支付错误：=======>", e);
         }
         return obj;
-	}
+    }
 
-	@Override
-    public GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource) throws Exception{
+    @Override
+    public GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("amount", amount);
         data.put("desc", desc);
@@ -127,48 +128,48 @@ public class WxPayServiceImpl implements WxPayService {
         data.put("paySource", paySource);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", data);
-        logger.info("商家提现请求参数：{}",JSONObject.toJSONString(param));
+        logger.info("商家提现请求参数：{}", JSONObject.toJSONString(param));
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
         String dataStr = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
         logger.info("商家提现，结果：{}", dataStr);
-        if(StringUtil.isEmpty(dataStr)){
+        if (StringUtil.isEmpty(dataStr)) {
             return GtJsonResult.instanceErrorMsg("提现失败");
         }
         Map result = JSONObject.parseObject(dataStr, Map.class);
-        if(CommonUtil.toInteger(result.get("code")) == 0){
+        if (CommonUtil.toInteger(result.get("code")) == 0) {
             return GtJsonResult.instanceSuccessMsg();
-        }else {
+        } else {
             return GtJsonResult.instanceErrorMsg(CommonUtil.isNotEmpty(result.get("msg")) ? result.get("msg").toString() : "提现失败");
         }
     }
 
-	@Override
-	public GtJsonResult refundOrder(String sysOrderNo, Double refundFee, Double totalFee){
-        try{
+    @Override
+    public GtJsonResult refundOrder(String sysOrderNo, Double refundFee, Double totalFee) {
+        try {
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("sysOrderNo", sysOrderNo);
             data.put("refundFee", refundFee);
             data.put("totalFee", totalFee);
             Map<String, Object> param = new HashMap<String, Object>();
             param.put("reqdata", data);
-            logger.info("退款请求参数：{}",JSONObject.toJSONString(param));
+            logger.info("退款请求参数：{}", JSONObject.toJSONString(param));
             String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/wxmemberPayRefund.do";
             String dataStr = SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(param), PropertiesUtil.getWxmpSignKey());
             logger.info("退款结果：{}", dataStr);
-            if(StringUtil.isEmpty(dataStr)){
+            if (StringUtil.isEmpty(dataStr)) {
                 return GtJsonResult.instanceErrorMsg("退款失败");
             }
             Map result = JSONObject.parseObject(dataStr, Map.class);
-            if(CommonUtil.toInteger(result.get("code")) == 0){
+            if (CommonUtil.toInteger(result.get("code")) == 0) {
                 return GtJsonResult.instanceSuccessMsg(result);
-            }else {
+            } else {
                 return GtJsonResult.instanceErrorMsg(CommonUtil.isNotEmpty(result.get("msg")) ? result.get("msg").toString() : "退款失败");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("退款失败", e);
             return GtJsonResult.instanceErrorMsg("退款失败");
         }
 
-	}
+    }
 
 }

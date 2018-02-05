@@ -15,31 +15,32 @@ import org.springframework.stereotype.Service;
 
 /**
  * tokenService
+ *
  * @author hongjiye
  * @time 2017-12-29 16:07
  **/
 @Service
 public class TokenApiServiceImpl implements ITokenApiService {
 
-	@Autowired
-	private RedisCacheUtil redisCacheUtil;
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
 
-	@Autowired
-	private MemberService memberService;
+    @Autowired
+    private MemberService memberService;
 
-	@Override
-	public Member getMemberByToken(String token, Integer busId) throws Exception{
-		if(busId == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		String redisMemberKey = WxAppCacheKeyUtil.getRedisMemberKeyByToken(token, PropertiesUtil.getTokenKey());
-		Member member = JSON.parseObject(redisCacheUtil.get(redisMemberKey), Member.class);
-		if(CommonUtil.isNotEmpty(member)){
-			if(!busId.equals(member.getBusid())){
-				return null;
-			}
-		}
-		member = memberService.getById(998);
-		return member;
-	}
+    @Override
+    public Member getMemberByToken(String token, Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        String redisMemberKey = WxAppCacheKeyUtil.getRedisMemberKeyByToken(token, PropertiesUtil.getTokenKey());
+        Member member = JSON.parseObject(redisCacheUtil.get(redisMemberKey), Member.class);
+        if (CommonUtil.isNotEmpty(member)) {
+            if (!busId.equals(member.getBusid())) {
+                return null;
+            }
+        }
+        member = memberService.getById(998);
+        return member;
+    }
 }

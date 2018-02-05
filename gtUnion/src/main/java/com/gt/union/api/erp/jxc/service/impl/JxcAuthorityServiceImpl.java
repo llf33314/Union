@@ -14,29 +14,29 @@ import java.util.Map;
  * @time 2017-12-05 16:27
  **/
 @Service
-public class JxcAuthorityServiceImpl implements JxcAuthorityService{
+public class JxcAuthorityServiceImpl implements JxcAuthorityService {
 
-	@Autowired
-	private RedisCacheUtil redisCacheUtil;
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
 
-	@Override
-	public String getJxcAuthority() {
-		String url = PropertiesUtil.getJxcUrl() + "/erp/b/login";
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("account", PropertiesUtil.getJxcAccount());
-		params.put("pwd", PropertiesUtil.getJxcPwd());
-		try {
-			JSONObject jsonObject = JSONObject.parseObject(SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(params)));
-			JSONObject tokens = jsonObject.getJSONObject("data");
-			String token = tokens.getString("token");
-			if(StringUtil.isNotEmpty(token)){
-				String key = RedisKeyUtil.getJxcAuthorityKey();
-				redisCacheUtil.set(key, token, 10800L);
-			}
-			return token;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    @Override
+    public String getJxcAuthority() {
+        String url = PropertiesUtil.getJxcUrl() + "/erp/b/login";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("account", PropertiesUtil.getJxcAccount());
+        params.put("pwd", PropertiesUtil.getJxcPwd());
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(SignRestHttpUtil.reqPostUTF8(url, JSONObject.toJSONString(params)));
+            JSONObject tokens = jsonObject.getJSONObject("data");
+            String token = tokens.getString("token");
+            if (StringUtil.isNotEmpty(token)) {
+                String key = RedisKeyUtil.getJxcAuthorityKey();
+                redisCacheUtil.set(key, token, 10800L);
+            }
+            return token;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

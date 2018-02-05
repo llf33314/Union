@@ -70,9 +70,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", opportunityId)
-                .eq("union_id", unionId)
-                .eq("to_member_id", toMemberId);
+            .eq("id", opportunityId)
+            .eq("union_id", unionId)
+            .eq("to_member_id", toMemberId);
 
         return unionOpportunityDao.selectOne(entityWrapper);
     }
@@ -85,10 +85,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", opportunityId)
-                .eq("union_id", unionId)
-                .eq("to_member_id", toMemberId)
-                .eq("accept_status", acceptStatus);
+            .eq("id", opportunityId)
+            .eq("union_id", unionId)
+            .eq("to_member_id", toMemberId)
+            .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectOne(entityWrapper);
     }
@@ -202,9 +202,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("from_member_id", fromMemberIdList)
-                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
-                .eq("accept_status", acceptStatus);
+            .in("from_member_id", fromMemberIdList)
+            .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
+            .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -218,10 +218,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("from_member_id", fromMemberIdList)
-                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
-                .eq("accept_status", acceptStatus)
-                .eq("is_close", isClose);
+            .in("from_member_id", fromMemberIdList)
+            .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
+            .eq("accept_status", acceptStatus)
+            .eq("is_close", isClose);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -234,9 +234,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("to_member_id", toMemberIdList)
-                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
-                .eq("accept_status", acceptStatus);
+            .in("to_member_id", toMemberIdList)
+            .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
+            .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -249,10 +249,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("to_member_id", toMemberIdList)
-                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", toMemberIdList)
-                .eq("accept_status", acceptStatus)
-                .eq("is_close", isClose);
+            .in("to_member_id", toMemberIdList)
+            .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", toMemberIdList)
+            .eq("accept_status", acceptStatus)
+            .eq("is_close", isClose);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -265,10 +265,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .in("from_member_id", fromMemberIdList)
-                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
-                .eq("accept_status", acceptStatus);
+            .eq("union_id", unionId)
+            .in("from_member_id", fromMemberIdList)
+            .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
+            .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -281,10 +281,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .in("to_member_id", toMemberIdList)
-                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
-                .eq("accept_status", acceptStatus);
+            .eq("union_id", unionId)
+            .in("to_member_id", toMemberIdList)
+            .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
+            .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -337,15 +337,15 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("from_member_id", fromMemberIdList)
-                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
-                .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
-                .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
-                .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
-                .exists(" SELECT * FROM t_union_member m" +
-                        " WHERE m.id=t_union_opportunity.to_member_id" +
-                        " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
-                .orderBy("accept_status ASC,create_time", false);
+            .in("from_member_id", fromMemberIdList)
+            .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
+            .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
+            .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
+            .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
+            .exists(" SELECT * FROM t_union_member m" +
+                " WHERE m.id=t_union_opportunity.to_member_id" +
+                " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
+            .orderBy("accept_status ASC,create_time", false);
         Page result = unionOpportunityDao.selectPage(page, entityWrapper);
         // toVO
         List<UnionOpportunity> resultDataList = result.getRecords();
@@ -370,15 +370,15 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("to_member_id", toMemberIdList)
-                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
-                .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
-                .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
-                .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
-                .exists(" SELECT * FROM t_union_member m" +
-                        " WHERE m.id=t_union_opportunity.from_member_id" +
-                        " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
-                .orderBy("accept_status ASC,create_time", false);
+            .in("to_member_id", toMemberIdList)
+            .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
+            .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
+            .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
+            .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
+            .exists(" SELECT * FROM t_union_member m" +
+                " WHERE m.id=t_union_opportunity.from_member_id" +
+                " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
+            .orderBy("accept_status ASC,create_time", false);
         Page result = unionOpportunityDao.selectPage(page, entityWrapper);
         // toVO
         List<UnionOpportunity> resultDataList = result.getRecords();
@@ -513,8 +513,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         // 短信通知
         String phone = StringUtil.isNotEmpty(toMember.getNotifyPhone()) ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
         String content = union.getName() + ","
-                + member.getEnterpriseName() + ","
-                + clientName + "," + clientPhone + "," + businessMsg;
+            + member.getEnterpriseName() + ","
+            + clientName + "," + clientPhone + "," + businessMsg;
 
         TemplateSmsMessage msg = new TemplateSmsMessage();
         msg.setBusId(toMember.getBusId());
@@ -578,12 +578,12 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (fromMember != null) {
             String phone = StringUtil.isNotEmpty(fromMember.getNotifyPhone()) ? fromMember.getNotifyPhone() : fromMember.getDirectorPhone();
             String content = union.getName() + ","
-                    + member.getEnterpriseName() + ","
-                    + (CommonConstant.COMMON_YES == isAccept ? "已接受" : "已拒绝")
-                    + ","
-                    + opportunity.getClientName() + ","
-                    + opportunity.getClientPhone() + ","
-                    + opportunity.getBusinessMsg();
+                + member.getEnterpriseName() + ","
+                + (CommonConstant.COMMON_YES == isAccept ? "已接受" : "已拒绝")
+                + ","
+                + opportunity.getClientName() + ","
+                + opportunity.getClientPhone() + ","
+                + opportunity.getBusinessMsg();
 
             TemplateSmsMessage msg = new TemplateSmsMessage();
             msg.setBusId(fromMember.getBusId());
@@ -605,10 +605,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("from_member_id", fromMemberIdList)
-                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
-                .eq("accept_status", acceptStatus)
-                .eq("is_close", isClose);
+            .in("from_member_id", fromMemberIdList)
+            .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
+            .eq("accept_status", acceptStatus)
+            .eq("is_close", isClose);
 
         entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money),0) brokerageMoneySum");
         Map<String, Object> resultMap = unionOpportunityDao.selectMap(entityWrapper);
@@ -624,10 +624,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("to_member_id", toMemberIdList)
-                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
-                .eq("accept_status", acceptStatus)
-                .eq("is_close", isClose);
+            .in("to_member_id", toMemberIdList)
+            .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
+            .eq("accept_status", acceptStatus)
+            .eq("is_close", isClose);
 
         entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money),0) brokerageMoneySum");
         Map<String, Object> resultMap = unionOpportunityDao.selectMap(entityWrapper);
@@ -876,7 +876,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionOpportunityDao.selectOne(entityWrapper);
     }
@@ -889,7 +889,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+            .eq("id", id);
 
         return unionOpportunityDao.selectOne(entityWrapper);
     }
@@ -964,7 +964,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -977,7 +977,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("from_member_id", fromMemberId);
+            .eq("from_member_id", fromMemberId);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -1002,7 +1002,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -1015,7 +1015,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("to_member_id", toMemberId);
+            .eq("to_member_id", toMemberId);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -1040,7 +1040,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
@@ -1053,7 +1053,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
+            .eq("union_id", unionId);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
