@@ -43,7 +43,7 @@
                 </div>
                 <div class="clearfix">
                   <span  class="fl SelectunionImg">
-                    <p>{{item.union.name}}</p>
+                    <p>{{item.union.name}}折扣卡</p>
                   </span>
                   <p class="overflowhiddenOh" v-show="item.disabledFlag"> <span>已办理</span> </p>
                   <!--底部信息-->

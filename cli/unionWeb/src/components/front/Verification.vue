@@ -124,7 +124,7 @@
               <el-switch v-model="isIntegral_" on-text="" off-text="">
               </el-switch>
             </el-form-item>
-            <el-form-item label="积分抵扣" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral >= 1">
+            <el-form-item label="积分抵扣：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral >= 1">
               <span> ￥
                 <span class="color_">{{ deductionPrice | formatPrice }} </span>
               </span>
@@ -135,10 +135,17 @@
                 <span class="color_">{{ price1 | formatPrice }} </span>
               </span>
             </el-form-item>
-            <el-form-item label="消费赠送积分：">
-              <span> ￥
-                <span>{{ price1 * form.giveIntegral | formatPrice }}联盟积分 </span>
-              </span>
+            <el-form-item label="赠送积分：">
+              <div>
+                <span>{{ price1 * form.giveIntegral | formatPrice }}</span>
+                <el-tooltip placement="right">
+                  <div slot="content" style="line-height: 1.5">
+                    1、每消费1元，将获得{{form.giveIntegral}}联盟积分<br/>
+                    2、日常消费时，{{form.exchangeIntegral}}联盟积分 = 1元
+                  </div>
+                  <span class="tubiao">!</span>
+                </el-tooltip>
+              </div>
             </el-form-item>
             <div class="discountsProject">
               <el-form-item label="优惠项目：" v-if="activitySelected.length>0">

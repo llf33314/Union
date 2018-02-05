@@ -1680,6 +1680,12 @@ hr {
   padding: 0;
   margin-top: 15px;
 }
+#front #Verification .second_0 .el-dialog__body .tubiao {
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  left: 163px;
+}
 #front #Verification .second_0 .el-dialog__body > div {
   width: 840px;
   margin: 30px;
