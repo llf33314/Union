@@ -231,50 +231,29 @@ export default {
 </script>
 
 <style scoped lang='less' rel="stylesheet/less">
-<<<<<<< HEAD
 /*滚动条样式*/
 .unionCardDetailsRight > div::-webkit-scrollbar {
   /*滚动条整体样式*/
   width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
   height: 4px;
 }
-.unionCardDetailsRight > div::-webkit-scrollbar-thumb {
+.step3::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 3px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 0px;
+}
+.unionCardDetailsRight > div::-webkit-scrollbar-thumb,
+.step3::-webkit-scrollbar {
   /*滚动条里面小方块*/
   border-radius: 5px;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   background: rgba(0, 0, 0, 0.2);
 }
-.unionCardDetailsRight > div::-webkit-scrollbar-track {
+.unionCardDetailsRight > div::-webkit-scrollbar-track,
+.step3::-webkit-scrollbar {
   /*滚动条里面轨道*/
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
-=======
-  /*滚动条样式*/
-  .unionCardDetailsRight > div::-webkit-scrollbar{
-    /*滚动条整体样式*/
-    width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
-    height: 4px;
-  }
-  .step3::-webkit-scrollbar{
-    /*滚动条整体样式*/
-    width: 3px; /*高宽分别对应横竖滚动条的尺寸*/
-    height: 0px;
-  }
-  .unionCardDetailsRight > div::-webkit-scrollbar-thumb,
-  .step3::-webkit-scrollbar {
-    /*滚动条里面小方块*/
-    border-radius: 5px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
-    background: rgba(0, 0, 0, .2);
-  }
-  .unionCardDetailsRight > div::-webkit-scrollbar-track,
-  .step3::-webkit-scrollbar {
-    /*滚动条里面轨道*/
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
-  }
->>>>>>> 297a586db529b3ab19355dd44452b65f69f9ee75
 </style>
