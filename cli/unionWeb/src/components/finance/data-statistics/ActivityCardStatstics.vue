@@ -2,8 +2,19 @@
   <div class="ActivityCardStatstics">
     <h3>联盟活动卡发售统计</h3>
     <nav>
-      <div id="publishCountStatistics" style="width:500px;height:300px;"></div>
-      <div id="sellBrokerageStatistics" style="width:500px;height:300px;"></div>
+      <div class="publishCountStatisticsParent">
+        <h3>售卡量统计</h3>
+        <p>单位：张</p>
+        <div id="publishCountStatistics" style="width:500px;height:300px;"></div>
+      </div>
+
+      <div class="sellBrokerageStatisticsParent">
+        <div>
+          <h3>售卡佣金统计</h3>
+          <p>单位：元</p>
+        </div>
+        <div id="sellBrokerageStatistics" style="width:500px;height:300px;"></div>
+      </div>
     </nav>
   </div>
 </template>
@@ -39,7 +50,7 @@ export default {
           formatter: params => {
             let unionName = params.name;
             let publishCount = params.value[0];
-            let sellCount = params.value[0];
+            let sellCount = params.value[1];
             return `${unionName} <br />历史发布张数：${publishCount} 张 <br />累计售出：${sellCount} 张 `;
           }
         },

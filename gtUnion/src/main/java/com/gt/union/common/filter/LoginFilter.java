@@ -77,8 +77,10 @@ public class LoginFilter implements Filter {
         //(3)判断是否已有登录信息
         // （3-1）佣金平台
         if (url.indexOf("h5Brokerage") > -1) {
+            //佣金平台
             doH5BrokerageFilter(req, res, chain);
         } else if (url.indexOf("wxAppCard") > -1) {
+            //联盟卡小程序
             doWxAppCardFilter(req, res, chain, url);
         } else {
             doWebFilter(req, res, chain, url);

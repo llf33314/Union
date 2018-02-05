@@ -81,24 +81,6 @@ public class SmsApiController {
 			default:
 				break;
 		}
-		if(SmsCodeConstant.APPLY_UNION_CARD_TYPE == type){
-			//办理联盟卡
-			Integer busId = user.getId();
-			if (user.getPid() != null && user.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-				busId = user.getPid();
-			}
-			try{
-				UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
-				// TODO
-//				CardApplyVO vo = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fan.getId(), null);
-//				if(vo == null){
-//					return GtJsonResult.instanceErrorMsg("您已办理联盟卡");
-//				}
-			}catch (Exception e){
-				logger.error("办理联盟卡发送短信校验是否办卡校验出错", e);
-			}
-
-		}
 		TemplateSmsMessage msg = new TemplateSmsMessage();
 		msg.setBusId(CommonUtil.isNotEmpty(user) ? user.getId() : PropertiesUtil.getDuofenBusId());
 		msg.setMobile(phone);

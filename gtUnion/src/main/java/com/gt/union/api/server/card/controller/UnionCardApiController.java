@@ -38,7 +38,7 @@ public class UnionCardApiController extends ApiBaseController {
 	public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionCardDiscountParam> requestApiParam){
 		try {
 			UnionCardDiscountParam param = requestApiParam.getReqdata();
-			boolean verification=super.verification(request, response, requestApiParam);
+			super.verification(request, response, requestApiParam);
 			UnionDiscountResult data = unionCardApiService.getConsumeUnionCardDiscount(param.getPhone(), param.getBusId());
 			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {

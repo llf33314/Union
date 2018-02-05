@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.erp.jxc.entity.JxcProduct;
 import com.gt.union.api.erp.jxc.service.JxcAuthorityService;
 import com.gt.union.api.erp.jxc.service.JxcProductService;
-import com.gt.union.api.erp.jxc.util.HttpClientUtil;
 import com.gt.union.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

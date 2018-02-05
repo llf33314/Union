@@ -56,7 +56,7 @@ public class SysLogInterceptor extends HandlerInterceptorAdapter {
                 logObj.put("opt_ip", IPKit.getIpAddr(request));
                 logObj.put("opt_paramers", KeysUtil.getEncString(JSONObject.toJSONString(getParamers(request))));
                 String date = DateTimeKit.getDateTime(DateTimeKit.DEFAULT_DATE_FORMAT_YYYYMM);
-//				daoUtil.saveObjectByMap("", "t_bus_log_"+date, logObj);
+				daoUtil.saveObjectByMap("", "t_bus_log_"+date, logObj);
             }
         }
         super.postHandle(request, response, handler, modelAndView);

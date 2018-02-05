@@ -231,7 +231,6 @@ public class DaoUtil extends JdbcTemplate {
 	 */
 	public Object saveObjectByMap(String dbName, String tableName,
 			Map<String, Object> map) {
-		map.remove("class");
 		// 声明操作sql
 		StringBuffer sql = new StringBuffer();
 		StringBuffer values = new StringBuffer();
@@ -269,22 +268,41 @@ public class DaoUtil extends JdbcTemplate {
 				@Override
 				public PreparedStatement createPreparedStatement(Connection connection)
 						throws SQLException {
-					PreparedStatement ps =connection.prepareStatement(insertSql,PreparedStatement.RETURN_GENERATED_KEYS);
-					for (int i = 0; i < list.size(); i++) {
-						ps.setObject(i + 1, list.get(i));
+					PreparedStatement ps = null;
+					try{
+						ps = connection.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS);
+						for (int i = 0; i < list.size(); i++) {
+							ps.setObject(i + 1, list.get(i));
+						}
+					}catch (Exception e){
+						e.printStackTrace();
+					}finally {
+						if(connection != null){
+							connection.close();
+						}
+						if(ps != null){
+							ps.close();
+						}
 					}
 					return ps;
 				}
 			}, new PreparedStatementCallback() {
+				@Override
 				public Object doInPreparedStatement(
 						PreparedStatement pstm) throws SQLException,
 						DataAccessException {
-					
-					pstm.executeUpdate();
-					ResultSet rs = pstm.getGeneratedKeys();
-					rs.next();
-					Object obj = rs.getObject(1);
-					DaoUtil.this.close(null, null, rs);
+					ResultSet rs = null;
+					Object obj = null;
+					try{
+						pstm.executeUpdate();
+						rs = pstm.getGeneratedKeys();
+						rs.next();
+						obj = rs.getObject(1);
+					}catch (Exception e){
+						e.printStackTrace();
+					}finally {
+						DaoUtil.this.close(null, null, rs);
+					}
 					return obj;
 				}
 			});

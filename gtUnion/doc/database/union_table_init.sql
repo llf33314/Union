@@ -217,6 +217,7 @@ CREATE TABLE `t_union_brokerage_withdrawal` (
   `sys_order_no` varchar(100) DEFAULT NULL COMMENT '系统订单号',
   `verifier_id` int(11) DEFAULT NULL COMMENT '平台管理者id',
   `verifier_name` varchar(100) DEFAULT NULL COMMENT '平台管理者名称',
+  `openid` varchar(100) DEFAULT NULL COMMENT '用户openid',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='佣金提现';
 
@@ -432,3 +433,40 @@ CREATE TABLE `t_union_user_introduction` (
   `content` text COMMENT '内容',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟商家简介';
+
+DROP TABLE IF EXISTS `t_union_refund_card`;
+CREATE TABLE `t_union_refund_card` (
+  `id` int(11) NOT NULL DEFAULT '0' COMMENT '主键',
+  `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `fan_id` int(11) DEFAULT NULL COMMENT '联盟卡粉丝id',
+  `activity_id` int(11) DEFAULT NULL COMMENT '活动卡id',
+  `refund_order_id` int(11) DEFAULT NULL COMMENT '退款订单id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡退款';
+
+DROP TABLE IF EXISTS `t_union_refund_opportunity`;
+CREATE TABLE `t_union_refund_opportunity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `refund_order_id` int(11) DEFAULT NULL COMMENT '退款订单id',
+  `opportunity_id` int(11) DEFAULT NULL COMMENT '商机id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='商机退款';
+
+DROP TABLE IF EXISTS `t_union_refund_order`;
+CREATE TABLE `t_union_refund_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `sys_order_no` varchar(50) DEFAULT NULL COMMENT '支付订单号',
+  `refund_order_no` varchar(50) DEFAULT NULL COMMENT '退款订单号',
+  `total_money` double(8,2) DEFAULT NULL COMMENT '订单总金额',
+  `refund_money` double(8,2) DEFAULT NULL COMMENT '退款金额',
+  `type` int(2) DEFAULT NULL COMMENT '退款类型 1：商机 2：联盟卡',
+  `status` int(2) DEFAULT NULL COMMENT '退款状态 1：申请退款 2：退款成功 3：退款失败',
+  `desc` varchar(100) DEFAULT NULL COMMENT '退款描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='退款订单';

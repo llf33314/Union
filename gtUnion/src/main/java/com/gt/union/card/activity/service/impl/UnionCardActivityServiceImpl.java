@@ -495,14 +495,15 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
     //********************************************* Base On Business - other *******************************************
 
     @Override
-    public Integer countValidGESellBeginTimeByUnionId(Integer unionId) throws Exception {
+    public Integer countValidLESellBeginTimeByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .ge("sell_begin_time", DateUtil.getCurrentDate());
+                .eq("union_id", unionId)
+                .le("sell_begin_time", DateUtil.getCurrentDate());
 
         return unionCardActivityDao.selectCount(entityWrapper);
     }

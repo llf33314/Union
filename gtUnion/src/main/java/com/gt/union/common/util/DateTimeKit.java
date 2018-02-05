@@ -11,14 +11,10 @@ import java.util.*;
 
 /**
  * 日期操作工具类
- * 
+ * @time 2017-12-25
+ * @author hongjiye
  */
 public class DateTimeKit {
-	public static Date date = null;
-
-	public static DateFormat dateFormat = null;
-
-	public static Calendar calendar = null;
 
 	/**
 	 * 缺省的日期显示格式： yyyy-MM-dd
@@ -49,10 +45,9 @@ public class DateTimeKit {
 	 * 时间显示格式：yyyyMMddHHmmss
 	 */
 	public static final String yyyyMMddHHmmss = "yyyyMMddHHmmss";
-	
-	public static Map<Integer, String> weekMap ;
+
+	final static Map<Integer, String> weekMap = new HashMap<Integer, String>();
 	static{
-		weekMap= new HashMap<Integer, String>();
 		weekMap.put(2, "周一");
 		weekMap.put(3, "周二");
 		weekMap.put(4, "周三");
@@ -65,7 +60,7 @@ public class DateTimeKit {
 	public static final String MMDDHHMMSS = "MMddHHmmss";
 
 	public java.sql.Timestamp getTimestamp() {
-		return new java.sql.Timestamp(new Date().getTime());
+			return new java.sql.Timestamp(System.currentTimeMillis());
 	}
 
 	/**
@@ -438,15 +433,17 @@ public class DateTimeKit {
 	 * @return Date 日期
 	 */
 	public static Date parseDate(String dateStr, String format) {
+		Date date = null;
 		try {
-			dateFormat = new SimpleDateFormat(format);
+			DateFormat simpleDateFormat = new SimpleDateFormat(format);
 			String dt = dateStr.replaceAll("-", "/");
 			if ((!"".equals(dt)) && (dt.length() < format.length())) {
 				dt += format.substring(dt.length()).replaceAll("[YyMmDdHhSs]",
 						"0");
 			}
-			date = (Date) dateFormat.parse(dt);
+			date = simpleDateFormat.parse(dt);
 		} catch (Exception e) {
+
 		}
 		return date;
 	}
@@ -476,8 +473,8 @@ public class DateTimeKit {
 		String result = "";
 		try {
 			if (date != null) {
-				dateFormat = new SimpleDateFormat(format);
-				result = dateFormat.format(date);
+				DateFormat simpleDateFormat = new SimpleDateFormat(format);
+				result = simpleDateFormat.format(date);
 			}
 		} catch (Exception e) {
 		}
@@ -503,7 +500,7 @@ public class DateTimeKit {
 	 * @return 返回年份
 	 */
 	public static int getYear(Date date) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.YEAR);
 	}
@@ -516,7 +513,7 @@ public class DateTimeKit {
 	 * @return 返回月份
 	 */
 	public static int getMonth(Date date) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.MONTH) + 1;
 	}
@@ -529,7 +526,7 @@ public class DateTimeKit {
 	 * @return 返回日份
 	 */
 	public static int getDay(Date date) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.DAY_OF_MONTH);
 	}
@@ -542,7 +539,7 @@ public class DateTimeKit {
 	 * @return 返回小时
 	 */
 	public static int getHour(Date date) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
@@ -555,7 +552,7 @@ public class DateTimeKit {
 	 * @return 返回分钟
 	 */
 	public static int getMinute(Date date) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.MINUTE);
 	}
@@ -568,7 +565,7 @@ public class DateTimeKit {
 	 * @return 返回秒钟
 	 */
 	public static int getSecond(Date date) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.SECOND);
 	}
@@ -581,7 +578,7 @@ public class DateTimeKit {
 	 * @return 返回毫秒
 	 */
 	public static long getMillis(Date date) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.getTimeInMillis();
 	}
@@ -629,7 +626,7 @@ public class DateTimeKit {
 	 * @return 返回相加后的日期
 	 */
 	public static Date addDate(Date date, int day) {
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		long millis = getMillis(date) + ((long) day) * 24 * 3600 * 1000;
 		calendar.setTimeInMillis(millis);
 		return calendar.getTime();
@@ -656,7 +653,7 @@ public class DateTimeKit {
 	 * @return String yyyy-MM-dd 格式
 	 */
 	public static String getMonthBegin(String strdate) {
-		date = parseDate(strdate);
+		Date date = parseDate(strdate);
 		return format(date, "yyyy-MM") + "-01";
 	}
 
@@ -668,8 +665,8 @@ public class DateTimeKit {
 	 * @return String 日期字符串 yyyy-MM-dd格式
 	 */
 	public static String getMonthEnd(String strdate) {
-		date = parseDate(getMonthBegin(strdate));
-		calendar = Calendar.getInstance();
+		Date date = parseDate(getMonthBegin(strdate));
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.MONTH, 1);
 		calendar.add(Calendar.DAY_OF_YEAR, -1);
@@ -743,9 +740,6 @@ public class DateTimeKit {
 			d2 = swap;
 		}
 
-		int betweendays = getDaysBetween(d1, d2);
-
-		@SuppressWarnings("unused")
 		int charge_date = 0;
 		int charge_start_date = 0;// 开始日期的日期偏移量
 		int charge_end_date = 0;// 结束日期的日期偏移量
@@ -763,9 +757,6 @@ public class DateTimeKit {
 		// }
 		result = (getDaysBetween(this.getNextMonday(d1), this.getNextMonday(d2)) / 7)
 				* 5 + charge_start_date - charge_end_date;
-		// System.out.println("charge_start_date>" + charge_start_date);
-		// System.out.println("charge_end_date>" + charge_end_date);
-		// System.out.println("between day is-->" + betweendays);
 		return result;
 	}
 
@@ -872,8 +863,8 @@ public class DateTimeKit {
 	 * @throws ParseException
 	 */
 	 public static int isYeaterday(Date oldTime) throws ParseException{  
-		 	Date newTime= newTime=new Date();  
-	        //将下面的 理解成  yyyy-MM-dd 00：00：00 更好理解点  
+		 	Date newTime = new Date();
+	        //将下面的 理解成  yyyy-MM-dd 00：00：00 更好理解点
 	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");  
 	        String todayStr = format.format(newTime);  
 	        Date today = format.parse(todayStr);  
@@ -1077,7 +1068,7 @@ public class DateTimeKit {
 		 * @return
 		 */
 		public static boolean laterThanNow(Date date){
-			return date.getTime()>new Date().getTime();
+			return date.getTime()>System.currentTimeMillis();
 		}
 		
 		/**
@@ -1390,12 +1381,9 @@ public class DateTimeKit {
 	 * @throws ParseException 
 	 */
 	public static void main(String[] args) throws ParseException {
-		//		20161216104457
-		Date date= DateTimeKit.parse("20161216104457", "yyyyMMddHHmmss");
-		System.out.println(date);
-		 SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
-		    Date d=sdf.parse("20161216104457");
-		    System.out.println(d.getTime());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		Date date = sdf.parse("20161216104457");
+		System.out.println(date.getTime());
 	}
 
 
@@ -1405,21 +1393,14 @@ public class DateTimeKit {
 	 * @return
 	 */      
 	public static Long getEndTime(){  
-//	        Calendar todayEnd = Calendar.getInstance(); 
-//	        todayEnd.set(Calendar.DATE, Calendar.DATE-1);
-//	        todayEnd.set(Calendar.HOUR, 14);  
-//	        todayEnd.set(Calendar.MINUTE, 59);  
-//	        todayEnd.set(Calendar.SECOND, 59);  
-		 Date currentTime = new Date();
-	        currentTime.setHours(0);
-	        currentTime.setMinutes(0);
-	        currentTime.setSeconds(0);
-	        Date backupTime=currentTime;//DateUtils.addDays(currentTime,+1);
-	        System.out.println(DateTimeKit.format(backupTime, yyyyMMddHHmmssms));
-	        return backupTime.getTime()/1000;  
-	        
-	      
-	    }  
+	 	Date currentTime = new Date();
+		currentTime.setHours(0);
+		currentTime.setMinutes(0);
+		currentTime.setSeconds(0);
+		Date backupTime=currentTime;
+		System.out.println(DateTimeKit.format(backupTime, yyyyMMddHHmmssms));
+		return backupTime.getTime()/1000;
+	    }
 	
 	/**
 	 * 当天开始时间戳
@@ -1447,8 +1428,7 @@ public class DateTimeKit {
              result = (d.parse(eDate).getTime() - d.parse(sDate)  
                      .getTime()) / time;// 当前时间减去测试时间  
                                          // 这个的除以1000得到秒，相应的60000得到分，3600000得到小时  
-             /*System.out.println("当前时间减去测试时间=" + result + "分钟");  */
-         } catch (ParseException e) {  
+         } catch (ParseException e) {
              e.printStackTrace();  
          }  
          return result;
@@ -1535,8 +1515,7 @@ public class DateTimeKit {
         		 result =  (l1-l)/mill;
         	 }
                                           // 这个的除以1000得到秒，相应的60000得到分，3600000得到小时  
-              /*System.out.println("当前时间减去测试时间=" + result + "分钟");  */
-          } catch (Exception e) {  
+          } catch (Exception e) {
               e.printStackTrace();  
           }  
           return result;
@@ -1658,12 +1637,11 @@ public class DateTimeKit {
 	 *  -1：source比traget时间小
 	 * @throws Exception
 	 */
-	public static int DateCompare(String source, String traget, String type) throws Exception {
-		int ret = 2;
+	public static int dateCompare(String source, String traget, String type) throws Exception {
 		SimpleDateFormat format = new SimpleDateFormat(type);
 		Date sourcedate = format.parse(source);
 		Date tragetdate = format.parse(traget);
-		ret = sourcedate.compareTo(tragetdate);
+		int ret = sourcedate.compareTo(tragetdate);
 		return ret;
 	}
 

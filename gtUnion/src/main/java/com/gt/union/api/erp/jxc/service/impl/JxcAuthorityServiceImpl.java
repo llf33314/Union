@@ -2,10 +2,7 @@ package com.gt.union.api.erp.jxc.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gt.union.api.erp.jxc.service.JxcAuthorityService;
-import com.gt.union.api.erp.jxc.util.HttpClientUtil;
 import com.gt.union.common.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

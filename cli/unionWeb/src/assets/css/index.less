@@ -373,11 +373,11 @@ hr{
 //前台办理联盟卡/首页联盟卡详情弹出框公共样式
 //详情左边样式
 .step3 {
+  height: 280px;
+  overflow: auto;
   .el-radio-group {
     width: 200px;
     margin:0 35px 0 0;
-    min-height: 295px;
-    overflow-y: auto;
     border-radius: 6px;
     .el-radio-button__inner:hover {
       color: inherit;
@@ -403,10 +403,10 @@ hr{
     }
     .bgcolor1{
       background-image: linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%);
-      width:198px;height: 80px;position: absolute;left: 0;top: 0;border-radius: 6px;
+      width:198px;height: 86px;position: absolute;left: 0;top: 0;border-radius: 6px;
     }
     .el-radio-button:first-child .el-radio-button__inner {
-      position: absolute;
+      margin-top: 10px;
     }
     .el-radio-button__orig-radio:checked+.el-radio-button__inner {
       color: #1f2d3d;
@@ -521,6 +521,17 @@ hr{
             .DetailsItems{
               color: #333;
             }
+            //右边折扣卡详情
+            .discountsDetails{
+              >li{
+                display: flex;
+                justify-content: space-between;
+                span:nth-last-child(1){
+                  margin-right: 40px;
+                }
+              }
+            }
+            //右边活动卡详情
             .companyName {
               >li{
                 margin-left: 25px;
@@ -705,6 +716,10 @@ hr{
     textarea.el-textarea__inner{
       font-size: 16px;
     }
+  }
+  .unionNoticeBreak{
+    //强制单词断行
+    word-break: break-all;
   }
 }
 
@@ -1456,6 +1471,8 @@ hr{
         p {
           margin-bottom: 7px;
           color: #333333;
+          display: flex;
+          line-height: 2;
         }
       }
     }
@@ -1471,10 +1488,11 @@ hr{
     .el-dialog__body {
       padding: 0px;
       margin-top: 15px;
+      padding-right: 10px!important;
     }
     .tuimeng {
       .el-dialog--tiny {
-        width: 600px;
+        width: 700px;
       }
     }
     .model_12{
@@ -1880,6 +1898,12 @@ hr{
       .el-dialog__body{
         padding: 0;
         margin-top: 15px;
+        .tubiao{
+          width: 22px;
+          height: 22px;
+          line-height: 22px;
+          left: 163px;
+        }
         >div {
           width: 840px;
           margin: 30px;
@@ -2042,6 +2066,7 @@ hr{
 
   //办理联盟卡---------------------------------  3
   #transaction{
+    position: relative;
     //公共样式
     .cardInformation{
       height: 40px;
@@ -2057,7 +2082,7 @@ hr{
       border: solid 1px #dfe6ec;
       margin-bottom:25px ;
       >form{
-        margin-top: 25px;
+        margin : 25px 0 0 25px;
       }
     }
     //联盟卡列表
@@ -2065,13 +2090,123 @@ hr{
       width: 80%;
       border: solid 1px #dfe6ec;
       margin-bottom:25px ;
-      .unionCardListStatic{
-        height: 310px;
+
+    }
+    //办卡列表
+    .transactionFooter{
+      width: 80%;
+      border: solid 1px #dfe6ec;
+      position: relative;
+      .transactionFooterNav{
+        max-height: 200px;
         overflow-y: auto;
       }
+      //卡列表格
+      .footerCardList{
+        height: 40px;
+        padding: 0 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom:1px solid #DFE6EC ;
+      }
+      .total{
+        width: 100%;
+        height: 40px;
+        background-color: #f1f1f1;
+        box-sizing: border-box;
+        padding:10px 30px ;
+        position: absolute;
+        bottom: 0;
+        >span{
+          color: #ff4949;
+        }
+      }
     }
-
-
+    //页面主内容
+    .SwitchAround {
+      max-height: 410px;
+      overflow-y: auto;
+      >div {
+        margin:20px 0 20px 30px;
+        .el-checkbox-button {
+          position: relative;
+          display: inline-block;
+          margin:5px 0 40px 13px;
+          .el-checkbox-button__inner {
+            padding: 0;
+            border: none;
+            >.clearfix{
+              border-radius: 4px 0 0 4px;
+            }
+          }
+        }
+        //益出隐藏
+        .overflowhiddenOh{
+          height: 120px;
+          border-radius: 6px;
+          width: 100%;
+          overflow: hidden;
+          position: absolute;
+          span{
+            position: absolute;
+            right: -40px;
+            top: 12px;
+            display: inline-block;
+            width: 117px;
+            background-color: rgba(0, 0, 0, .4);
+            text-align: center;
+            color: #EEEEEE;
+            padding: 5px;
+            transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            -moz-transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+          }
+        }
+        .SelectunionImg {
+          display: block;
+          color: #fff;
+          font-size: 20px;
+          border-radius: 6px;
+          width: 300px;
+          height: 120px;
+          line-height: 120px;
+          background-image: linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%);
+        }
+        .bottomFont{
+          margin-left: 5px;position: absolute;
+          top: 135px;left: 0;color: #333;
+          font-size: 20px;
+        }
+        .el-checkbox-button.is-checked .el-checkbox-button__inner{
+          background-color: #96a3ad;
+          border-color: #96a3ad;
+          box-shadow: none;
+          i{
+            display: block;
+            width:300px;
+            height:120px;
+            position: absolute;
+            background: rgba(35,34,34,.3) url('../../assets/images/images3.png') no-repeat bottom right;
+            top: 0;
+            left:0;
+            border-radius: 6px;
+          }
+        }
+      }
+    }
+    //固定页面底部
+    .footerFix{
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      text-align: center;
+      width: 100%;
+      height: 56px;
+      line-height: 56px;
+      background-color: #f5f5f5;
+    }
     .model_1 {
       .el-dialog--tiny {
         width: 560px;
@@ -2132,6 +2267,7 @@ hr{
       left: 62%;
     }
   }
+  //统计图模块样式
   .DataStatistics{
     .BrokerageStatistics{
       >nav{
@@ -2150,7 +2286,7 @@ hr{
         border-bottom: 1px solid #ddd;
       }
       .btnGroup{
-        margin:0 0 20px 395px ;
+        margin-left: 31%;
       }
     }
     .ActivityCardStatstics{
@@ -2161,11 +2297,18 @@ hr{
       }
       >nav{
         display: flex;
+        .publishCountStatisticsParent,.sellBrokerageStatisticsParent{
+          h3,p {
+            margin-left: 5px;
+          }
+        }
+        p{
+          margin:9px 0 25px 0 ;
+        }
       }
     }
   }
 }
-
 
 
 //没有联盟的弹出框样式
@@ -2294,31 +2437,26 @@ hr{
   #sellBrokerageStatistics{
     margin-left: 0px;
   }
-  #discountCardStatistics{
-    width: 1080px!important;
-    >div:nth-child(1){
-      width: 1080px!important;
-      canvas{
-        width: 1080px!important;
-      }
-    }
-  }
 }
 //（当屏幕大于1680时）
 @media screen and (min-width: 1680px){
   #brokeragePayStatistics{
     margin-left: 300px;
   }
-  #sellBrokerageStatistics{
+  .sellBrokerageStatisticsParent{
     margin-left: 300px;
   }
-  #discountCardStatistics{
-    width: 1650px!important;
-    >div:nth-child(1){
-      width: 1650px!important;
-      canvas{
-        width: 1500px!important;
-      }
-    }
+}
+
+@media screen and (min-width: 1880px){
+  #brokeragePayStatistics{
+    margin-left: 520px;
+  }
+  .sellBrokerageStatisticsParent{
+    margin-left: 545px;
   }
 }
+
+
+
+

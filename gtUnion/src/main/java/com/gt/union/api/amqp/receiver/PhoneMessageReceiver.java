@@ -38,14 +38,17 @@ public class PhoneMessageReceiver {
     @Autowired
     private SmsService smsService;
 
+    @Autowired
+    private AmqpConfig amqpConfig;
+
     @Bean
     public Queue queuePhoneMessage() {
-        return new Queue(AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE, true); //队列持久
+        return new Queue(amqpConfig.getUnionRoutPhoneKey(), true); //队列持久
     }
 
     @Bean
     public Binding bindingPhoneMessage() {
-        return BindingBuilder.bind(queuePhoneMessage()).to(directExchange).with(AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE);
+        return BindingBuilder.bind(queuePhoneMessage()).to(directExchange).with(amqpConfig.getUnionRoutPhoneKey());
     }
 
     @Bean

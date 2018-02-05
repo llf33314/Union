@@ -44,23 +44,23 @@
         <!-- 左侧联盟卡 -->
         <div class="step3">
           <el-radio-group v-model="unionCardId">
-            <el-radio-button v-if="detailData.disCountCard" :key="detailData.disCountCard.card.id"
-             :label="detailData.disCountCard.card.id">
-              <div style="z-index: 10;color:#fff">{{detailData.disCountCard.card.name}}</div>
+            <!--//折扣卡-->
+            <el-radio-button v-if="detailData.discountCard" :key="detailData.discountCard.card.id"
+             :label="detailData.discountCard.card.id">
+              <div style="z-index: 10;color:#fff">{{detailData.discountCard.card.name}}</div>
               <div class="choiceShadow">
                 <div class="bgcolor1" style=""></div>
                 <div class="shadow"></div>
-                <img src="~assets/images/images3.png" />
+                <img src="~assets/images/images3.png" style="display: none"/>
               </div>
             </el-radio-button>
+            <!--//活动卡-->
             <el-radio-button v-if="detailData.activityCardList" v-for="item in detailData.activityCardList" :key="item.card.id"
             :label="item.card.id">
               <div style="z-index: 10;color:#fff" >{{item.card.name}}</div>
               <img class="outOfDate" src="~assets/images/outOfDate02.png" v-if="item.isExpired">
               <div class="choiceShadow">
-                <!--//backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'-->
-                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#FD7157 0%, #EB3C3F 100%)'}"
-                style="width:198px;height: 86px;position: absolute;left: 0;top: 0;"></div>
+                <div class="bgcolor1" :style="{backgroundImage: 'linear-gradient(90deg,#'+item.color1+' 0%, #'+item.color2+' 100%)'}"></div>
                 <div class="shadow"></div>
                 <img src="~assets/images/images3.png" style="display: none" />
               </div>
@@ -70,13 +70,13 @@
         <!-- 右侧联盟卡详情 -->
         <div class="unionCardDetailsRight">
           <!--折扣卡详情-->
-          <div v-if="detailData.disCountCard" v-show="unionCardId===detailData.disCountCard.card.id">
-            <p class="DetailsName">{{detailData.disCountCard.card.name}}</p>
-            <p class="DetailsTime">办卡时间 {{detailData.disCountCard.createTime}}</p>
+          <div v-if="detailData.discountCard" v-show="unionCardId===detailData.discountCard.card.id">
+            <p class="DetailsName">{{detailData.discountCard.card.name}}</p>
+            <p class="DetailsTime">办卡时间 {{detailData.discountCard.card.createTime}}</p>
             <p>消费特权：可在下列商家消费时享受折扣</p>
-            <ol>
-              <li v-for="item in detailData.disCountCard.memberList" :key="item.id" :label="item.id">
-                <span>{{item.enterpriseName}}</span>
+            <ol class="discountsDetails">
+              <li v-for="(item,index) in detailData.discountCard.memberList" :key="item.id" :label="item.id">
+                <span>{{index+1+'、 '}}{{item.enterpriseName}}</span>
                 <span v-if="item.discount">{{(item.discount*10).toFixed(1)}}折</span>
                 <span v-else> 无折扣</span>
               </li>
@@ -91,10 +91,10 @@
             <p class="DetailsItems">优惠项目： 共{{item.projectItemCount}}项</p>
             <ol>
               <li v-for="(item1,index) in item.cardProjectList" :key="item1.member.id" :label="item1.member.id">
-                <span>{{index+1+'. '}}{{item1.member.enterpriseName}}</span>
+                <span>{{index+1+'、 '}}{{item1.member.enterpriseName}}</span>
                 <ul class="companyName">
                   <li v-for="item2 in item1.projectItemList" :key="item2.id" :label="item2.id">
-                    <i class="circle"></i>
+                    <span class="circle"></span>
                     <span>{{item2.name}}</span>
                     <!-- todo * 样式更换 -->
                     <span>{{item2.number}}</span>
@@ -133,10 +133,7 @@ export default {
       totalAll: 0,
       visible: false,
       unionCardId: '',
-      detailData: {
-        discountCard: {},
-        discount: ''
-      }
+      detailData: {}
     };
   },
   computed: {
@@ -181,12 +178,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 带条件查询联盟卡
@@ -214,36 +206,32 @@ export default {
             this.detailData = res.data.data;
             this.visible = true;
             if (this.detailData.discountCard) {
-              this.detailData.discountCard.card.createTime = timeFilter(this.detailData.discountCard.createTime);
+              this.detailData.discountCard.card.createTime = timeFilter(this.detailData.discountCard.card.createTime);
+              this.unionCardId = this.detailData.discountCard.card.id;
             }
             if (this.detailData.activityCardList) {
-              console.log(this.detailData.activityCardList);
+              if (!this.detailData.discountCard) {
+                this.unionCardId = this.detailData.activityCardList[0].card.id;
+              }
               this.detailData.activityCardList.forEach((v, i) => {
                 v.card.createTime = timeFilter(v.card.createTime);
                 v.card.validity = timeFilter(v.card.validity);
-                // let color1 = (v.color1 = v.activity.color.split(',')[0]);
-                // let color2 = (v.color2 = v.activity.color.split(',')[1]);
-                // let mDiv = 'm' + color2 + i;
-                // setTimeout(function() {
-                //   $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                // }, 0);
+                v.color1 = v.activity.color.split(',')[0];
+                v.color2 = v.activity.color.split(',')[1];
               });
             }
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     }
   }
 };
 </script>
+
 <style scoped lang='less' rel="stylesheet/less">
+<<<<<<< HEAD
 /*滚动条样式*/
 .unionCardDetailsRight > div::-webkit-scrollbar {
   /*滚动条整体样式*/
@@ -262,4 +250,31 @@ export default {
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
+=======
+  /*滚动条样式*/
+  .unionCardDetailsRight > div::-webkit-scrollbar{
+    /*滚动条整体样式*/
+    width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 4px;
+  }
+  .step3::-webkit-scrollbar{
+    /*滚动条整体样式*/
+    width: 3px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 0px;
+  }
+  .unionCardDetailsRight > div::-webkit-scrollbar-thumb,
+  .step3::-webkit-scrollbar {
+    /*滚动条里面小方块*/
+    border-radius: 5px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+    background: rgba(0, 0, 0, .2);
+  }
+  .unionCardDetailsRight > div::-webkit-scrollbar-track,
+  .step3::-webkit-scrollbar {
+    /*滚动条里面轨道*/
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+  }
+>>>>>>> 297a586db529b3ab19355dd44452b65f69f9ee75
 </style>

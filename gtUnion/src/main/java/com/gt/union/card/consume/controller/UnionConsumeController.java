@@ -1,6 +1,5 @@
 package com.gt.union.card.consume.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
@@ -8,6 +7,7 @@ import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
+import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
@@ -17,7 +17,7 @@ import com.gt.union.union.main.vo.UnionPayVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -150,22 +150,24 @@ public class UnionConsumeController {
                 payMoneyCell.setCellStyle(centerCellStyle);
                 // 优惠项目
                 Cell itemListCell = row.createCell(cellIndex++);
-                String itemListValue = "";
+                StringBuilder sbItemListValue = new StringBuilder();
                 if (ListUtil.isNotEmpty(vo.getNonErpTextList())) {
-                    itemListValue = JSONObject.toJSONString(vo.getNonErpTextList());
+                    for (UnionCardProjectItem item : vo.getNonErpTextList()) {
+                        sbItemListValue.append(item.getName()).append(",");
+                    }
                 }
                 if (ListUtil.isNotEmpty(vo.getErpTextList())) {
-                    if (StringUtil.isNotEmpty(itemListValue)) {
-                        itemListValue += ",";
+                    for (UnionCardProjectItem item : vo.getErpTextList()) {
+                        sbItemListValue.append(item.getName()).append(",");
                     }
-                    itemListValue += JSONObject.toJSONString(vo.getErpTextList());
                 }
                 if (ListUtil.isNotEmpty(vo.getErpGoodsList())) {
-                    if (StringUtil.isNotEmpty(itemListValue)) {
-                        itemListValue += ",";
+                    for (UnionCardProjectItem item : vo.getErpGoodsList()) {
+                        sbItemListValue.append(item.getName()).append(",");
                     }
-                    itemListValue += JSONObject.toJSONString(vo.getErpGoodsList());
                 }
+                String itemListValue = sbItemListValue.toString();
+                itemListValue = itemListValue.endsWith(",") ? itemListValue.substring(0, itemListValue.length() - 1) : itemListValue;
                 itemListCell.setCellValue(itemListValue);
                 itemListCell.setCellStyle(centerCellStyle);
                 // 支付状态

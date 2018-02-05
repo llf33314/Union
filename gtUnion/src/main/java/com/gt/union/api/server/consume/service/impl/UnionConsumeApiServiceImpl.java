@@ -64,7 +64,7 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
-		logger.info("手机端联盟卡核销，参数：{}", JSON.toJSONString(unionConsumeParam));
+		logger.info("API联盟卡核销，参数：{}", JSON.toJSONString(unionConsumeParam));
 		if(unionConsumeParam.getUnionCardId() == null){
 			throw new ParamException("unionCardId为空");
 		}
@@ -90,13 +90,18 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 		if(card == null){
 			throw new BusinessException("联盟卡不存在");
 		}
+
+		UnionConsume consume = unionConsumeService.getValidByOrderNoAndModel(unionConsumeParam.getOrderNo(), unionConsumeParam.getModel());
+		if (consume != null) {
+			throw new BusinessException("订单已存在");
+		}
 		UnionConsume unionConsume = new UnionConsume();
 		unionConsume.setCreateTime(new Date());
 		unionConsume.setDelStatus(CommonConstant.DEL_STATUS_NO);
 		unionConsume.setBusinessType(unionConsumeParam.getModel());//行业模型
 		unionConsume.setBusinessDesc(unionConsumeParam.getModelDesc());//行业描述
 		unionConsume.setSysOrderNo(unionConsumeParam.getOrderNo());//订单号
-		unionConsume.setPayType(unionConsumeParam.getOrderType() == 4 ? 0 : unionConsumeParam.getOrderType());//支付类型 (0：现金 1：微信 2：支付宝)
+		unionConsume.setPayType(unionConsumeParam.getOrderType() == 4 ? Integer.valueOf(0) : unionConsumeParam.getOrderType());//支付类型 (0：现金 1：微信 2：支付宝)
 		unionConsume.setType(1);//线上支付
 		unionConsume.setPayStatus(unionConsumeParam.getStatus());//支付状态
 		unionConsume.setConsumeMoney(unionConsumeParam.getTotalMoney());//联盟折扣打折前价格
@@ -109,10 +114,10 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 		unionConsume.setMemberId(card.getMemberId());
 		UnionMember unionMember = unionMemberService.getById(card.getMemberId());
 		unionConsume.setDiscount(CommonUtil.isNotEmpty(unionMember.getDiscount()) ? unionMember.getDiscount() : 0);
-		unionConsume.setShopId(unionConsumeParam.getShopId());
 		if(CommonUtil.isNotEmpty(unionConsumeParam.getShopId())){
 			WsWxShopInfoExtend shop = shopService.getById(unionConsumeParam.getShopId());
 			if(shop != null){
+				unionConsume.setShopId(unionConsumeParam.getShopId());
 				unionConsume.setShopName(shop.getBusinessName());
 			}
 		}
@@ -133,7 +138,6 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 						unionCardIntegralService.update(uci);
 					}else {
 						UnionCardIntegral uci = new UnionCardIntegral();
-						uci.setId(cardIntegral.getId());
 						uci.setIntegral(getIntegral);
 						uci.setCreateTime(new Date());
 						uci.setUnionId(card.getUnionId());

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  * @version 2017-12-01 11:39:37
  */
 public class UnionSessionUtil extends SessionUtils {
-    public static String SESSION_UNION_H5_BROKERAGE_USER = "union_h5_brokerage_user";
+    final public static String SESSION_UNION_H5_BROKERAGE_USER = "union_h5_brokerage_user";
 
     /**
      * 获取h5佣金平台登录者

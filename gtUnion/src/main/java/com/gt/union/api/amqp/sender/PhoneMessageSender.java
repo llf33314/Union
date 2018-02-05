@@ -24,9 +24,12 @@ public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, Rabbi
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    private AmqpConfig amqpConfig;
+
     public void sendMsg(SmsMessage smsMessage) {
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
-        this.rabbitTemplate.convertAndSend(AmqpConfig.UNION_EXCHANGE, AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE,
+        this.rabbitTemplate.convertAndSend(amqpConfig.getUnionExchange(), amqpConfig.getUnionRoutPhoneKey(),
                 smsMessage.toString(), correlationData);
         rabbitTemplate.setConfirmCallback(this);
         rabbitTemplate.setReturnCallback(this);
@@ -49,7 +52,7 @@ public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, Rabbi
             System.out.println(msg);
             System.out.println("消息找不到队列");
         }catch (Exception e){
-
+            System.out.println("数据转换异常");
         }
 
     }

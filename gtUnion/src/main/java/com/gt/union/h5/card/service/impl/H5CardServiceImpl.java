@@ -370,7 +370,7 @@ public class H5CardServiceImpl implements IH5CardService {
 					if(o1.getCardType() > o2.getCardType()){
 						return 1;
 					}else if(o1.getCardType().equals(o2.getCardType())){
-						return -o1.getCreatetime().compareTo(o2.getCreatetime());
+						return o2.getCreatetime().compareTo(o1.getCreatetime());
 					}else {
 						return -1;
 					}
@@ -406,12 +406,12 @@ public class H5CardServiceImpl implements IH5CardService {
 			data.put("phone", 0);
 			return GtJsonResult.instanceSuccessMsg(data).toString();
 		}
-		List list = new ArrayList<>();
-		if(CommonUtil.isNotEmpty(activityId)){
-			list.add(activityId);
-		}
-		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
-		// TODO
+//		if(CommonUtil.isNotEmpty(activityId)){
+//			List list = new ArrayList<>();
+//			list.add(activityId);
+//		}
+//		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
+//		// TODO
 //		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
 //		data.put("phone", 1);
 //		if(result != null){

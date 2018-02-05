@@ -27,11 +27,14 @@ import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 联盟卡根信息 服务实现类
@@ -70,6 +73,9 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     @Autowired
     private IUnionConsumeProjectService unionConsumeProjectService;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -120,7 +126,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
                 ActivityCard activityCard = new ActivityCard();
                 activityCard.setCard(typeActivityCard);
 
-                activityCard.setIsExpired(currentDate.compareTo(typeActivityCard.getValidity()));
+                activityCard.setIsExpired(currentDate.compareTo(typeActivityCard.getValidity()) > 0 ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
 
                 Integer activityId = typeActivityCard.getActivityId();
                 UnionCardActivity activity = unionCardActivityService.getById(activityId);
@@ -128,7 +134,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
                 Integer projectItemCount = 0;
                 List<ActivityCardProject> cardProjectList = new ArrayList<>();
-                List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+                List<UnionCardProject> projectList = unionCardProjectService.listValidWithoutExpiredMemberByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
                 if (ListUtil.isNotEmpty(projectList)) {
                     for (UnionCardProject project : projectList) {
                         ActivityCardProject activityCardProject = new ActivityCardProject();
@@ -296,10 +302,10 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     @Override
     public UnionCardFan getOrSaveByPhone(String phone) throws Exception {
-        String key = null;
+        String key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
+        RLock rLock = redissonClient.getLock(key);
         try {
-            key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
-//            RedissonLockUtil.lock(key, 5);
+            rLock.lock(5, TimeUnit.SECONDS);
             UnionCardFan fan = getValidByPhone(phone);
             if (fan == null) {
                 fan = new UnionCardFan();
@@ -312,7 +318,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             return fan;
         } finally {
             if (key != null) {
-//                RedissonLockUtil.unlock(key);
+                rLock.unlock();
             }
         }
     }

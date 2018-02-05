@@ -214,8 +214,8 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
                     //售罄
                     activityCardVO.setStatus(WxAppCardConstant.CARD_SELL_OUT);
                 }else {
-                    if (CommonUtil.isEmpty(fanId) || !unionCardService.existValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fanId, activity.getId())) {
-                        //没办理过该联盟卡或已过期
+                    if (CommonUtil.isNotEmpty(fanId) && unionCardService.existValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fanId, activity.getId())) {
+                        //已办理
                         activityCardVO.setStatus(WxAppCardConstant.CARD_ACTIVITY_APPLY);
                     }
                 }
@@ -379,9 +379,11 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         vo.setFan(fan);
         vo.setActivityIdList(activityList);
 
-        List unionList = new ArrayList<>();
-        unionList.add(unionId);
-        vo.setUnionIdList(unionList);
+        if(ListUtil.isEmpty(activityList)){
+            List unionList = new ArrayList<>();
+            unionList.add(unionId);
+            vo.setUnionIdList(unionList);
+        }
 
         UnionPayVO result = unionCardService.saveApplyByBusId(busId, vo, unionCardApplyService);
         if (result != null) {

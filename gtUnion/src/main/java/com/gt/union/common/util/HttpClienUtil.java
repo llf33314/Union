@@ -124,7 +124,6 @@ public class HttpClienUtil {
 				}
 				/** 把json字符串转换成json对象 **/
 				jsonResult = JSON.parseObject(str);
-				url = URLDecoder.decode(url, "UTF-8");
 			} else {
 				logger.error("get请求提交失败:" + url);
 				throw new Exception();
