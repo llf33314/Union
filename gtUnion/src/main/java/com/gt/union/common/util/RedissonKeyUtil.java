@@ -60,4 +60,13 @@ public class RedissonKeyUtil {
 	public static String getUnionConsumeOrderKey(String orderNo) {
 		return PropertiesUtil.redisNamePrefix() + "redisson:consume:order:" + orderNo;
 	}
+
+	/**
+	 * 获取支付办理联盟卡订单锁键
+	 * @param orderNo
+	 * @return
+	 */
+	public static String getUnionCardOrderKey(String orderNo) {
+		return PropertiesUtil.redisNamePrefix() + "redisson:card:order:" + orderNo;
+	}
 }

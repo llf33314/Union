@@ -484,54 +484,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
         redisCacheUtil.set(idKey, newUnionMain);
     }
 
-    private void setCache(List<UnionMain> newUnionMainList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionMainList);
-        }
-    }
-
-    private void setValidCache(List<UnionMain> newUnionMainList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionMainList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionMain> newUnionMainList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionMainList);
-        }
-    }
-
     private void removeCache(UnionMain unionMain) {
         if (unionMain == null) {
             return;
@@ -555,14 +507,5 @@ public class UnionMainServiceImpl implements IUnionMainService {
 
     }
 
-    private List<String> getForeignIdKeyList(List<UnionMain> unionMainList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        return result;
-    }
 
 }

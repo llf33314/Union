@@ -647,134 +647,148 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(final String orderNo, final String socketKey, final String payType, final String payOrderNo, final Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
         if (orderNo == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
         }
-
+        final List<UnionCardRecord> recordList;
         try {
             // 判断recordIds有效性
-            List<UnionCardRecord> recordList = unionCardRecordService.listValidByOrderNo(orderNo);
+            recordList = unionCardRecordService.listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(recordList)) {
                 throw new BusinessException("没有支付信息");
-            }
-
-            List<Integer> recordIds = new ArrayList<Integer>();
-            for (UnionCardRecord record : recordList) {
-                // 如果recordIds的支付状态存在已处理，则直接返回成功
-                Integer payStatus = record.getPayStatus();
-                if (CardConstant.PAY_STATUS_SUCCESS == payStatus || CardConstant.PAY_STATUS_FAIL == payStatus || CardConstant.PAY_STATUS_RETURN == payStatus) {
-                    result.put("code", 0);
-                    result.put("msg", "重复处理");
-                    return JSONObject.toJSONString(result);
-                }
-            }
-            //数据库锁
-            if (unionCardRecordService.updateRecordStatusByIds(recordIds, CommonConstant.COMMON_YES == isSuccess ? CardConstant.PAY_STATUS_SUCCESS : CardConstant.PAY_STATUS_FAIL)) {
-                List<UnionCardRecord> updateRecordList = new ArrayList<>();
-                Date currentDate = DateUtil.getCurrentDate();
-                Map<Integer, Integer> unionIds = new HashMap<Integer, Integer>();
-                List<UnionCard> saveDiscountCardList = new ArrayList<>();
-                for (UnionCardRecord record : recordList) {
-
-                    // 根据订单信息生成活动卡
-                    UnionCardRecord updateRecord = new UnionCardRecord();
-                    updateRecord.setId(record.getId());
-                    updateRecord.setPayStatus(CommonConstant.COMMON_YES == isSuccess ? CardConstant.PAY_STATUS_SUCCESS : CardConstant.PAY_STATUS_FAIL);
-                    if (payType.equals("0")) {
-                        updateRecord.setPayType(CardConstant.PAY_TYPE_WX);
-                        updateRecord.setWxOrderNo(payOrderNo);
-                    } else {
-                        updateRecord.setPayType(CardConstant.PAY_TYPE_ALIPAY);
-                        updateRecord.setAlipayOrderNo(payOrderNo);
-                    }
-
-                    UnionCard saveActivityCard = new UnionCard();
-                    saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                    saveActivityCard.setCreateTime(currentDate);
-                    saveActivityCard.setType(CardConstant.TYPE_ACTIVITY);
-                    saveActivityCard.setFanId(record.getFanId());
-                    saveActivityCard.setMemberId(record.getMemberId());
-                    saveActivityCard.setUnionId(record.getUnionId());
-                    UnionCardActivity activity = unionCardActivityService.getById(record.getActivityId());
-                    if (activity != null) {
-                        saveActivityCard.setActivityId(activity.getId());
-                        saveActivityCard.setName(activity.getName());
-                        saveActivityCard.setValidity(DateUtil.addDays(currentDate, activity.getValidityDay()));
-                    }
-                    save(saveActivityCard);
-
-                    updateRecord.setCardId(saveActivityCard.getId());
-                    updateRecordList.add(updateRecord);
-                    // 由于下面使用recordList进行操作，所以这里需要更新它的值
-                    record.setCardId(updateRecord.getCardId());
-
-                    // 自动办理折扣卡
-                    if (!unionIds.containsKey(record.getUnionId())) {
-                        unionIds.put(record.getUnionId(), record.getUnionId());
-                        if (!existValidUnexpiredByUnionIdAndFanIdAndType(record.getUnionId(), record.getFanId(), CardConstant.TYPE_DISCOUNT)) {
-                            UnionCard saveDiscountCard = new UnionCard();
-                            saveDiscountCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                            saveDiscountCard.setCreateTime(currentDate);
-                            saveDiscountCard.setType(CardConstant.TYPE_DISCOUNT);
-                            saveDiscountCard.setFanId(record.getFanId());
-                            saveDiscountCard.setMemberId(record.getMemberId());
-                            saveDiscountCard.setUnionId(record.getUnionId());
-                            UnionMain union = unionMainService.getById(record.getUnionId());
-                            saveDiscountCard.setName((union != null ? union.getName() : "") + "折扣卡");
-                            saveDiscountCard.setValidity(DateUtil.addYears(currentDate, 10));
-                            saveDiscountCardList.add(saveDiscountCard);
-                        }
-                    }
-                }
-
-
-                if (ListUtil.isNotEmpty(saveDiscountCardList)) {
-                    saveBatch(saveDiscountCardList);
-                }
-                //售卡分成
-                List<UnionCardSharingRecord> saveSharingRecordList = new ArrayList<>();
-                List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
-                if (CommonConstant.COMMON_YES == isSuccess) {
-                    for (UnionCardRecord record : recordList) {
-                        if (unionCardSharingRatioService.existValidByUnionIdAndActivityId(record.getUnionId(), record.getActivityId())) {
-                            saveSharingRecordList.addAll(shareByRatio(record));
-                        } else {
-                            saveSharingRecordList.addAll(shareByAverage(record));
-                        }
-                    }
-                    saveIncomeList = getSaveIncomeList(saveSharingRecordList);
-                }
-
-                if (ListUtil.isNotEmpty(updateRecordList)) {
-                    unionCardRecordService.updateBatch(updateRecordList);
-                }
-                if (ListUtil.isNotEmpty(saveSharingRecordList)) {
-                    unionCardSharingRecordService.saveBatch(saveSharingRecordList);
-                }
-                if (ListUtil.isNotEmpty(saveIncomeList)) {
-                    unionBrokerageIncomeService.saveBatch(saveIncomeList);
-                }
-
-                // socket通知
-                if (StringUtil.isNotEmpty(socketKey)) {
-                    socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
-                }
-                result.put("code", 0);
-                result.put("msg", "成功");
-                return JSONObject.toJSONString(result);
-            } else {
-                result.put("code", -1);
-                result.put("msg", "订单已重复处理");
-                return JSONObject.toJSONString(result);
             }
         } catch (Exception e) {
             logger.error("办理联盟卡支付成功回调错误", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
+            return JSONObject.toJSONString(result);
+        }
+        String key = RedissonKeyUtil.getUnionCardOrderKey(orderNo);
+        RLock rLock = redissonClient.getLock(key);
+        rLock.lock(5, TimeUnit.SECONDS);
+        try{
+
+        }catch (Exception e){}
+        for (UnionCardRecord record : recordList) {
+            Integer payStatus = record.getPayStatus();
+            if (CardConstant.PAY_STATUS_SUCCESS == payStatus || CardConstant.PAY_STATUS_FAIL == payStatus || CardConstant.PAY_STATUS_RETURN == payStatus) {
+                result.put("code", 0);
+                result.put("msg", "重复处理");
+                return JSONObject.toJSONString(result);
+            }
+        }
+        GtJsonResult gtJsonResult = transactionTemplate.execute(new TransactionCallback<GtJsonResult>(){
+            @Override
+            public GtJsonResult doInTransaction(TransactionStatus transactionStatus) {
+                List<UnionCardRecord> updateRecordList = new ArrayList<>();
+                Date currentDate = DateUtil.getCurrentDate();
+                Map<Integer, Integer> unionIds = new HashMap<Integer, Integer>();
+                List<UnionCard> saveDiscountCardList = new ArrayList<>();
+                try{
+                    for (UnionCardRecord record : recordList) {
+
+                        // 根据订单信息生成活动卡
+                        UnionCardRecord updateRecord = new UnionCardRecord();
+                        updateRecord.setId(record.getId());
+                        updateRecord.setPayStatus(CommonConstant.COMMON_YES == isSuccess ? CardConstant.PAY_STATUS_SUCCESS : CardConstant.PAY_STATUS_FAIL);
+                        if (payType.equals("0")) {
+                            updateRecord.setPayType(CardConstant.PAY_TYPE_WX);
+                            updateRecord.setWxOrderNo(payOrderNo);
+                        } else {
+                            updateRecord.setPayType(CardConstant.PAY_TYPE_ALIPAY);
+                            updateRecord.setAlipayOrderNo(payOrderNo);
+                        }
+
+                        UnionCard saveActivityCard = new UnionCard();
+                        saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                        saveActivityCard.setCreateTime(currentDate);
+                        saveActivityCard.setType(CardConstant.TYPE_ACTIVITY);
+                        saveActivityCard.setFanId(record.getFanId());
+                        saveActivityCard.setMemberId(record.getMemberId());
+                        saveActivityCard.setUnionId(record.getUnionId());
+                        UnionCardActivity activity = unionCardActivityService.getById(record.getActivityId());
+                        if (activity != null) {
+                            saveActivityCard.setActivityId(activity.getId());
+                            saveActivityCard.setName(activity.getName());
+                            saveActivityCard.setValidity(DateUtil.addDays(currentDate, activity.getValidityDay()));
+                        }
+                        save(saveActivityCard);
+
+                        updateRecord.setCardId(saveActivityCard.getId());
+                        updateRecordList.add(updateRecord);
+                        // 由于下面使用recordList进行操作，所以这里需要更新它的值
+                        record.setCardId(updateRecord.getCardId());
+
+                        // 自动办理折扣卡
+                        if (!unionIds.containsKey(record.getUnionId())) {
+                            unionIds.put(record.getUnionId(), record.getUnionId());
+                            if (!existValidUnexpiredByUnionIdAndFanIdAndType(record.getUnionId(), record.getFanId(), CardConstant.TYPE_DISCOUNT)) {
+                                UnionCard saveDiscountCard = new UnionCard();
+                                saveDiscountCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                                saveDiscountCard.setCreateTime(currentDate);
+                                saveDiscountCard.setType(CardConstant.TYPE_DISCOUNT);
+                                saveDiscountCard.setFanId(record.getFanId());
+                                saveDiscountCard.setMemberId(record.getMemberId());
+                                saveDiscountCard.setUnionId(record.getUnionId());
+                                UnionMain union = unionMainService.getById(record.getUnionId());
+                                saveDiscountCard.setName((union != null ? union.getName() : "") + "折扣卡");
+                                saveDiscountCard.setValidity(DateUtil.addYears(currentDate, 10));
+                                saveDiscountCardList.add(saveDiscountCard);
+                            }
+                        }
+                    }
+
+
+                    if (ListUtil.isNotEmpty(saveDiscountCardList)) {
+                        saveBatch(saveDiscountCardList);
+                    }
+                    //售卡分成
+                    List<UnionCardSharingRecord> saveSharingRecordList = new ArrayList<>();
+                    List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
+                    if (CommonConstant.COMMON_YES == isSuccess) {
+                        for (UnionCardRecord record : recordList) {
+                            if (unionCardSharingRatioService.existValidByUnionIdAndActivityId(record.getUnionId(), record.getActivityId())) {
+                                saveSharingRecordList.addAll(shareByRatio(record));
+                            } else {
+                                saveSharingRecordList.addAll(shareByAverage(record));
+                            }
+                        }
+                        saveIncomeList = getSaveIncomeList(saveSharingRecordList);
+                    }
+
+                    if (ListUtil.isNotEmpty(updateRecordList)) {
+                        unionCardRecordService.updateBatch(updateRecordList);
+                    }
+                    if (ListUtil.isNotEmpty(saveSharingRecordList)) {
+                        unionCardSharingRecordService.saveBatch(saveSharingRecordList);
+                    }
+                    if (ListUtil.isNotEmpty(saveIncomeList)) {
+                        unionBrokerageIncomeService.saveBatch(saveIncomeList);
+                    }
+                }catch (Exception e){
+                    transactionStatus.setRollbackOnly();
+                    logger.error("办理联盟卡支付成功回调错误", e);
+                    return GtJsonResult.instanceErrorMsg(e.getMessage());
+                }
+                return GtJsonResult.instanceSuccessMsg();
+            }
+        });
+
+        if(gtJsonResult.isSuccess()){
+            // socket通知
+            if (StringUtil.isNotEmpty(socketKey)) {
+                socketService.socketPaySendMessage(socketKey, isSuccess, null, orderNo);
+            }
+            result.put("code", 0);
+            result.put("msg", "成功");
+            return JSONObject.toJSONString(result);
+        }else {
+            result.put("code", -1);
+            result.put("msg", gtJsonResult.getErrorMsg());
             return JSONObject.toJSONString(result);
         }
     }

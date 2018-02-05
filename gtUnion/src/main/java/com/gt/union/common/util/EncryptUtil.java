@@ -13,6 +13,8 @@ import java.security.MessageDigest;
 /**
  * 功能描述
  * 加密常用类
+ * @author hongjiye
+ * @time 2018/2/5
  */
 public class EncryptUtil {
 	// 密钥是16位长度的byte[]进行Base64转换后得到的字符串
@@ -25,7 +27,7 @@ public class EncryptUtil {
 	 *            需要加密的消息字符串
 	 * @return 加密后的字符串
 	 */
-	public static String encrypt(String secretkey,String xmlStr) {
+	public static String encrypt(String secretKey,String xmlStr) {
 		byte[] encrypt = null;
 
 		try {
@@ -33,28 +35,30 @@ public class EncryptUtil {
 			encrypt = xmlStr.getBytes("utf-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
+			return null;
 		}
 		// 取MD5Hash码，并组合加密数组
-		byte[] md5Hasn = null;
+		byte[] md5Hash = null;
 		try {
-			md5Hasn = EncryptUtil.MD5Hash(encrypt, 0, encrypt.length);
+			md5Hash = EncryptUtil.MD5Hash(encrypt, 0, encrypt.length);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		// 组合消息体
-		byte[] totalByte = EncryptUtil.addMD5(md5Hasn, encrypt);
+		byte[] totalByte = EncryptUtil.addMD5(md5Hash, encrypt);
 
 		// 取密钥和偏转向量
 		byte[] key = new byte[8];
 		byte[] iv = new byte[8];
-		getKeyIV(secretkey, key, iv);
-		SecretKeySpec deskey = new SecretKeySpec(key, "DES");
+		getKeyIV(secretKey, key, iv);
+		SecretKeySpec desKey = new SecretKeySpec(key, "DES");
 		IvParameterSpec ivParam = new IvParameterSpec(iv);
 
 		// 使用DES算法使用加密消息体
 		byte[] temp = null;
 		try {
-			temp = EncryptUtil.DES_CBC_Encrypt(totalByte, deskey, ivParam);
+			temp = EncryptUtil.DES_CBC_Encrypt(totalByte, desKey, ivParam);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -78,6 +82,7 @@ public class EncryptUtil {
 		try {
 			encBuf = decoder.decodeBuffer(xmlStr);
 		} catch (IOException e) {
+			return null;
 		}
 
 		// 取密钥和偏转向量
@@ -93,6 +98,7 @@ public class EncryptUtil {
 		try {
 			temp = EncryptUtil.DES_CBC_Decrypt(encBuf, deskey, ivParam);
 		} catch (Exception e) {
+			return null;
 		}
 
 		// 进行解密后的md5Hash校验
@@ -100,12 +106,12 @@ public class EncryptUtil {
 		try {
 			md5Hash = EncryptUtil.MD5Hash(temp, 16, temp.length - 16);
 		} catch (Exception e) {
+			return null;
 		}
 
 		// 进行解密校检
 		for (int i = 0; i < md5Hash.length; i++) {
 			if (md5Hash[i] != temp[i]) {
-				// System.out.println(md5Hash[i] + "MD5校验错误。" + temp[i]);
 				throw new Exception("MD5校验错误。");
 			}
 		}
@@ -355,12 +361,5 @@ public class EncryptUtil {
 			iv[i] = buf[i + 8];
 		}
 	}
-	
-	public static void main(String[] args) throws Exception {
-		String aa=encrypt("CFCCBD99C12B62E52952EA90A931A01F","++");
-		System.out.println(aa);
-		System.out.println(decrypt("CFCCBD99C12B62E52952EA90A931A01F", aa));
-		
-		System.out.println(encrypt("CFCCBD99C12B62E52952EA90A931A01F","++"));
-	}
+
 }

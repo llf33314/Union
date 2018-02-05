@@ -101,7 +101,7 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 		unionConsume.setBusinessType(unionConsumeParam.getModel());//行业模型
 		unionConsume.setBusinessDesc(unionConsumeParam.getModelDesc());//行业描述
 		unionConsume.setSysOrderNo(unionConsumeParam.getOrderNo());//订单号
-		unionConsume.setPayType(unionConsumeParam.getOrderType() == 4 ? 0 : unionConsumeParam.getOrderType());//支付类型 (0：现金 1：微信 2：支付宝)
+		unionConsume.setPayType(unionConsumeParam.getOrderType() == 4 ? Integer.valueOf(0) : unionConsumeParam.getOrderType());//支付类型 (0：现金 1：微信 2：支付宝)
 		unionConsume.setType(1);//线上支付
 		unionConsume.setPayStatus(unionConsumeParam.getStatus());//支付状态
 		unionConsume.setConsumeMoney(unionConsumeParam.getTotalMoney());//联盟折扣打折前价格
@@ -138,7 +138,6 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 						unionCardIntegralService.update(uci);
 					}else {
 						UnionCardIntegral uci = new UnionCardIntegral();
-						uci.setId(cardIntegral.getId());
 						uci.setIntegral(getIntegral);
 						uci.setCreateTime(new Date());
 						uci.setUnionId(card.getUnionId());

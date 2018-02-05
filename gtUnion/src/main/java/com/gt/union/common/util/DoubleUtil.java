@@ -45,7 +45,7 @@ public class DoubleUtil {
      * @return boolean
      */
     public static boolean checkIntegerPrecision(Double num, int integer) {
-        num = num == null ? Double.valueOf(num) : num;
+        num = num == null ? Double.valueOf(0) : num;
         String strNum = BigDecimal.valueOf(num).toString();
         int index = strNum.indexOf(".");
         return !(strNum.substring(index != -1 ? index : 0).length() > integer);

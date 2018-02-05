@@ -57,8 +57,8 @@ public class ErpServiceImpl implements ErpService {
 			List<ErpTypeVO> list = JSON.parseArray(data.get("menusLevelList").toString(),ErpTypeVO.class);
 			if(ListUtil.isNotEmpty(list)){
 				for(ErpTypeVO vo : list){
-					for(Integer erpType : ConfigConstant.UNION_USER_ERP_TYPE){
-						if(erpType.equals(vo.getErpModel())){
+					for(int erpType : ConfigConstant.UNION_USER_ERP_TYPE){
+						if(erpType == vo.getErpModel()){
 							vo.setErpType(vo.getErpModel());
 							dataList.add(vo);
 						}

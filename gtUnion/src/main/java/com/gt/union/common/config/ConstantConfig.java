@@ -11,11 +11,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class ConstantConfig {
-    public static String UNION_URL;
 
-    @Value("${union.url}")
-    public void setUnionUrl(String unionUrl) {
-        UNION_URL = unionUrl;
-    }
 
 }
