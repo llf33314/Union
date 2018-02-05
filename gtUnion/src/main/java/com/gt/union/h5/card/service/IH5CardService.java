@@ -18,6 +18,7 @@ public interface IH5CardService {
      * @param phone 粉丝用户手机号
      * @param busId 商家id
      * @return
+     * @throws Exception 统一处理异常
      */
     IndexVO getIndexVO(String phone, Integer busId) throws Exception;
 
@@ -29,6 +30,7 @@ public interface IH5CardService {
      * @param unionId    联盟id
      * @param activityId 活动卡id
      * @return
+     * @throws Exception 统一处理异常
      */
     CardDetailVO getCardDetail(String phone, Integer busId, Integer unionId, Integer activityId) throws Exception;
 
@@ -37,6 +39,7 @@ public interface IH5CardService {
      *
      * @param phone 用户手机号
      * @return
+     * @throws Exception 统一处理异常
      */
     MyCardDetailVO myCardDetail(String phone) throws Exception;
 
@@ -47,6 +50,8 @@ public interface IH5CardService {
      * @param busId  商家id
      * @param phone  手机号
      * @param code   验证码
+     * @throws Exception 统一处理异常
+     *
      */
     void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
 
@@ -58,6 +63,7 @@ public interface IH5CardService {
      * @param activityId 活动id
      * @param unionId    联盟id
      * @return
+     * @throws Exception 统一处理异常
      */
     String cardTransaction(String phone, Integer busId, Integer activityId, Integer unionId) throws Exception;
 
@@ -67,6 +73,7 @@ public interface IH5CardService {
      * @param page  分页参数
      * @param phone 手机号
      * @return Page
+     * @throws Exception 统一处理异常
      */
     Page pageConsumeByPhone(Page page, String phone) throws Exception;
 }

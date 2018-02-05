@@ -9,7 +9,9 @@ package com.gt.union.common.exception;
 public class BaseException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    //失败：友好的用户提示消息
+    /**
+     * 失败：友好的用户提示消息
+     */
     protected String errorMsg;
 
     public BaseException(String errorMsg) {

@@ -7,6 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * @author hongjiye
  * Created by Administrator on 2017/9/4 0004.
  */
 @ApiModel( value = "BindCardParam", description = "绑定联盟卡参数实体" )

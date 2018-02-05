@@ -5,9 +5,11 @@ import java.util.Random;
 
 /**
  * 随机数工具类
+ * @author hongjiye
+ * @time 2018/2/5
  */
 public class RandomKit {
-	
+
 	/**
 	 * 数字随机
 	 */
@@ -22,11 +24,11 @@ public class RandomKit {
 	 * 字符和数字随机
 	 */
 	public static final int NUMBER_CHAR = 2;
-	
+
 
 	/**
 	 * 获取临时文件名 非随机
-	 * 
+	 *
 	 * @param filename
 	 *            文件名
 	 * @return

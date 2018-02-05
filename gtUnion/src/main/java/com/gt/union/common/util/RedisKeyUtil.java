@@ -1,6 +1,8 @@
 package com.gt.union.common.util;
 
 /**
+ * redis缓存键工具
+ * @author hongjiye
  * Created by Administrator on 2017/8/18 0018.
  */
 public class RedisKeyUtil {

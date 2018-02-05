@@ -55,7 +55,9 @@ public class UnionConsumeGiveIntegralServiceImpl implements IUnionConsumeGiveInt
 		Integer businessModel = CommonUtil.toInteger(model);
 		Integer businessOrderId = CommonUtil.toInteger(orderId);
 		UnionConsume consume = unionConsumeService.getValidByBusinessOrderIdAndModel(businessOrderId, businessModel);
-		if(consume != null && consume.getPayStatus() == ConsumeConstant.PAY_STATUS_SUCCESS && (CommonUtil.isEmpty(consume.getGiveIntegral()) || consume.getGiveIntegral() == 0)){
+        boolean flag = consume != null && consume.getPayStatus() == ConsumeConstant.PAY_STATUS_SUCCESS && (CommonUtil.isEmpty(consume.getGiveIntegral()) || consume.getGiveIntegral() == 0);
+        //是否赠送积分
+		if(flag){
 			//记录存在且支付成功且没有赠送积分
 			if(CommonUtil.isNotEmpty(consume.getUnionId())){
 				UnionMain main = unionMainService.getValidById(consume.getUnionId());

@@ -14,6 +14,7 @@ public interface IUnionCardApiService {
 	 * @param phone		手机号
 	 * @param busId		商家id
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	UnionDiscountResult getConsumeUnionCardDiscount(String phone, Integer busId) throws Exception;
 }

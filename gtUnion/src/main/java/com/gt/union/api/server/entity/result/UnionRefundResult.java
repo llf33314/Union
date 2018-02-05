@@ -3,6 +3,8 @@ package com.gt.union.api.server.entity.result;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
+ * 联盟卡退款结果
+ * @author hongjiye
  * Created by Administrator on 2017/9/4 0004.
  */
 public class UnionRefundResult {

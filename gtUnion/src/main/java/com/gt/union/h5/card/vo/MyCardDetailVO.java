@@ -1,5 +1,7 @@
 package com.gt.union.h5.card.vo;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -88,4 +90,9 @@ public class MyCardDetailVO {
 	public void setCardList(List<MyUnionCardDetailVO> cardList) {
 		this.cardList = cardList;
 	}
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect);
+    }
 }

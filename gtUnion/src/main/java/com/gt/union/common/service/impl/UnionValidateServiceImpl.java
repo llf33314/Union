@@ -9,6 +9,8 @@ import org.springframework.validation.ObjectError;
 import java.util.List;
 
 /**
+ * 表单请求参数实现类
+ * @author hongjiye
  * Created by Administrator on 2017/8/16 0016.
  */
 @Service

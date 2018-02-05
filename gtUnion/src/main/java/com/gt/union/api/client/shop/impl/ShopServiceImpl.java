@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 门店服务类
+ * @author hongjiye
  * Created by Administrator on 2017/9/18 0018.
  */
 @Service

@@ -44,6 +44,7 @@ public interface MemberService {
 	 * @param memberId	粉丝id
 	 * @param phone		手机号
 	 * @return	1：成功 0：失败
+     * @throws Exception    统一异常处理
 	 */
 	boolean bindMemberPhone(Integer busId, Integer memberId, String phone) throws Exception;
 
@@ -53,6 +54,7 @@ public interface MemberService {
 	 * @param memberId	粉丝id
 	 * @param phone		手机号
 	 * @return	1：成功 0：失败
+     * @throws Exception    统一异常处理
 	 */
 	Member bindMemberPhoneApp(Integer busId, Integer memberId, String phone) throws Exception;
 
@@ -61,6 +63,7 @@ public interface MemberService {
 	 * @param phone		手机号
 	 * @param busId		商家id
 	 * @return	1：成功 0：失败
+     * @throws Exception    统一异常处理
 	 */
 	boolean loginMemberByPhone(String phone, Integer busId) throws Exception;
 

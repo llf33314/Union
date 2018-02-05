@@ -77,6 +77,7 @@ public interface IH5BrokerageService {
      * @param unionId
      * @param page
      * @return
+     * @throws Exception 统一处理异常
      */
     Page pageFromOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer unionId, Page page) throws Exception;
 

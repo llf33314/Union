@@ -2,6 +2,7 @@ package com.gt.union.common.util;
 
 /**
  * 发送短信工具类
+ * @author hongjiye
  * Created by Administrator on 2017/8/2 0002.
  */
 public class SmsUtil {

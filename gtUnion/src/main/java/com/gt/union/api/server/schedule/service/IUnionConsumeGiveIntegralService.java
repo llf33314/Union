@@ -12,6 +12,7 @@ public interface IUnionConsumeGiveIntegralService {
 	/**
 	 * 赠送积分
 	 * @param param
+     * @throws Exception    统一异常处理
 	 */
-	void giveConsumeIntegral(Map param) throws ParamException, Exception;
+	void giveConsumeIntegral(Map param) throws Exception;
 }

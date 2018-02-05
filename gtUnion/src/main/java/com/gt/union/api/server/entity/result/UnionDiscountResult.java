@@ -7,6 +7,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 获取折扣结果
+ * @author  hongjiye
  * Created by Administrator on 2017/8/23 0023.
  */
 @ApiModel( value = "UnionDiscountResult", description = "获取联盟折扣实体" )

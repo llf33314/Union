@@ -43,7 +43,8 @@ public class PhoneMessageReceiver {
 
     @Bean
     public Queue queuePhoneMessage() {
-        return new Queue(amqpConfig.getUnionRoutPhoneKey(), true); //队列持久
+        //队列持久
+        return new Queue(amqpConfig.getUnionRoutPhoneKey(), true);
     }
 
     @Bean

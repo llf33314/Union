@@ -23,7 +23,7 @@ public interface IWxAppCardService {
 	 * @param busId	商家id
 	 * @param page	分页参数
 	 * @return
-	 * @throws Exception
+	 * @throws Exception    统一异常处理
 	 */
 	Page listWxAppCardPage(String phone, Integer busId, Page page) throws Exception;
 
@@ -32,6 +32,7 @@ public interface IWxAppCardService {
 	 * @param busId		商家id
 	 * @param enterpriseName	企业名称 模糊搜索
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	List<UnionMember> listNearUser(Integer busId, String enterpriseName) throws Exception;
 
@@ -44,6 +45,7 @@ public interface IWxAppCardService {
 	 * @param activityId 活动卡id
 	 * @param unionMemberId
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	CardDetailVO getCardDetail(String phone, Integer busId, Integer unionId, Integer activityId, Integer unionMemberId) throws Exception;
 
@@ -52,15 +54,18 @@ public interface IWxAppCardService {
 	 *
 	 * @param phone 用户手机号
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	MyCardDetailVO myCardDetail(String phone) throws Exception;
 
 	/**
 	 * 绑定联盟卡手机号
-	 *  @param member 用户
+	 * @param member 用户
 	 * @param busId  商家id
 	 * @param phone  手机号
 	 * @param code   验证码
+     * @return
+     * @throws Exception    统一异常处理
 	 */
 	Member bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
 
@@ -72,6 +77,7 @@ public interface IWxAppCardService {
 	 * @param activityId 活动id
 	 * @param unionId    联盟id
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	String cardTransaction(String phone, Integer busId, Integer activityId, Integer unionId) throws Exception;
 
@@ -81,6 +87,7 @@ public interface IWxAppCardService {
 	 * @param page  分页参数
 	 * @param phone 手机号
 	 * @return Page
+     * @throws Exception    统一异常处理
 	 */
 	Page pageConsumeByPhone(Page page, String phone) throws Exception;
 
@@ -92,6 +99,7 @@ public interface IWxAppCardService {
 	 * @param page        分页参数
 	 * @param unionMemberId
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	Page listCardDetailPage(Integer busId, Integer unionId, Integer activityId, Page page, Integer unionMemberId) throws Exception;
 
@@ -100,6 +108,7 @@ public interface IWxAppCardService {
 	 * @param phone		手机号
 	 * @param page		分页参数
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	Page listMyCardPage(String phone, Page page) throws Exception;
 
@@ -109,6 +118,7 @@ public interface IWxAppCardService {
 	 * @param orderNo
 	 * @param phone
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	String getPayParam(Integer duoFenMemberId, String orderNo, String phone) throws Exception;
 
@@ -116,7 +126,7 @@ public interface IWxAppCardService {
 	 * 获取商家简介
 	 * @param busId
 	 * @return
-	 * @throws Exception
+     * @throws Exception    统一异常处理
 	 */
 	UnionUserIntroduction getUserIntroduction(Integer busId) throws Exception;
 
@@ -124,6 +134,7 @@ public interface IWxAppCardService {
 	 * 查询商家门店列表
 	 * @param busId
 	 * @return
+     * @throws Exception    统一异常处理
 	 */
 	List<WsWxShopInfoExtend> listShopByBusId(Integer busId);
 }

@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
+ * 联盟卡核销结果
+ * @author hongjiye
  * Created by Administrator on 2017/9/4 0004.
  */
 @ApiModel( value = "UnionConsumeResult", description = "联盟卡核销结果实体" )

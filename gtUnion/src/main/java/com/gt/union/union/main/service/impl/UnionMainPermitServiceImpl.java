@@ -182,7 +182,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
             UnionMainPermit updatePermit = new UnionMainPermit();
             updatePermit.setId(permit.getId());
             updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES ? UnionConstant.PERMIT_ORDER_STATUS_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_FAIL);
-            if (payType.equals("0")) {
+            if ("0".equals(payType)) {
                 updatePermit.setPayType(UnionConstant.PERMIT_PAY_TYPE_WX);
                 updatePermit.setWxOrderNo(payOrderNo);
             } else {
