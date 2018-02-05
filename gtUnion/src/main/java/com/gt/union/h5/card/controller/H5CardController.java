@@ -94,10 +94,7 @@ public class H5CardController {
 		Member member = SessionUtils.getLoginMember(request, busId);
 		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){
-			Map<String,Object> login = new HashMap<String,Object>();
-			login.put("login",1);
-//			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, null).toString();
-			return GtJsonResult.instanceSuccessMsg(login).toString();
+			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, null).toString();
 		}
 		MyCardDetailVO myCardDetailVO = h5CardService.myCardDetail(member.getPhone());
 		myCardDetailVO.setNickName(StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
@@ -129,9 +126,7 @@ public class H5CardController {
 	@RequestMapping(value = "/qr/cardNo", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public void qrCardNo(HttpServletRequest request,
 						  HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
-		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), cardNo);//加密后参数
-		encrypt = URLEncoder.encode(encrypt,"UTF-8");
-		QRcodeKit.buildQRcode(encrypt, 250, 250, response);
+		QRcodeKit.buildQRcode(cardNo, 250, 250, response);
 	}
 
 	@ApiOperation(value = "获取二维码图片链接", notes = "获取二维码图片链接", produces = "application/json;charset=UTF-8")

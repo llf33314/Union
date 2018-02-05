@@ -28,7 +28,7 @@ public class UnionWxAppCardApplyServiceImpl implements IUnionCardApplyService {
 		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=";
 
 		PayParam payParam = new PayParam();
-		payParam.setTotalFee(payMoneySum.doubleValue());
+		payParam.setTotalFee(payMoneySum);
 		payParam.setOrderNum(orderNo);
 		payParam.setIsreturn(CommonConstant.COMMON_NO);
 		payParam.setReturnUrl("");

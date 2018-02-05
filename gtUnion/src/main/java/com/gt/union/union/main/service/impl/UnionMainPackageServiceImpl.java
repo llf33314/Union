@@ -318,54 +318,6 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
         redisCacheUtil.set(idKey, newUnionMainPackage);
     }
 
-    private void setCache(List<UnionMainPackage> newUnionMainPackageList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionMainPackageList);
-        }
-    }
-
-    private void setValidCache(List<UnionMainPackage> newUnionMainPackageList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionMainPackageList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionMainPackage> newUnionMainPackageList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionMainPackageList);
-        }
-    }
-
     private void removeCache(UnionMainPackage unionMainPackage) {
         if (unionMainPackage == null) {
             return;
@@ -389,14 +341,5 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
 
     }
 
-    private List<String> getForeignIdKeyList(List<UnionMainPackage> unionMainPackageList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        return result;
-    }
 
 }

@@ -70,7 +70,7 @@ public class UnionMainNoticeController {
             throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            content = content != null ? content : new String();
+            content = content != null ? content : "";
             unionMainNoticeService.updateByBusIdAndUnionId(busId, unionId, content);
         }
         return GtJsonResult.instanceSuccessMsg().toString();

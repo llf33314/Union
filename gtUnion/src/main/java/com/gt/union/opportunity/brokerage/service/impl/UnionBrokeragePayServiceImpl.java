@@ -395,10 +395,11 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
         }
-        RLock rLock = null;
+
         String orderKey = RedissonKeyUtil.getUnionOpportunityOrderKey(orderNo);
         RLock rLock1 = redissonClient.getLock(orderKey);
         rLock1.lock(10, TimeUnit.SECONDS);
+        RLock rLock = null;
         try{
             List<UnionBrokeragePay> payList = listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(payList)) {
@@ -541,9 +542,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             if(rLock != null){
                 rLock.unlock();
             }
-            if(rLock1 != null){
-                rLock1.unlock();
-            }
+            rLock1.unlock();
         }
 
         return JSONObject.toJSONString(result);
@@ -555,10 +554,11 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             UnionRefundOrder successRefundOrder = unionRefundOrderService.getValidByOrderNoAndStatusAndType(orderNo, RefundOrderConstant.REFUND_STATUS_SUCCESS, RefundOrderConstant.TYPE_OPPORTUNITY);
             //没有退款
             if(successRefundOrder == null){
+                //退款
                 final GtJsonResult gtJsonResult = wxPayService.refundOrder(orderNo,refundFee, totalFee);
                 final Map data = (Map)gtJsonResult.getData();
 
-                Boolean result = transactionTemplate.execute(new TransactionCallback<Boolean>(){
+                transactionTemplate.execute(new TransactionCallback(){
 
                     @Override
                     public Boolean doInTransaction(TransactionStatus transactionStatus) {

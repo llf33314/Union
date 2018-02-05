@@ -216,22 +216,22 @@ public class MockUtil {
         return mockData(clazz, field2SrcListMap, random);
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> T mockData(Class<T> clazz, Map<String, List<Object>> field2SrcListMap, Random random) {
         if (BASE_DATA_TYPE_SET.contains(clazz.getName())) {
             return mockData4BaseDataType(clazz, random);
         }
 
+
+        //防止构造函数私有化而报错
+        Constructor defaultConstructor = clazz.getDeclaredConstructors()[0];
+        defaultConstructor.setAccessible(true);
+        Class[] paramTypeArray = defaultConstructor.getParameterTypes();
+        Object[] paramArray = new Object[paramTypeArray.length];
+        for (int i = 0; i < paramTypeArray.length; i++) {
+            paramArray[i] = null;
+        }
         T result;
         try {
-            //防止构造函数私有化而报错
-            Constructor defaultConstructor = clazz.getDeclaredConstructors()[0];
-            defaultConstructor.setAccessible(true);
-            Class[] paramTypeArray = defaultConstructor.getParameterTypes();
-            Object[] paramArray = new Object[paramTypeArray.length];
-            for (int i = 0; i < paramTypeArray.length; i++) {
-                paramArray[i] = null;
-            }
             result = (T) defaultConstructor.newInstance(paramArray);
         } catch (Exception e) {
             //不支持枚举类实例
@@ -255,7 +255,6 @@ public class MockUtil {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> T mockData4BaseDataType(Class<T> clazz, Random random) {
         switch (clazz.getName()) {
             case BASIC_BYTE:
@@ -314,7 +313,6 @@ public class MockUtil {
         return mockData(field.getType(), field2SrcListMap, random);
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> List<T> mockData4ListType(Class<T> clazz, Map<String, List<Object>> field2SrcListMap, Random random) {
         List<T> result = new ArrayList();
 

@@ -379,9 +379,11 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         vo.setFan(fan);
         vo.setActivityIdList(activityList);
 
-        List unionList = new ArrayList<>();
-        unionList.add(unionId);
-        vo.setUnionIdList(unionList);
+        if(ListUtil.isEmpty(activityList)){
+            List unionList = new ArrayList<>();
+            unionList.add(unionId);
+            vo.setUnionIdList(unionList);
+        }
 
         UnionPayVO result = unionCardService.saveApplyByBusId(busId, vo, unionCardApplyService);
         if (result != null) {

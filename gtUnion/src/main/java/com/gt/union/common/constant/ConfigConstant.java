@@ -75,7 +75,7 @@ public interface ConfigConstant {
      * 2：车小算
      * 联盟erp项目类型
      */
-    Integer[] UNION_USER_ERP_TYPE = {2};
+    int[] UNION_USER_ERP_TYPE = {2};
 
     /**
      * 支付模块：联盟许可

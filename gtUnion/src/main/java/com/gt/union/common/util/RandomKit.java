@@ -90,6 +90,6 @@ public class RandomKit {
 	 * @return
 	 */
 	public static int getRandomInt(int length, int type) {
-		return Integer.valueOf(getRandomString(length, type));
+		return Integer.parseInt(getRandomString(length, type));
 	}
 }
