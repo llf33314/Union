@@ -208,7 +208,7 @@ export default {
           if (res.data.data) {
             this.unionCardList = res.data.data;
             console.log(this.unionCardList);
-            if(this.unionCardList.activityCardList) {
+            if (this.unionCardList.activityCardList) {
               this.unionCardList.activityCardList.forEach((v, i) => {
                 v.color1 = v.activity.color.split(',')[0];
                 v.color2 = v.activity.color.split(',')[1];
@@ -499,12 +499,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: '网络错误',
-            type: 'error',
-            duration: 3000
-          });
+          this.$message({ showClose: true, message: '网络错误', type: 'error', duration: 3000 });
         });
     },
     // 初始化
@@ -528,7 +523,6 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less">
-
 .codeImg {
   width: 200px;
   height: 200px;
@@ -555,65 +549,66 @@ export default {
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-  .slotContent{
-    min-height: 200px;
-    max-height: 350px;
-  }
-  //折扣卡//活动卡公用样式
-  .discountsCardDetails,.cardDetails{
-    width: 350px;
-    height: 290px;
-    overflow: hidden;
-    padding: 13px;
-    background: #fff;
-    box-sizing: border-box;
-    z-index: 10;
-    text-align: start;
-    line-height: 2;
-    color: #333;
-    font-size: 14px;
-  }
-  //折扣卡
-  .discountsCardDetails{
-    ul{
-      height: 170px;
-      overflow-y: auto;
-      li{
-        display: flex;
-        justify-content: space-between;
-        span:nth-last-child(1){
-          margin-right: 80px;
-        }
+.slotContent {
+  min-height: 200px;
+  max-height: 350px;
+}
+//折扣卡//活动卡公用样式
+.discountsCardDetails,
+.cardDetails {
+  width: 350px;
+  height: 290px;
+  overflow: hidden;
+  padding: 13px;
+  background: #fff;
+  box-sizing: border-box;
+  z-index: 10;
+  text-align: start;
+  line-height: 2;
+  color: #333;
+  font-size: 14px;
+}
+//折扣卡
+.discountsCardDetails {
+  ul {
+    height: 170px;
+    overflow-y: auto;
+    li {
+      display: flex;
+      justify-content: space-between;
+      span:nth-last-child(1) {
+        margin-right: 80px;
       }
     }
   }
-  //活动卡
-  .cardDetails{
-    height: 315px;
-    ol{
-      height: 170px;
-      overflow-y: auto;
+}
+//活动卡
+.cardDetails {
+  height: 315px;
+  ol {
+    height: 170px;
+    overflow-y: auto;
+  }
+  .companyName {
+    > li {
+      margin-left: 25px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
     }
-    .companyName {
-      >li{
-        margin-left: 25px;
-        color: #999;display: flex;
-        justify-content: space-between;
-      }
-      .circle {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #ccc;
-      }
+    .circle {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ccc;
     }
   }
-  //去掉默认的禁止图标样式
-  .SwitchAround{
-    .el-checkbox-button.is-disabled .el-checkbox-button__inner {
-      cursor: inherit!important;
-    }
+}
+//去掉默认的禁止图标样式
+.SwitchAround {
+  .el-checkbox-button.is-disabled .el-checkbox-button__inner {
+    cursor: inherit !important;
   }
-
+}
 </style>

@@ -15,7 +15,7 @@
       </p>
     </div>
     <!-- 活动卡列表 -->
-    <div class="activityCardsList" v-for="(item,index1) in tableData" :key="item.activity.id">
+    <div class="activityCardsList" v-for="item in tableData" :key="item.activity.id">
       <!--表头-->
       <ul class="clearfix nav">
         <li>{{ item.activity.name }}</li>
