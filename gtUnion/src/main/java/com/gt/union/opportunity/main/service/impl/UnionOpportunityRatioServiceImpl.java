@@ -79,12 +79,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
                 .orderBy("create_time", true);
         Page result = unionMemberService.pageSupport(page, entityWrapper);
         // toVO
-        result.setRecords(ListOpportunityRatioVO(result.getRecords(), member.getId()));
+        result.setRecords(listOpportunityRatioVO(result.getRecords(), member.getId()));
 
         return result;
     }
 
-    private List<OpportunityRatioVO> ListOpportunityRatioVO(List<UnionMember> memberList, Integer memberId) throws Exception {
+    private List<OpportunityRatioVO> listOpportunityRatioVO(List<UnionMember> memberList, Integer memberId) throws Exception {
         List<OpportunityRatioVO> result = new ArrayList<>();
 
         if (ListUtil.isNotEmpty(memberList)) {

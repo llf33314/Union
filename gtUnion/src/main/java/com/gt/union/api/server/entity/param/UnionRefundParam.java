@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
+ * 联盟卡退款参数
+ * @author hongjiye
  * Created by Administrator on 2017/9/4 0004.
  */
 @ApiModel( value = "UnionRefundParam", description = "其他模块使用了联盟卡退款参数实体" )

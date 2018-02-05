@@ -9,9 +9,9 @@ import java.util.Map;
 
 /**
  * 通用工具类
- * 
+ *
  * @author
- * 
+ *
  */
 public class CommonUtil {
 	private static final Logger logger = Logger.getLogger(CommonUtil.class);
@@ -146,9 +146,10 @@ public class CommonUtil {
 	public static Integer judgeBrowser(HttpServletRequest request){
 		String ua = request.getHeader("user-agent")
 				.toLowerCase();
-		if (ua.indexOf("micromessenger") > 0) {// 微信-1
+        // 微信==1
+		if (ua.indexOf("micromessenger") > 0) {
 			return 1;
-		}else{//其他 -99
+		}else{//其他==99
 			return 99;
 		}
 	}

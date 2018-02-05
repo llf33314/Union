@@ -18,8 +18,8 @@ import java.util.Arrays;
  * @author hongjiye
  * @time 2018-01-05 11:19
  **/
-//@Aspect
-//@Component
+/*@Aspect
+@Component*/
 public class WebLogAspectConfig {
 
 //	private Logger logger = Logger.getLogger(getClass());

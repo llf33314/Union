@@ -224,7 +224,7 @@ public class LoginFilter implements Filter {
     private void doWebFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain, String url) throws IOException, ServletException {
         // 后台
         BusUser busUser = SessionUtils.getLoginUser(req);
-        if (busUser == null && ConfigConstant.IS_DEV == CommonConstant.COMMON_YES) {
+        if (busUser == null && ConfigConstant.IS_DEV == CommonConstant.COMMON_NO) {
             justForDev(req);
             chain.doFilter(req, res);
             return;

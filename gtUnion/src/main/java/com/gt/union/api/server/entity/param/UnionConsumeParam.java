@@ -7,6 +7,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 联盟卡核销参数
+ * @author hongjiye
  * Created by Administrator on 2017/9/4 0004.
  */
 @ApiModel( value = "UnionConsumeParam", description = "其他模块使用联盟卡核销参数实体" )

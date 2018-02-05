@@ -10,6 +10,8 @@ import java.net.URLConnection;
 
 /**
  * IP操作
+ * @author hongjiye
+ * @time 2018/2/5
  */
 public class IPKit {
 	public static String getRemoteIP(HttpServletRequest request) {
@@ -41,11 +43,11 @@ public class IPKit {
 		    }
 		    return ip;
 		 }
-	 
-	 
+
+
 	 /**
 	 * 根据IP获取对应的城市 调用QQ的接口
-	 * 
+	 *
 	 * @param strIP
 	 * @return
 	 */

@@ -14,6 +14,11 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
+/**
+ * 数据库工具类
+ * @author hongjiye
+ * @time 2018/2/5
+ */
 @Component
 public class DaoUtil extends JdbcTemplate {
 
@@ -33,10 +38,10 @@ public class DaoUtil extends JdbcTemplate {
 	 * @param executSql
 	 * @return 返回添加对象的Id值;
 	 */
-
 	private Object invokeExecuteStatementCallBack(final String executSql) {
 		Object key = this.execute(new StatementCallback() {
-			public Object doInStatement(Statement stm) throws SQLException,
+			@Override
+            public Object doInStatement(Statement stm) throws SQLException,
 					DataAccessException {
 				stm.executeUpdate(executSql);
 				ResultSet rs = null;
@@ -93,7 +98,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 关闭相应资源;
-	 * 
+	 *
 	 * @param conn
 	 * @param stm
 	 * @param rs
@@ -127,7 +132,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 反射获取所有的字段
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
@@ -142,7 +147,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 反射获取所有以get开头的方法
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
@@ -164,18 +169,20 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 批量存储调用的批量操作方法;
-	 * 
+	 *
 	 * @param sql
 	 * @param allValueList
 	 * @return
 	 */
 	private int[] invokeBatchUpdate(String sql, final List<List> allValueList) {
 		return this.batchUpdate(sql, new BatchPreparedStatementSetter() {
-			public int getBatchSize() {
+			@Override
+            public int getBatchSize() {
 				return allValueList.size();
 			}
 
-			public void setValues(PreparedStatement pstm, int i)
+			@Override
+            public void setValues(PreparedStatement pstm, int i)
 					throws SQLException {
 				List list = allValueList.get(i);
 				for (int k = 0; k < list.size(); k++) {
@@ -187,7 +194,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 通过反射方式获取对应get方法中所返回的数据对象;
-	 * 
+	 *
 	 * @param obj
 	 * @param methodList
 	 * @param temp
@@ -220,7 +227,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 使用jdbc操作，给定对应的数据Map对象，进行数据的存储操作;
-	 * 
+	 *
 	 * @param dbName
 	 *            数据库名称;可以不写，不写的情况下默认使用的是当前datasouce定义的数据库。
 	 * @param tableName
@@ -261,10 +268,10 @@ public class DaoUtil extends JdbcTemplate {
 					+ ")";
 			sql = new StringBuffer();
 			sql.append(sql1).append(value1);
-			
+
 			final String insertSql=sql.toString();
 			return this.execute(new PreparedStatementCreator() {
-				
+
 				@Override
 				public PreparedStatement createPreparedStatement(Connection connection)
 						throws SQLException {
@@ -311,7 +318,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 批量添加数据到数据库中的数据表中； (只针对同一数据表的数据批量写入操作，注意这个方法效率相对比较低)
-	 * 
+	 *
 	 * @param dbName
 	 *            数据库名
 	 * @param tableName
@@ -331,7 +338,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 批量写入一组数据到数据库
-	 * 
+	 *
 	 * @param dbName
 	 *            数据库名称可以为null或""，表示使用当前数据源的数据库
 	 * @param tableName
@@ -384,11 +391,13 @@ public class DaoUtil extends JdbcTemplate {
 			return this.batchUpdate(sql.toString(),
 					new BatchPreparedStatementSetter() {
 
-						public int getBatchSize() {
+						@Override
+                        public int getBatchSize() {
 							return allValuesList.size();
 						}
 
-						public void setValues(PreparedStatement pstm, int i)
+						@Override
+                        public void setValues(PreparedStatement pstm, int i)
 								throws SQLException {
 							List<Object> list = allValuesList.get(i);
 							for (int j = 0; j < list.size(); j++) {
@@ -404,7 +413,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 用于生成批量写入数据库之前的sql数据;
-	 * 
+	 *
 	 * @param sql
 	 *            传入的sql前一部分:insert into
 	 * @param values
@@ -430,7 +439,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * sql的分页查询(仅仅支持Mysql)
-	 * 
+	 *
 	 * @param sql
 	 * @param start
 	 * @param pageSize
@@ -449,7 +458,7 @@ public class DaoUtil extends JdbcTemplate {
 		resultList = this.queryForList(sb.toString(), objs);
 		return resultList;
 	}
-	
+
 	/**
 	 * 查询所有数据 cz
 	 * @param sql
@@ -461,8 +470,8 @@ public class DaoUtil extends JdbcTemplate {
 		resultList = this.queryForList(sql, objs);
 		return resultList;
 	}
-	
-	
+
+
 
 	/**
 	 * 装拼 统计sql语句
@@ -499,7 +508,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 使用sql根据id删除一条数据记录(单一数据表)
-	 * 
+	 *
 	 * @param dbName
 	 *            数据库名称 可以为null或“”，默认是用DataSource配置的数据库;
 	 * @param tableName
@@ -520,7 +529,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 组合要删除的数据表的sql语句;
-	 * 
+	 *
 	 * @param dbName
 	 * @param tableName
 	 * @param idName
@@ -548,7 +557,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 使用sql根据id集合删除一批数据记录(单一数据表);
-	 * 
+	 *
 	 * @param dbName
 	 *            数据库名称 可以为null或“”，默认是用DataSource配置的数据库;
 	 * @param tableName
@@ -581,7 +590,7 @@ public class DaoUtil extends JdbcTemplate {
 
 	/**
 	 * 根据id更新一张数据表中的数据内容;
-	 * 
+	 *
 	 * @param dbName
 	 *            数据库名,可以为null或空字符"",
 	 * @param tableName
@@ -641,11 +650,11 @@ public class DaoUtil extends JdbcTemplate {
 
 
 
-	
+
 	/**
 	 * 设置分页的当前页为空时的默认值
 	 * @param currentPage
-	 * 
+	 *
 	 */
 	private Integer defaultCurrentPage(Integer currentPage){
 		if(currentPage==null){
@@ -674,10 +683,12 @@ public class DaoUtil extends JdbcTemplate {
 	public <T> T queryForObject(String sql, Class<T> requiredType,
 			Object... args) throws DataAccessException {
 		List<T> list = queryForList(sql, requiredType, args);
-		if(list!=null && list.size()>0)return list.get(0);
+		if(list!=null && list.size()>0) {
+            return list.get(0);
+        }
 		return null;
 	}
-	
+
 	/**
 	 * 重写queryForMap
 	 */
@@ -690,7 +701,7 @@ public class DaoUtil extends JdbcTemplate {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 重写queryForMap
 	 */

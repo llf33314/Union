@@ -1,5 +1,7 @@
 package com.gt.union.wxapp.card.vo;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.union.member.entity.UnionMember;
 import io.swagger.annotations.ApiModel;
@@ -35,4 +37,9 @@ public class CardDetailListVO {
 	public void setUnionCardProjectItems(List<UnionCardProjectItem> unionCardProjectItems) {
 		this.unionCardProjectItems = unionCardProjectItems;
 	}
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect);
+    }
 }

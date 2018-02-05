@@ -3,6 +3,8 @@ package com.gt.union.common.entity;
 import java.util.Date;
 
 /**
+ * 联盟权限信息
+ * @author hongjiye
  * Created by Administrator on 2017/7/26 0026.
  */
 public class UnionAuthorityInfo {

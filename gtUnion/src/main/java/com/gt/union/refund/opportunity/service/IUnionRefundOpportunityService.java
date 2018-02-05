@@ -15,6 +15,7 @@ public interface IUnionRefundOpportunityService {
 	/**
 	 * 批量插入商机退款列表
 	 * @param refundOpportunityList
+     * @throws Exception    统一异常处理
 	 */
 	void saveBatch(List<UnionRefundOpportunity> refundOpportunityList) throws Exception;
 }

@@ -6,6 +6,11 @@ import com.gt.union.api.client.erp.vo.ErpServerVO;
 
 import java.util.List;
 
+/**
+ * erp服务类
+ * @author hongjiye
+ * @time 2018/2/5
+ */
 public interface ErpService {
 
 	/**

@@ -1,5 +1,7 @@
 package com.gt.union.wxapp.card.vo;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.annotations.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -65,4 +67,9 @@ public class NearUserVO {
 	public void setAddressLatitude(String addressLatitude) {
 		this.addressLatitude = addressLatitude;
 	}
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect);
+    }
 }

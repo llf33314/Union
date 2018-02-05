@@ -90,7 +90,8 @@ public class BusUserServiceImpl implements IBusUserService {
 	public String getWxPublicUserQRCode(Integer publicId, Integer busId, Integer extendId) {
         logger.info("获取公众号关注二维码永久链接publicId：{}，busId：{}", publicId, busId);
         String codeKey = RedisKeyUtil.getWxPublicUserQRCodeKey(publicId, busId);
-        if (this.redisCacheUtil.exists(codeKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
+        //（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
+        if (this.redisCacheUtil.exists(codeKey)) {
             String obj = this.redisCacheUtil.get(codeKey);
             if(CommonUtil.isNotEmpty(obj)){
                 return JSON.parseObject(obj, String.class);

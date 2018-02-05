@@ -1,5 +1,7 @@
 package com.gt.union.api.client.erp.vo;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -42,4 +44,9 @@ public class ErpTypeVO {
 	public void setErpModel(Integer erpModel) {
 		this.erpModel = erpModel;
 	}
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect);
+    }
 }

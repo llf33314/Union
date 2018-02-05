@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 联盟卡对外服务接口
+ * @author hongjiye
  * Created by Administrator on 2017/8/23 0023.
  */
 @RestController

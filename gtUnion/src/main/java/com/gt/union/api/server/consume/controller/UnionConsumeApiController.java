@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * 联盟卡核销接口
+ * @author hongjiye
  * Created by Administrator on 2017/9/4 0004.
  */
 @RestController

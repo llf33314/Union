@@ -695,7 +695,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                         UnionCardRecord updateRecord = new UnionCardRecord();
                         updateRecord.setId(record.getId());
                         updateRecord.setPayStatus(CommonConstant.COMMON_YES == isSuccess ? CardConstant.PAY_STATUS_SUCCESS : CardConstant.PAY_STATUS_FAIL);
-                        if (payType.equals("0")) {
+                        if ("0".equals(payType)) {
                             updateRecord.setPayType(CardConstant.PAY_TYPE_WX);
                             updateRecord.setWxOrderNo(payOrderNo);
                         } else {

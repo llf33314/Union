@@ -7,6 +7,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 其他模块线上获取联盟卡折扣参数实体
+ * @author hongjiye
  * Created by Administrator on 2017/9/13 0013.
  */
 @ApiModel( value = "UnionCardDiscountParam", description = "其他模块线上获取联盟卡折扣参数实体" )

@@ -6,6 +6,11 @@ import org.springframework.validation.ObjectError;
 
 import java.util.List;
 
+/**
+ * 校验表单参数工具
+ * @author hongjiye
+ * @time 2018/2/5
+ */
 public class ParamValidatorUtil {
 
     /**

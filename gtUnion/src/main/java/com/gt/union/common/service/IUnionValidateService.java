@@ -4,6 +4,8 @@ import com.gt.union.common.exception.ParamException;
 import org.springframework.validation.BindingResult;
 
 /**
+ * 校验表单参数服务类
+ * @author hongjiye
  * Created by Administrator on 2017/8/16 0016.
  */
 public interface IUnionValidateService {

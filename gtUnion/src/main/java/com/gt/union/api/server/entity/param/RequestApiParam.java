@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 /**
  * api请求参数
+ * @author hongjiye
  * Created by Administrator on 2017/9/4 0004.
  */
 @ApiModel( value = "RequestApiParam", description = "接口参数" )
