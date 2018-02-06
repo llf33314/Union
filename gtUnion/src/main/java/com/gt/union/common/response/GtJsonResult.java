@@ -30,7 +30,7 @@ public class GtJsonResult<T> implements Serializable {
      * 成功：自定义的数据包
      */
     @ApiModelProperty(value = "成功返回的具体数据")
-    private transient T data;
+    private T data;
 
     /**
      * 成功或失败：重定向地址
